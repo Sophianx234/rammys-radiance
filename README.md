@@ -1,5 +1,5 @@
 <div align="center">
-  <h1 align="center">Rammys Closet 🛍️</h1>
+  <h1 align="center">Rammys Radiance 🛍️</h1>
   <p align="center">
     <strong>A high-performance, minimalist e-commerce storefront built for modern brands.</strong>
   </p>
