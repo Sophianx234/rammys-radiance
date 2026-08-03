@@ -1,19 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { GalleryVerticalEnd } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 
 export default function ForgotPasswordPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -50,87 +42,85 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="grid h-dvh overflow-hidden relative bg-gradient-to-b from-secondary to-background lg:grid-cols-2">
-      {/* Left Section */}
-      <div className="flex flex-col overflow-y-scroll scrollbar-hide gap-4 p-6 md:p-10">
-        {/* Logo */}
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            <span className="text-primary">Rammys Radiance</span>
-          </a>
-        </div>
-
-        {/* Form Section */}
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-              <FieldGroup>
-                <div className="flex flex-col items-center gap-1 text-center">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Forgot Password
-                  </h1>
-                  <p className="text-muted-foreground text-sm text-balance">
-                    Enter your email and we’ll send a password reset link.
-                  </p>
-                </div>
-
-                {/* Email */}
-                <Field>
-                  <FieldLabel htmlFor="email" className="text-foreground">
-                    Email
-                  </FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-secondary text-foreground border border-border placeholder-muted-foreground focus:ring-primary"
-                  />
-                </Field>
-
-                {/* Error or Success */}
-                {error && (
-                  <p className="text-red-500 text-sm text-center">{error}</p>
-                )}
-                {success && (
-                  <p className="text-green-500 text-sm text-center">
-                    {success}
-                  </p>
-                )}
-
-                {/* Submit */}
-                <Button
-                  type="submit"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
-                  disabled={loading}
-                >
-                  {loading ? "Sending..." : "Send Reset Link"}
-                </Button>
-
-                <FieldDescription className="text-center text-muted-foreground">
-                  Remember your password?{" "}
-                  <a href="/login" className="text-primary hover:underline">
-                    Sign in
-                  </a>
-                </FieldDescription>
-              </FieldGroup>
-            </form>
+    <div className="grid min-h-dvh lg:h-dvh font-sans bg-surface lg:grid-cols-2 overflow-hidden">
+      {/* Left Section (Form) */}
+      <div className="flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="flex justify-center mb-16">
+            <Link href="/">
+              <Image 
+                src="/imgs/logo.jpeg" 
+                alt="Rammy's Radiance" 
+                width={180} 
+                height={54} 
+                className="object-contain"
+                priority
+              />
+            </Link>
           </div>
+
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-text-main mb-4">
+              Reset Password
+            </h1>
+            <p className="text-[13px] text-text-muted tracking-wide">
+              Enter your email and we'll send a password reset link.
+            </p>
+          </div>
+
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+            )}
+            {success && (
+              <p className="text-[#5B7763] text-[12px] font-medium text-center">{success}</p>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
+            >
+              {loading ? "Sending..." : "Send Reset Link"}
+            </Button>
+          </form>
+
+          <p className="mt-12 text-center text-[12px] text-text-muted">
+            Remember your password?{" "}
+            <Link href="/login" className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+              Sign In
+            </Link>
+          </p>
         </div>
       </div>
 
-      {/* Right Image Section */}
-      <div className="bg-muted relative hidden lg:block">
-        <img
+      {/* Right Section (Image) */}
+      <div className="relative hidden lg:block bg-surface h-full">
+        <Image
           src="/imgs/c-1.jpg"
-          alt="Fashion display"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          alt="Rammy's Radiance Model"
+          fill
+          className="object-cover"
+          sizes="50vw"
+          priority
         />
+        <div className="absolute inset-0 bg-black/5" />
       </div>
     </div>
   );

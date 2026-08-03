@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 
 interface ProductCardProps {
   id: string;
+  slug?: string;
   name: string;
   price: string;
   discountPrice?: string;
@@ -14,6 +15,7 @@ interface ProductCardProps {
 
 export function ProductCard({
   id,
+  slug,
   name,
   price,
   discountPrice,
@@ -22,7 +24,7 @@ export function ProductCard({
   discountBadge,
 }: ProductCardProps) {
   return (
-    <div className="group flex flex-col cursor-pointer w-full">
+    <Link href={`/product/${slug || id}`} className="group flex flex-col cursor-pointer w-full block">
       {/* Image Container */}
       <div className="relative aspect-[4/5] bg-[#F8F9FA] mb-5 overflow-hidden flex items-center justify-center">
         {discountBadge && (
@@ -56,9 +58,9 @@ export function ProductCard({
           )}
         </div>
         
-        <Link href={`/product/${id}`} className="text-sm font-semibold text-text-main hover:text-action-primary transition-colors">
+        <div className="text-sm font-semibold text-text-main group-hover:text-action-primary transition-colors">
           {name}
-        </Link>
+        </div>
         
         {/* Stars */}
         <div className="flex items-center space-x-[2px] mt-1">
@@ -67,6 +69,6 @@ export function ProductCard({
           ))}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

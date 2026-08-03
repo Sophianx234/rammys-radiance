@@ -8,7 +8,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   try {
     await connectToDatabase();
 
-    const product = await Product.findById(params.id).populate("category").lean();
+    const { id } = params;
+    let product;
+
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      product = await Product.findById(id).populate("category").lean();
+    } else {
+      product = await Product.findOne({ slug: id }).populate("category").lean();
+    }
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

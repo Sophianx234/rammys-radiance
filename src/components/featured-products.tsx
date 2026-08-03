@@ -12,6 +12,7 @@ import {
 const products = [
   {
     id: "1",
+    slug: "shield-conditioner",
     name: "Shield Conditioner",
     price: "$10.00 - $20.00",
     priceRange: true,
@@ -20,12 +21,14 @@ const products = [
   },
   {
     id: "2",
+    slug: "perfecting-facial-oil",
     name: "Perfecting Facial Oil",
     price: "$20.00",
     image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: "3",
+    slug: "enriched-hand-body-wash",
     name: "Enriched Hand & Body Wash",
     price: "$25.00",
     discountPrice: "$23.00",
@@ -34,12 +37,14 @@ const products = [
   },
   {
     id: "4",
+    slug: "shield-shampoo",
     name: "Shield Shampoo",
     price: "$45.00",
     image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: "5",
+    slug: "radiant-skin-serum",
     name: "Radiant Skin Serum",
     price: "$30.00",
     discountBadge: "-10%",
@@ -47,12 +52,14 @@ const products = [
   },
   {
     id: "6",
+    slug: "daily-moisture-cream",
     name: "Daily Moisture Cream",
     price: "$18.00",
     image: "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: "7",
+    slug: "botanical-toner",
     name: "Botanical Toner",
     price: "$22.00",
     discountPrice: "$19.00",
@@ -61,6 +68,7 @@ const products = [
   },
   {
     id: "8",
+    slug: "night-recovery-oil",
     name: "Night Recovery Oil",
     price: "$35.00",
     image: "https://images.unsplash.com/photo-1608248593842-83210d7a0419?auto=format&fit=crop&q=80&w=600",
