@@ -76,14 +76,13 @@ export default function ResetPasswordPage() {
     <div className="grid h-dvh overflow-hidden bg-gradient-to-b from-secondary to-background lg:grid-cols-2">
       {/* Left Section */}
       <div className="flex flex-col overflow-y-scroll scrollbar-hide p-6 md:p-10 gap-4">
-        
         {/* Logo */}
         <div className="flex justify-center md:justify-start gap-2">
           <a href="/" className="flex items-center gap-2 font-medium">
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            <span className="text-primary">Rammys Closet</span>
+            <span className="text-primary">Rammys Radiance</span>
           </a>
         </div>
 
@@ -91,7 +90,6 @@ export default function ResetPasswordPage() {
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-
               <FieldGroup>
                 <div className="flex flex-col items-center text-center gap-1">
                   <h1 className="text-2xl font-bold text-foreground">
@@ -104,7 +102,9 @@ export default function ResetPasswordPage() {
 
                 {/* New Password */}
                 <Field>
-                  <FieldLabel className="text-foreground">New Password</FieldLabel>
+                  <FieldLabel className="text-foreground">
+                    New Password
+                  </FieldLabel>
                   <Input
                     type="password"
                     placeholder="••••••••"
@@ -117,7 +117,9 @@ export default function ResetPasswordPage() {
 
                 {/* Confirm Password */}
                 <Field>
-                  <FieldLabel className="text-foreground">Confirm Password</FieldLabel>
+                  <FieldLabel className="text-foreground">
+                    Confirm Password
+                  </FieldLabel>
                   <Input
                     type="password"
                     placeholder="••••••••"
@@ -129,8 +131,14 @@ export default function ResetPasswordPage() {
                 </Field>
 
                 {/* Error / Success */}
-                {error && <p className="text-red-500 text-center text-sm">{error}</p>}
-                {success && <p className="text-green-500 text-center text-sm">{success}</p>}
+                {error && (
+                  <p className="text-red-500 text-center text-sm">{error}</p>
+                )}
+                {success && (
+                  <p className="text-green-500 text-center text-sm">
+                    {success}
+                  </p>
+                )}
 
                 {/* Submit */}
                 <Button

@@ -1,22 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Menu, X, Search } from "lucide-react";
-import { FaUserCircle, FaUser, FaShoppingBag, FaHeart, FaCog, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import Image from "next/image";
+import { Search, User, Star, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { Button } from "./ui/button";
-import { useCart } from "./cart-context";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { user, cart, setUser } = useDashStore();
   const router = useRouter();
-
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close mobile menu when clicking outside
@@ -33,165 +35,141 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  function getInitials(name: string) {
-    if (!name) return "";
-    const parts = name.trim().split(" ");
-    return (parts[0]?.[0] + (parts[1]?.[0] || "")).toUpperCase();
-  }
-
   const handleLogout = async () => {
     try {
-      setIsLoading(true);
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (!res.ok) return console.error("Logout failed");
       setUser(null);
       router.push("/login");
     } catch (err) {
       console.error(err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  const navLinks = [
+    { name: "HOME", href: "/" },
+    { name: "ELEMENTS", href: "#" },
+    { name: "SHOP", href: "/shop" },
+    { name: "BLOG", href: "#" },
+    { name: "PAGES", href: "#" },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">RC</span>
-            </div>
-            <span className="hidden sm:inline font-semibold text-lg">Rammys Closet</span>
-          </Link>
+    <header className="sticky top-0 z-50 w-full flex flex-col bg-surface border-b border-border">
+      {/* Top Banner */}
+      <div className="bg-[#5B7763] text-white text-xs sm:text-sm text-center py-2.5 px-4 w-full font-medium">
+        Free shipping on all U.S. orders $50+
+      </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/shop" className="hover:text-primary text-sm">Shop</Link>
-            <Link href="/about" className="hover:text-primary text-sm">About</Link>
-            <Link href="/contact" className="hover:text-primary text-sm">Contact</Link>
-          </nav>
-
-          {/* Right */}
-          <div className="flex items-center space-x-4">
-            <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
-              <Search size={20} />
-            </button>
-
-            <Link href="/cart">
-              <Button variant="outline" size="icon" className="relative bg-transparent">
-                <ShoppingCart size={20} />
-                {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cart.length}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
-            {/* User */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                {!user ? (
-                  <button className="p-2 hover:bg-secondary rounded-full">
-                    <FaUserCircle className="w-6 h-6" />
-                  </button>
-                ) : !user.profile ? (
-                  <button className="w-9 h-9 flex items-center justify-center bg-secondary border text-primary rounded-full font-bold">
-                    {getInitials(user.name)}
-                  </button>
-                ) : (
-                  <button className="w-9 h-9 rounded-full overflow-hidden border hover:ring-2 hover:ring-primary transition-all">
-                    <img src={user.profile} className="w-full h-full object-cover" />
-                  </button>
-                )}
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end" className="w-48 bg-neutral-900">
-                {user && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href="" className="flex items-center gap-2"><FaUser /> My Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/orders" className="flex items-center gap-2"><FaShoppingBag /> Orders</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/wishlist" className="flex items-center gap-2"><FaHeart /> Wishlist</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings" className="flex items-center gap-2"><FaCog /> Settings</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                {!user&&<DropdownMenuItem asChild>
-                  <Link href="/login" className="flex items-center gap-2"><FaSignInAlt /> Login</Link>
-                </DropdownMenuItem>}
-                {user && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href='' onClick={handleLogout} className="flex items-center gap-2 text-red-500">
-                        <FaSignOutAlt /> {isLoading ? "Logging out..." : "Logout"}
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Mobile Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 hover:bg-secondary rounded-lg transition"
+      {/* Main Navbar */}
+      <div className="w-full px-6 lg:px-12 flex items-center justify-between h-[80px]">
+        
+        {/* Left: Navigation (Desktop) */}
+        <nav className="hidden lg:flex items-center space-x-8 flex-1">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.name} 
+              href={link.href} 
+              className="flex items-center text-[13px] font-semibold text-text-main tracking-[0.08em] hover:text-action-primary transition-colors"
             >
-              {isOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
+              {link.name}
+              <ChevronDown className="ml-1.5 w-3.5 h-3.5 text-text-muted" strokeWidth={2} />
+            </Link>
+          ))}
+        </nav>
+
+        {/* Center: Logo */}
+        <div className="flex-1 lg:flex-none flex justify-center lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+          <Link href="/">
+            <Image 
+              src="/imgs/logo.jpeg" 
+              alt="Rammy's Radiance Logo" 
+              width={160} 
+              height={48} 
+              className="object-contain"
+              priority
+            />
+          </Link>
         </div>
 
-        {/* Animated Mobile Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.nav
-              ref={menuRef}
-              key="mobile-menu"
-              initial={{ opacity: 0, y: -15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-              className="md:hidden pb-4 mt-2 space-y-2"
-            >
-              {[
-                { name: "Shop", href: "/shop" },
-                { name: "About", href: "/about" },
-                { name: "Contact", href: "/contact" },
-                { name: "Login", href: "/login" },
-              ].map((item) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="block px-2 py-2 hover:bg-secondary rounded-lg"
-                  >
-                    {item.name}
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.nav>
-          )}
-        </AnimatePresence>
+        {/* Right: Icons */}
+        <div className="flex items-center justify-end space-x-6 flex-1">
+          <button className="text-text-main hover:text-action-primary transition-colors">
+            <Search className="w-[20px] h-[20px]" strokeWidth={1.5} />
+          </button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-text-main hover:text-action-primary transition-colors">
+                <User className="w-[20px] h-[20px]" strokeWidth={1.5} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-surface">
+              {user ? (
+                <>
+                  <DropdownMenuItem asChild><Link href="/profile">My Profile</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <button onClick={handleLogout} className="w-full text-left text-red-500">Logout</button>
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem asChild><Link href="/login">Login / Register</Link></DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Link href="/wishlist" className="relative text-text-main hover:text-action-primary transition-colors hidden sm:block">
+            <Star className="w-[20px] h-[20px]" strokeWidth={1.5} />
+            <span className="absolute -top-2 -right-2 bg-text-main text-surface text-[10px] font-bold rounded-full w-[16px] h-[16px] flex items-center justify-center">
+              0
+            </span>
+          </Link>
+
+          <Link href="/cart" className="relative text-text-main hover:text-action-primary transition-colors">
+            <ShoppingBag className="w-[20px] h-[20px]" strokeWidth={1.5} />
+            <span className="absolute -top-2 -right-2 bg-text-main text-surface text-[10px] font-bold rounded-full w-[16px] h-[16px] flex items-center justify-center">
+              {cart?.length || 0}
+            </span>
+          </Link>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden text-text-main hover:text-action-primary transition ml-2"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Animated Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.nav
+            ref={menuRef}
+            key="mobile-menu"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="lg:hidden overflow-hidden bg-surface border-t border-border"
+          >
+            <div className="px-6 py-4 space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block text-sm font-semibold tracking-wider text-text-main hover:text-action-primary"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

@@ -51,9 +51,8 @@ export default function LoginPage() {
         if (res.ok) {
           if ((userData.user as IUser).role === "admin") {
             router.push("/admin/products");
-          } else if((userData.user as IUser).role === "dispatcher"){
+          } else if ((userData.user as IUser).role === "dispatcher") {
             router.push("/admin/orders");
-
           } else {
             router.push("/");
           }
@@ -77,7 +76,7 @@ export default function LoginPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            <span className="text-primary">Rammys Closet</span>
+            <span className="text-primary">Rammys Radiance</span>
           </a>
         </div>
 
@@ -96,7 +95,6 @@ export default function LoginPage() {
                 </div>
 
                 {/* ROLE TOGGLER */}
-                
 
                 {/* Email */}
                 <Field>
@@ -180,7 +178,10 @@ export default function LoginPage() {
 
                   <FieldDescription className="px-6 text-center text-muted-foreground">
                     Don&apos;t have an account?{" "}
-                    <Link href="/signup" className="text-primary hover:underline">
+                    <Link
+                      href="/signup"
+                      className="text-primary hover:underline"
+                    >
                       Create one
                     </Link>
                   </FieldDescription>

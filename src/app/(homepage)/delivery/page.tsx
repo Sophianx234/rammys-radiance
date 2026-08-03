@@ -7,7 +7,6 @@ export default function DeliveryPage() {
   return (
     <section className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-zinc-950 text-white py-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -37,21 +36,24 @@ export default function DeliveryPage() {
               Delivery Options
             </h2>
             <p className="mb-4">
-              Rammys Closet offers reliable delivery across Ghana and international shipping to select countries.
-              Each order is carefully packaged to ensure it arrives in perfect condition.
+              Rammys Radiance offers reliable delivery across Ghana and
+              international shipping to select countries. Each order is
+              carefully packaged to ensure it arrives in perfect condition.
             </p>
 
             <ul className="list-disc list-inside space-y-2 text-gray-400">
               <li>
-                <span className="text-gray-300">Standard Delivery:</span>  
+                <span className="text-gray-300">Standard Delivery:</span>
                 Affordable option for non-urgent orders.
               </li>
               <li>
-                <span className="text-gray-300">Express Delivery:</span>  
+                <span className="text-gray-300">Express Delivery:</span>
                 Faster arrival for customers who need their items quickly.
               </li>
               <li>
-                <span className="text-gray-300">Pickup Points (when available):</span>  
+                <span className="text-gray-300">
+                  Pickup Points (when available):
+                </span>
                 Collect from approved pickup locations.
               </li>
             </ul>
@@ -65,13 +67,26 @@ export default function DeliveryPage() {
             </h2>
             <p className="mb-4">Estimated timelines are as follows:</p>
             <ul className="list-disc list-inside space-y-2 text-gray-400">
-              <li><span className="text-gray-300">Within Accra:</span> 1–2 working days</li>
-              <li><span className="text-gray-300">Greater Accra Region:</span> 1–3 working days</li>
-              <li><span className="text-gray-300">Other Regions in Ghana:</span> 2–5 working days</li>
-              <li><span className="text-gray-300">International Shipping:</span> 7–15 working days depending on destination</li>
+              <li>
+                <span className="text-gray-300">Within Accra:</span> 1–2 working
+                days
+              </li>
+              <li>
+                <span className="text-gray-300">Greater Accra Region:</span> 1–3
+                working days
+              </li>
+              <li>
+                <span className="text-gray-300">Other Regions in Ghana:</span>{" "}
+                2–5 working days
+              </li>
+              <li>
+                <span className="text-gray-300">International Shipping:</span>{" "}
+                7–15 working days depending on destination
+              </li>
             </ul>
             <p className="mt-3 text-gray-400">
-              Note: Weekends and public holidays may extend delivery times slightly.
+              Note: Weekends and public holidays may extend delivery times
+              slightly.
             </p>
           </section>
 
@@ -82,8 +97,9 @@ export default function DeliveryPage() {
               Order Packaging
             </h2>
             <p>
-              Every package is sealed securely and inspected before dispatch.  
-              Fragile or delicate products receive extra protective packaging to ensure safe delivery.
+              Every package is sealed securely and inspected before dispatch.
+              Fragile or delicate products receive extra protective packaging to
+              ensure safe delivery.
             </p>
           </section>
 
@@ -94,51 +110,65 @@ export default function DeliveryPage() {
               International Shipping
             </h2>
             <p className="mb-3">
-              We currently ship to select countries outside Ghana. Shipping fees and delivery times vary based on your destination.
+              We currently ship to select countries outside Ghana. Shipping fees
+              and delivery times vary based on your destination.
             </p>
 
             <p className="text-gray-400">
-              Customs or import duties (where applicable) are the responsibility of the customer.
+              Customs or import duties (where applicable) are the responsibility
+              of the customer.
             </p>
           </section>
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-xl font-semibold text-primary mb-3">Tracking Your Order</h2>
+            <h2 className="text-xl font-semibold text-primary mb-3">
+              Tracking Your Order
+            </h2>
             <p>
-              Once your order is dispatched, you will receive a tracking number via email or SMS.
-              You can use this number to monitor your package’s journey until it reaches you.
+              Once your order is dispatched, you will receive a tracking number
+              via email or SMS. You can use this number to monitor your
+              package’s journey until it reaches you.
             </p>
           </section>
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-xl font-semibold text-primary mb-3">Delivery Fees</h2>
+            <h2 className="text-xl font-semibold text-primary mb-3">
+              Delivery Fees
+            </h2>
             <p className="mb-4">
-              Delivery fees are calculated based on your location and the size of your order.
-              You’ll see the delivery cost clearly displayed at checkout before confirming your purchase.
+              Delivery fees are calculated based on your location and the size
+              of your order. You’ll see the delivery cost clearly displayed at
+              checkout before confirming your purchase.
             </p>
             <p className="text-gray-400">
-              From time to time, we offer discounted or free delivery promotions.
+              From time to time, we offer discounted or free delivery
+              promotions.
             </p>
           </section>
 
           {/* Section 7 */}
           <section>
-            <h2 className="text-xl font-semibold text-primary mb-3">Failed or Delayed Deliveries</h2>
+            <h2 className="text-xl font-semibold text-primary mb-3">
+              Failed or Delayed Deliveries
+            </h2>
             <p>
-              If a delivery attempt fails due to incorrect details or an unavailable recipient,
-              our team will contact you to reschedule.  
-              Severe weather or unexpected courier delays may occasionally affect delivery times.
+              If a delivery attempt fails due to incorrect details or an
+              unavailable recipient, our team will contact you to reschedule.
+              Severe weather or unexpected courier delays may occasionally
+              affect delivery times.
             </p>
           </section>
 
           {/* Section 8 */}
           <section>
-            <h2 className="text-xl font-semibold text-primary mb-3">Need Assistance?</h2>
+            <h2 className="text-xl font-semibold text-primary mb-3">
+              Need Assistance?
+            </h2>
             <p>
-              Our support team is always ready to help with delivery questions or concerns.
-              Reach us at{" "}
+              Our support team is always ready to help with delivery questions
+              or concerns. Reach us at{" "}
               <span className="text-primary">support@rammys.com</span>.
             </p>
           </section>

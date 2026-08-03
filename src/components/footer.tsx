@@ -16,7 +16,7 @@ export default function Footer() {
                   RC
                 </span>
               </div>
-              <span className="font-semibold text-lg">Rammys Closet</span>
+              <span className="font-semibold text-lg">Rammys Radiance</span>
             </div>
             <p className="text-muted-foreground text-sm">
               Luxury cosmetics curated for your unique beauty
@@ -134,7 +134,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Rammys Closet. All rights reserved.
+            © {currentYear} Rammys Radiance. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link

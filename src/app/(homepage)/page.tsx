@@ -16,7 +16,6 @@ export default function HomePage() {
   return (
     <main>
       <Hero />
-      <CategoriesShowcase />
       <FeaturedProducts />
       <Bestsellers />
       {/* <AboutSectios /> */}

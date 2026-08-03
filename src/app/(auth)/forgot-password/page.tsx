@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            <span className="text-primary">Rammys Closet</span>
+            <span className="text-primary">Rammys Radiance</span>
           </a>
         </div>
 
@@ -69,7 +69,9 @@ export default function ForgotPasswordPage() {
             <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <h1 className="text-2xl font-bold text-foreground">Forgot Password</h1>
+                  <h1 className="text-2xl font-bold text-foreground">
+                    Forgot Password
+                  </h1>
                   <p className="text-muted-foreground text-sm text-balance">
                     Enter your email and we’ll send a password reset link.
                   </p>
@@ -77,7 +79,9 @@ export default function ForgotPasswordPage() {
 
                 {/* Email */}
                 <Field>
-                  <FieldLabel htmlFor="email" className="text-foreground">Email</FieldLabel>
+                  <FieldLabel htmlFor="email" className="text-foreground">
+                    Email
+                  </FieldLabel>
                   <Input
                     id="email"
                     type="email"
@@ -90,8 +94,14 @@ export default function ForgotPasswordPage() {
                 </Field>
 
                 {/* Error or Success */}
-                {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-                {success && <p className="text-green-500 text-sm text-center">{success}</p>}
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
+                {success && (
+                  <p className="text-green-500 text-sm text-center">
+                    {success}
+                  </p>
+                )}
 
                 {/* Submit */}
                 <Button

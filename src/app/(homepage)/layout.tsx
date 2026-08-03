@@ -1,20 +1,25 @@
-
 import { CartProvider } from "@/components/cart-context";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono,Inter , Barlow, Lato, Pacifico} from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Inter,
+  Barlow,
+  Lato,
+  Pacifico,
+} from "next/font/google";
 import type React from "react";
 import "../globals.css";
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Rammys Closet - Premium Cosmetics",
+  title: "Rammys Radiance - Premium Cosmetics",
   description: "Discover luxury beauty products curated for you",
   generator: "v0.app",
-}
-
+};
 
 export const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const barlow = Barlow({
@@ -36,20 +41,16 @@ export const pacifico = Pacifico({
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-
-  
   return (
     <html lang="en">
       <script src="https://js.paystack.co/v1/inline.js"></script>
 
       <body className={` ${inter.className} antialiased`}>
-        <CartProvider>
-          {children}
-          </CartProvider>
+        <CartProvider>{children}</CartProvider>
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

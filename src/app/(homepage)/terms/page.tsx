@@ -1,13 +1,21 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, ShieldAlert, UserCheck, Globe2, Lock, BadgeCheck, Scale, Wallet } from "lucide-react";
+import {
+  FileText,
+  ShieldAlert,
+  UserCheck,
+  Globe2,
+  Lock,
+  BadgeCheck,
+  Scale,
+  Wallet,
+} from "lucide-react";
 
 export default function TermsPage() {
   return (
     <section className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-zinc-950 text-white py-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -37,8 +45,9 @@ export default function TermsPage() {
               Acceptance of Terms
             </h2>
             <p>
-              By using this website, you agree to comply with and be bound by these Terms & Conditions.
-              If you do not agree with any part of these terms, you may not use our services.
+              By using this website, you agree to comply with and be bound by
+              these Terms & Conditions. If you do not agree with any part of
+              these terms, you may not use our services.
             </p>
           </section>
 
@@ -49,8 +58,8 @@ export default function TermsPage() {
               Eligibility
             </h2>
             <p>
-              You must be at least 18 years old or accessing the site under the supervision of a guardian
-              to place an order or create an account.
+              You must be at least 18 years old or accessing the site under the
+              supervision of a guardian to place an order or create an account.
             </p>
           </section>
 
@@ -61,10 +70,22 @@ export default function TermsPage() {
               Orders & Payments
             </h2>
             <ul className="list-disc list-inside space-y-2 text-gray-400">
-              <li><span className="text-gray-300">Accurate information:</span> You agree to provide correct billing and delivery details.</li>
-              <li><span className="text-gray-300">Price changes:</span> Prices may change without prior notice.</li>
-              <li><span className="text-gray-300">Order confirmation:</span> Orders are confirmed once payment is received.</li>
-              <li><span className="text-gray-300">Fraud prevention:</span> Suspicious or fraudulent orders may be cancelled.</li>
+              <li>
+                <span className="text-gray-300">Accurate information:</span> You
+                agree to provide correct billing and delivery details.
+              </li>
+              <li>
+                <span className="text-gray-300">Price changes:</span> Prices may
+                change without prior notice.
+              </li>
+              <li>
+                <span className="text-gray-300">Order confirmation:</span>{" "}
+                Orders are confirmed once payment is received.
+              </li>
+              <li>
+                <span className="text-gray-300">Fraud prevention:</span>{" "}
+                Suspicious or fraudulent orders may be cancelled.
+              </li>
             </ul>
           </section>
 
@@ -75,8 +96,9 @@ export default function TermsPage() {
               Product Availability
             </h2>
             <p>
-              Stock availability is not guaranteed. If a product becomes unavailable after ordering,
-              we will notify you and issue a refund or offer an alternative.
+              Stock availability is not guaranteed. If a product becomes
+              unavailable after ordering, we will notify you and issue a refund
+              or offer an alternative.
             </p>
           </section>
 
@@ -100,8 +122,10 @@ export default function TermsPage() {
               Privacy & Data Protection
             </h2>
             <p>
-              We respect your privacy and handle personal information responsibly.
-              Please read our <span className="text-primary underline">Privacy Policy</span> for full details.
+              We respect your privacy and handle personal information
+              responsibly. Please read our{" "}
+              <span className="text-primary underline">Privacy Policy</span> for
+              full details.
             </p>
           </section>
 
@@ -112,8 +136,9 @@ export default function TermsPage() {
               Third-Party Links
             </h2>
             <p>
-              Our website may contain links to third-party services. We are not responsible for the content,
-              policies, or actions of these external sites.
+              Our website may contain links to third-party services. We are not
+              responsible for the content, policies, or actions of these
+              external sites.
             </p>
           </section>
 
@@ -124,26 +149,30 @@ export default function TermsPage() {
               Limitation of Liability
             </h2>
             <p>
-              Rammys Closet is not liable for any indirect, incidental, or consequential damages resulting
-              from the use of our services.  
+              Rammys Radiance is not liable for any indirect, incidental, or
+              consequential damages resulting from the use of our services.
             </p>
           </section>
 
           {/* Section 9 */}
           <section>
-            <h2 className="text-xl font-semibold text-primary mb-3">Changes to Terms</h2>
+            <h2 className="text-xl font-semibold text-primary mb-3">
+              Changes to Terms
+            </h2>
             <p>
-              We may update these terms occasionally. Continued use of our website indicates acceptance of
-              the new terms.
+              We may update these terms occasionally. Continued use of our
+              website indicates acceptance of the new terms.
             </p>
           </section>
 
           {/* Section 10 */}
           <section>
-            <h2 className="text-xl font-semibold text-primary mb-3">Contact Us</h2>
+            <h2 className="text-xl font-semibold text-primary mb-3">
+              Contact Us
+            </h2>
             <p>
-              If you have questions about these Terms & Conditions, contact us at{" "}
-              <span className="text-primary">support@rammys.com</span>.
+              If you have questions about these Terms & Conditions, contact us
+              at <span className="text-primary">support@rammys.com</span>.
             </p>
           </section>
         </motion.div>

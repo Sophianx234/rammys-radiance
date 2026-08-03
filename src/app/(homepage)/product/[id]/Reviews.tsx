@@ -1,16 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import ReviewCard from "@/components/review-card"
-import { Button } from "@/components/ui/button"
-import { Star } from "lucide-react"
+import { useState } from "react";
+import ReviewCard from "@/components/review-card";
+import { Button } from "@/components/ui/button";
+import { Star } from "lucide-react";
 
 const mockReviews = [
   {
     author: "Sarah M.",
     rating: 5,
     title: "Amazing quality!",
-    content: "The product exceeded my expectations. The quality is excellent and it arrived quickly.",
+    content:
+      "The product exceeded my expectations. The quality is excellent and it arrived quickly.",
     date: "2025-10-20",
     verified: true,
   },
@@ -18,7 +19,8 @@ const mockReviews = [
     author: "Jennifer K.",
     rating: 4,
     title: "Great product, fast delivery",
-    content: "Very satisfied with my purchase. The color is exactly as shown in pictures.",
+    content:
+      "Very satisfied with my purchase. The color is exactly as shown in pictures.",
     date: "2025-10-18",
     verified: true,
   },
@@ -26,14 +28,15 @@ const mockReviews = [
     author: "Amanda T.",
     rating: 5,
     title: "Love it!",
-    content: "Best purchase I've made from Rammys Closet. Highly recommend to everyone.",
+    content:
+      "Best purchase I've made from Rammys Radiance. Highly recommend to everyone.",
     date: "2025-10-15",
     verified: true,
   },
-]
+];
 
 export default function ReviewsSection() {
-  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   return (
     <div className="mt-12 border-t border-border pt-8">
@@ -47,10 +50,15 @@ export default function ReviewsSection() {
             ))}
           </div>
           <span className="text-lg font-semibold">4.7/5</span>
-          <span className="text-muted-foreground">({mockReviews.length} reviews)</span>
+          <span className="text-muted-foreground">
+            ({mockReviews.length} reviews)
+          </span>
         </div>
 
-        <Button onClick={() => setShowReviewForm(!showReviewForm)} className="bg-primary hover:bg-primary/90">
+        <Button
+          onClick={() => setShowReviewForm(!showReviewForm)}
+          className="bg-primary hover:bg-primary/90"
+        >
           {showReviewForm ? "Cancel" : "Write a Review"}
         </Button>
       </div>
@@ -63,7 +71,11 @@ export default function ReviewsSection() {
               <label className="block text-sm font-medium mb-2">Rating</label>
               <div className="flex gap-2">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <button key={i} type="button" className="p-1 hover:scale-110 transition-transform">
+                  <button
+                    key={i}
+                    type="button"
+                    className="p-1 hover:scale-110 transition-transform"
+                  >
                     <Star className="w-6 h-6 text-muted-foreground hover:fill-primary hover:text-primary" />
                   </button>
                 ))}
@@ -98,5 +110,5 @@ export default function ReviewsSection() {
         ))}
       </div>
     </div>
-  )
+  );
 }

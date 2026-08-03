@@ -1,106 +1,111 @@
 "use client";
 
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import Link from "next/link";
-import { Heart, Star } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
-import ProductCard from "@/app/(homepage)/shop/product-card";
+import { ProductCard } from "./product-card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-/* const featuredProducts = [
+const products = [
   {
-    id: 1,
-    name: "Luxury Lipstick - Crimson",
-    price: 2500,
-    category: "Lips",
-    image: "/luxury-lipstick-crimson-red.jpg",
+    id: "1",
+    name: "Shield Conditioner",
+    price: "$10.00 - $20.00",
+    priceRange: true,
+    discountBadge: "-17%",
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=600",
   },
   {
-    id: 2,
-    name: "Silk Eye Shadow Palette",
-    price: 3500,
-    category: "Eyes",
-    image: "/eyeshadow-palette-luxury-cosmetics.jpg",
+    id: "2",
+    name: "Perfecting Facial Oil",
+    price: "$20.00",
+    image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&q=80&w=600",
   },
   {
-    id: 3,
-    name: "Foundation - Porcelain",
-    price: 2800,
-    category: "Face",
-    image: "/luxury-foundation-porcelain-makeup.jpg",
+    id: "3",
+    name: "Enriched Hand & Body Wash",
+    price: "$25.00",
+    discountPrice: "$23.00",
+    discountBadge: "-8%",
+    image: "https://images.unsplash.com/photo-1615397323281-b6aeb63a9496?auto=format&fit=crop&q=80&w=600",
   },
   {
-    id: 4,
-    name: "Shimmer Setting Powder",
-    price: 1800,
-    category: "Face",
-    image: "/luxury-setting-powder-shimmer.jpg",
+    id: "4",
+    name: "Shield Shampoo",
+    price: "$45.00",
+    image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=600",
   },
-]; */
-
-
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  category: { name: string };
-  images: string[];
-}
+  {
+    id: "5",
+    name: "Radiant Skin Serum",
+    price: "$30.00",
+    discountBadge: "-10%",
+    image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=600",
+  },
+  {
+    id: "6",
+    name: "Daily Moisture Cream",
+    price: "$18.00",
+    image: "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&q=80&w=600",
+  },
+  {
+    id: "7",
+    name: "Botanical Toner",
+    price: "$22.00",
+    discountPrice: "$19.00",
+    discountBadge: "-15%",
+    image: "https://images.unsplash.com/photo-1556228720-192a6af4e865?auto=format&fit=crop&q=80&w=600",
+  },
+  {
+    id: "8",
+    name: "Night Recovery Oil",
+    price: "$35.00",
+    image: "https://images.unsplash.com/photo-1608248593842-83210d7a0419?auto=format&fit=crop&q=80&w=600",
+  },
+];
 
 export default function FeaturedProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-
-  useEffect(() => {
-    const getFeaturedProducts = async () => {
-      try {
-        const res = await fetch("/api/admin/products");
-        const data = await res.json();
-        console.log('featured products', data)
-        const featured = data.filter((p: any) => p.isFeatured).slice(0, 4);
-      setProducts(featured);
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-      }
-    };
-    getFeaturedProducts();
-  }, []);
-
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]
-    );
-  };
-
   return (
-    <section className="py-16 md:py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 space-y-4">
-          <p className="text-primary text-sm font-semibold uppercase tracking-widest">
-            This Month
-          </p>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold">
-            Featured Collection
+    <section className="py-24 bg-surface">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
+        
+        {/* Header */}
+        <div className="text-center mb-16 space-y-3">
+          <h2 className="text-3xl md:text-4xl font-medium text-text-main tracking-tight">
+            Our Featured Products
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Hand-picked selections from our premium beauty collection
+          <p className="text-text-muted text-sm md:text-base">
+            Get the skin you want to feel
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product}/>
-          ))}
+        {/* Carousel */}
+        <div className="relative px-2 sm:px-12">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4 md:-ml-6">
+              {products.map((product) => (
+                <CarouselItem key={product.id} className="pl-4 md:pl-6 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <ProductCard {...product} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            
+            <div className="hidden sm:block">
+              <CarouselPrevious className="-left-12 h-10 w-10 border-border/60 text-text-muted hover:text-text-main hover:border-text-main transition-colors bg-surface" />
+              <CarouselNext className="-right-12 h-10 w-10 border-border/60 text-text-muted hover:text-text-main hover:border-text-main transition-colors bg-surface" />
+            </div>
+          </Carousel>
         </div>
 
-        <div className="text-center mt-12">
-          <Link href="/shop">
-            <Button size="lg" variant="outline">
-              Browse All Products
-            </Button>
-          </Link>
-        </div>
       </div>
     </section>
   );

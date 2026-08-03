@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { Star } from "lucide-react"
+import { Star } from "lucide-react";
 
 export default function CustomerTestimonials() {
   const testimonials = [
     {
       name: "Chioma A.",
       location: "Lagos",
-      text: "Rammys Closet is my go-to for authentic luxury makeup. The quality is unmatched and delivery is always prompt!",
+      text: "Rammys Radiance is my go-to for authentic luxury makeup. The quality is unmatched and delivery is always prompt!",
       rating: 5,
     },
     {
@@ -28,14 +28,18 @@ export default function CustomerTestimonials() {
       text: "Best shopping experience! Authentic products, beautiful packaging, and incredible support. Highly recommended!",
       rating: 5,
     },
-  ]
+  ];
 
   return (
     <section className="py-16 px-4 md:px-6 lg:px-8 bg-card/50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Loved by Our Customers</h2>
-          <p className="text-lg text-muted-foreground">Real reviews from beauty enthusiasts</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Loved by Our Customers
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Real reviews from beauty enthusiasts
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -49,15 +53,21 @@ export default function CustomerTestimonials() {
                   <Star key={i} className="w-4 h-4 fill-accent text-accent" />
                 ))}
               </div>
-              <p className="text-foreground mb-4 italic">"{testimonial.text}"</p>
+              <p className="text-foreground mb-4 italic">
+                "{testimonial.text}"
+              </p>
               <div className="border-t border-border pt-4">
-                <p className="font-semibold text-foreground">{testimonial.name}</p>
-                <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                <p className="font-semibold text-foreground">
+                  {testimonial.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {testimonial.location}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

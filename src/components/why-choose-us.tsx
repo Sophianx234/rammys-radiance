@@ -31,7 +31,7 @@ export default function WhyChooseUs() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Why Choose Rammys Closet
+            Why Choose Rammys Radiance
           </h2>
           <p className="text-lg text-muted-foreground">
             Experience luxury cosmetics like never before
