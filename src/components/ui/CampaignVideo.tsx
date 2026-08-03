@@ -1,70 +1,70 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function CampaignVideo() {
   return (
-    <section className="relative h-[70vh] overflow-hidden">
-      {/* Background (you can switch to video later) */}
-      {/* 
-      <video
-        className="absolute inset-0 w-full h-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source src="/videos/campaign.mp4" type="video/mp4" />
-      </video> 
-      */}
-      <img
-        src="/imgs/f-5.jpg"
-        alt="Campaign Video Placeholder"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <section className="relative h-[600px] lg:h-[700px] w-full overflow-hidden">
+      {/* Background Media */}
+      <div className="absolute inset-0 w-full h-full">
+        {/* Replace with <video> tag when you have the actual video file */}
+        <img
+          src="/imgs/f-5.jpg"
+          alt="Campaign Video Placeholder"
+          className="w-full h-full object-cover object-center"
+        />
+        {/* Clean dark overlay to ensure white text pops beautifully */}
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
 
       {/* Overlay Content */}
-      <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center text-white">
-        <motion.h2
-          initial={{ opacity: 0, y: 40 }}
+      <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-6">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-5xl md:text-6xl font-serif font-bold mb-4"
+          className="text-[11px] sm:text-xs font-bold tracking-[0.2em] uppercase mb-4 text-white/90"
         >
-          Unveil the Glow Collection
+          The Glow Collection
+        </motion.p>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true }}
+          className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight mb-6"
+        >
+          Radiance <br className="sm:hidden" />
+          Redefined.
         </motion.h2>
 
         <motion.p
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
+          transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="text-lg text-gray-200 mb-6 max-w-lg"
+          className="text-base sm:text-lg text-white/80 mb-10 max-w-md mx-auto leading-relaxed"
         >
-          Experience a new era of radiant confidence.
+          Experience a new era of effortless confidence with our clinically proven, nature-inspired formulas.
         </motion.p>
 
-        <motion.button
-          initial={{ opacity: 0, y: 40 }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          className="bg-primary hover:bg-primary/90 text-black px-8 py-4 rounded-full font-medium shadow-lg"
+          transition={{ delay: 0.45, duration: 0.8 }}
+          viewport={{ once: true }}
         >
-          Shop Now
-        </motion.button>
+          <Link
+            href="/shop"
+            className="inline-flex items-center justify-center bg-white text-black px-10 py-4 text-[13px] font-semibold hover:bg-black hover:text-white transition-colors duration-300 shadow-sm"
+          >
+            Watch Campaign
+          </Link>
+        </motion.div>
       </div>
-
-      {/* Optional soft glow overlay for elegance */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 0.4 }}
-        transition={{ delay: 0.5, duration: 1 }}
-        viewport={{ once: true }}
-        className="absolute inset-0 bg-gradient-radial from-primary/20 via-transparent to-transparent blur-3xl pointer-events-none"
-      />
     </section>
   );
 }

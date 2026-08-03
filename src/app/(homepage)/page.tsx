@@ -7,9 +7,12 @@ import Footer from "@/components/footer"
 import Header from "@/components/header"
 import Hero from "@/components/hero"
 import Newsletter from "@/components/newsletter"
+import PromoBanners from "@/components/promo-banners"
+import PromoBannersSecondary from "@/components/promo-banners-secondary"
 import Bestsellers from "@/components/ui/BestSellers"
 import CampaignVideo from "@/components/ui/CampaignVideo"
 import Sustainability from "@/components/ui/Sustainability"
+import WhyChooseUs from "@/components/why-choose-us"
 
 export default function HomePage() {
  
@@ -18,9 +21,12 @@ export default function HomePage() {
       <Hero />
       <FeaturedProducts />
       <Bestsellers />
+      <PromoBanners />
+      <PromoBannersSecondary/>
       {/* <AboutSectios /> */}
       <CampaignVideo />
       <BrandShowcase />
+      <WhyChooseUs />
       <Testimonials />
       {/* <BeautyBlog /> */}
       <Sustainability />
