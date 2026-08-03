@@ -48,10 +48,9 @@ export default function Header() {
 
   const navLinks = [
     { name: "HOME", href: "/" },
-    { name: "ELEMENTS", href: "#" },
     { name: "SHOP", href: "/shop" },
     { name: "BLOG", href: "#" },
-    { name: "PAGES", href: "#" },
+    { name: "CONTACT", href: "#" },
   ];
 
   return (
