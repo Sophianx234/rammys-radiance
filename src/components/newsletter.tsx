@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import ScaleLoader from "react-spinners/ScaleLoader";
 
@@ -10,15 +9,14 @@ export default function Newsletter() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<null | { type: "success" | "error"; text: string }>(null);
-  console.log('message',message);
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
     try {
-      // simulate async API call
-     const response = await fetch("/api/newsletter", {
+      const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,13 +26,9 @@ export default function Newsletter() {
 
       if (!response.ok) {
         throw new Error("Subscription failed");
-
       }
-      // simulation: success if email includes "@"
       
       const data = await response.json();
-      console.log('boruto',data);
-
       setMessage(data);
       setEmail("");
     } catch (err) {
@@ -45,92 +39,76 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-black via-zinc-900 to-zinc-950 text-white">
-      <div className="grid md:grid-cols-2 items-stretch max-w-7xl mx-auto">
+    <section className="bg-[#E7EAE5] overflow-hidden">
+      <div className="grid md:grid-cols-2">
+        
         {/* Left Content */}
         <motion.div
-          className="relative z-10 flex flex-col justify-center px-8 py-24 md:py-32 text-center md:text-left"
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          className="flex flex-col justify-center px-8 py-20 md:py-32 md:px-16 lg:px-24"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p className="text-primary uppercase tracking-[0.25em] text-sm font-semibold mb-4">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-black/60 mb-4">
             Join the Inner Circle
           </p>
 
-          <h2 className="text-4xl md:text-5xl font-serif font-bold leading-tight mb-6">
-            Exclusive Beauty Awaits
+          <h2 className="text-3xl md:text-5xl font-medium tracking-tight text-black mb-6 leading-[1.1]">
+            Exclusive Beauty <br /> Awaits.
           </h2>
 
-          <p className="text-gray-300 text-lg max-w-md mx-auto md:mx-0 mb-10">
-            Subscribe for curated trends, product drops, and insider beauty
-            tips from industry experts designed to inspire your elegance.
+          <p className="text-sm text-black/70 max-w-md mb-12 leading-relaxed">
+            Subscribe for curated trends, product drops, and insider beauty tips from industry experts designed to inspire your elegance.
           </p>
 
-          <motion.form
-            onSubmit={handleSubscribe}
-            className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md mx-auto md:mx-0"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
+          <form onSubmit={handleSubscribe} className="flex flex-col gap-8 w-full max-w-md">
             <div className="relative w-full">
-              <Mail
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                size={20}
-              />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 required
-                className="w-full bg-zinc-800/70 border border-zinc-700 rounded-full pl-12 pr-4 py-4 focus:outline-none focus:ring-2 focus:ring-primary/80 text-white placeholder-gray-400 transition"
+                className="w-full bg-transparent border-b border-black/30 pb-3 text-sm focus:outline-none focus:border-black text-black placeholder-black/40 transition-colors rounded-none"
               />
             </div>
 
             <Button
               type="submit"
-              size="lg"
               disabled={loading}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-base font-medium shadow-lg flex items-center justify-center"
+              className="bg-black hover:bg-black/80 text-white w-full sm:w-auto self-start px-12 h-[50px] rounded-none text-xs font-semibold uppercase tracking-widest transition-colors"
             >
-              {loading ? <ScaleLoader height={18} width={3} /> : "Subscribe"}
+              {loading ? <ScaleLoader height={14} width={2} color="#fff" /> : "Subscribe"}
             </Button>
-          </motion.form>
+          </form>
 
-          {/* Success / Error Messages */}
           {message?.type && (
-            <p
-              className={`mt-4 text-sm  ${
-                message.type === "success" ? "text-green-400" : "text-red-400"
-              }`}
-            >
+            <p className={`mt-6 text-[13px] font-medium ${message.type === "success" ? "text-[#5B7763]" : "text-red-500"}`}>
               {message.text}
             </p>
           )}
 
-          <p className="text-sm text-gray-500 pt-6">
+          <p className="text-[11px] text-black/40 mt-8 uppercase tracking-wider">
             No spam. Just pure beauty inspiration.
           </p>
         </motion.div>
 
-        {/* Right Image Section */}
+        {/* Right Image */}
         <motion.div
-          className="relative overflow-hidden"
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          className="relative h-[450px] md:h-auto overflow-hidden"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.8 }}
+          transition={{ duration: 1 }}
         >
           <img
-            src="/imgs/c-6.jpg"
-            alt="Luxury makeup model"
-            className="w-full h-full object-cover"
+            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=1200"
+            alt="Luxury beauty products"
+            className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/40 to-transparent" />
         </motion.div>
+
       </div>
     </section>
   );

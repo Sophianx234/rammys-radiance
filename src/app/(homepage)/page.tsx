@@ -23,14 +23,10 @@ export default function HomePage() {
       <Bestsellers />
       <PromoBanners />
       <PromoBannersSecondary/>
-      {/* <AboutSectios /> */}
       <CampaignVideo />
       <BrandShowcase />
       <WhyChooseUs />
       <Testimonials />
-      {/* <BeautyBlog /> */}
-      <Sustainability />
-      {/* <SocialFeed /> */}
       <Newsletter />
     </main>
   )
