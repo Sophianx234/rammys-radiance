@@ -67,9 +67,13 @@ export async function POST(req: Request) {
       orderStatus: "processing",
     });
 
-    // Clear cart
+    // Clear cart and update user profile info
     if (data.userId) {
-      await User.findByIdAndUpdate(data.userId, { cart: [] });
+      await User.findByIdAndUpdate(data.userId, { 
+        cart: [],
+        phone: data.formData.phone,
+        name: data.formData.fullName,
+      });
     }
 
      const user = await User.findById(data.userId);

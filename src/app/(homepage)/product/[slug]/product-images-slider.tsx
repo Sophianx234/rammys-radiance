@@ -14,7 +14,7 @@ export default function ProductImageSlider({ images }: { images: string[] }) {
     <div className="flex flex-col gap-4 h-full w-full">
 
       {/* Main Image Slider */}
-      <div className="relative w-full h-[420px] md:h-full bg-secondary rounded-xl overflow-hidden">
+      <div className="relative w-full h-[420px] md:h-full bg-secondary  overflow-hidden">
 
         {/* Arrows */}
         <button

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useDashStore } from "@/lib/store";
 import { IUser } from "@/models/User";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const navItems = [
   { name: "Overview", key: "overview", icon: LayoutDashboard, path: "/admin/overview" },
@@ -63,18 +64,24 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`h-screen hidden sm:flex sticky top-0 flex-col border-r border-neutral-800 bg-[#0A0A0A] text-neutral-200 transition-all duration-300 ${
-        collapsed ? "w-20" : "w-64"
+      className={`h-screen hidden md:flex sticky top-0 flex-col border-r border-border/40 bg-white transition-all duration-300 ${
+        collapsed ? "w-[80px]" : "w-[260px]"
       }`}
     >
       {/* HEADER */}
-      <div className="flex items-center justify-between h-16 border-b border-neutral-800 px-4">
+      <div className="flex items-center justify-between h-20 border-b border-border/40 px-4">
         {!collapsed && (
-          <div className="flex items-center gap-3">
-            <img src="/x-1.jpg" alt="Logo" className="size-9 rounded-full object-cover" />
+          <div className="flex items-center gap-3 overflow-hidden ">
             <div className="flex flex-col">
-              <h1 className="text-white font-bold tracking-tight">Rammy’s Closet</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">Admin Dashboard</p>
+              <Image 
+                src="/imgs/logo.jpeg" 
+                alt="Rammy's Radiance Logo" 
+                width={170} 
+                height={36} 
+                className="object-contain -ml-7"
+                priority
+              />
+              
             </div>
           </div>
         )}
@@ -82,66 +89,79 @@ export default function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="text-neutral-400 hover:text-white"
+          className="text-text-muted hover:text-[#5B7763] hover:bg-secondary/50 rounded-none h-10 w-10 mx-auto transition-colors"
         >
-          <LucidePanelLeft size={20} />
+          <LucidePanelLeft size={18} strokeWidth={1.5} />
         </Button>
       </div>
 
       {/* NAVIGATION */}
-      <nav className="flex-1 flex flex-col gap-1 p-3">
+      <nav className="flex-1 flex flex-col gap-1 p-4 overflow-y-auto overflow-x-hidden">
         {navItems.map(({ name, key, icon: Icon }) => {
           // Only show "Orders" to non-admin users
-          if (user?.role !== "admin" && key !== "orders") return null;
+          // if (user?.role !== "admin" && key !== "orders") return null;
 
           const isActive = activeTab === key;
 
           return (
-            <motion.button
+            <button
               key={key}
               onClick={() => {
                 setActiveTab(key);
                 router.push(navItems.find((item) => item.key === key)?.path || "/");
               }}
-              whileTap={{ scale: 0.98 }}
-              className={`relative flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`relative flex items-center gap-4 w-full px-4 py-3.5 transition-all outline-none focus:outline-none group ${
                 isActive
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-900"
-              }`}
+                  ? "bg-secondary/70 text-[#222222]"
+                  : "text-text-muted hover:text-[#222222] hover:bg-secondary/40"
+              } ${collapsed ? "justify-center px-0" : ""}`}
             >
-              <Icon size={20} className={`${isActive ? "text-primary" : "text-neutral-500"}`} />
-              {!collapsed && <span>{name}</span>}
+              <Icon 
+                size={18} 
+                strokeWidth={1.5}
+                className={`flex-shrink-0 transition-colors ${isActive ? "text-[#5B7763]" : "text-text-muted group-hover:text-[#222222]"}`} 
+              />
+              
+              {!collapsed && (
+                <span className="text-[11px] uppercase tracking-wider font-bold whitespace-nowrap">
+                  {name}
+                </span>
+              )}
+              
               {isActive && (
                 <motion.span
-                  layoutId="activeIndicator"
-                  className="absolute left-0 top-0 h-full w-1 bg-primary rounded-r"
+                  layoutId="activeSidebarIndicator"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-1/2 w-1 bg-[#5B7763]"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-            </motion.button>
+            </button>
           );
         })}
       </nav>
 
       {/* FOOTER ACTIONS */}
-      <div className="border-t border-neutral-800 p-3 mt-auto space-y-1">
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all"
+      <div className="border-t border-border/40 p-4 mt-auto space-y-1">
+        <button
+          className={`flex items-center gap-4 w-full px-4 py-3.5 text-text-muted hover:text-[#222222] hover:bg-secondary/40 transition-colors outline-none focus:outline-none group ${collapsed ? "justify-center px-0" : ""}`}
         >
-          <Settings size={19} className="text-neutral-500" />
-          {!collapsed && "Settings"}
-        </motion.button>
+          <Settings size={18} strokeWidth={1.5} className="flex-shrink-0 text-text-muted group-hover:text-[#222222] transition-colors" />
+          {!collapsed && <span className="text-[11px] uppercase tracking-wider font-bold whitespace-nowrap">Settings</span>}
+        </button>
 
-        <motion.button
-          whileTap={{ scale: 0.97 }}
+        <button
           onClick={handleLogout}
           disabled={loading}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-rose-500 hover:text-rose-400 hover:bg-neutral-900 transition-all"
+          className={`flex items-center gap-4 w-full px-4 py-3.5 text-red-600 hover:text-red-700 hover:bg-red-50/50 transition-colors outline-none focus:outline-none group ${collapsed ? "justify-center px-0" : ""}`}
         >
-          <LogOut size={19} className="text-rose-500" />
-          {!collapsed && (loading ? "Logging out..." : "Logout")}
-        </motion.button>
+          <LogOut size={18} strokeWidth={1.5} className="flex-shrink-0 text-red-600 group-hover:text-red-700 transition-colors" />
+          {!collapsed && (
+            <span className="text-[11px] uppercase tracking-wider font-bold whitespace-nowrap">
+              {loading ? "Logging out..." : "Logout"}
+            </span>
+          )}
+        </button>
       </div>
     </aside>
   );

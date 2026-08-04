@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Search, User, Star, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
+import { Search, User, Star, ShoppingBag, ChevronDown, Menu, X, Package, LogOut, Settings, LogIn } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
@@ -231,40 +231,47 @@ export default function Header() {
                 </span>
               ) : <span className="text-[12px] font-medium tracking-wide hidden sm:block pt-1">Account</span>}
             </button>
+
             <div className={`absolute top-[3.5rem] right-0 pt-4 w-48 transition-all duration-300 z-50 ${isUserMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+
               <div className={`relative bg-white border border-border/40 shadow-sm flex flex-col transform transition-transform duration-300 ${isUserMenuOpen ? 'translate-y-0' : 'translate-y-2'}`}>
                 {/* Pointed Edge (Caret) */}
                 <div className="absolute -top-[7px] right-[18px] w-[13px] h-[13px] bg-white border-t border-l border-border/40 transform rotate-45 z-0"></div>
                 
                 <div className="flex flex-col relative z-10 py-2">
+                  {/* drop down items */}
                   {user ? (
                     <>
-                      <Link href="/profile" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
-                        My Profile
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        <User className="w-4 h-4" /> My Profile
                       </Link>
-                      <Link href="/orders" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
-                        Orders
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        <Package className="w-4 h-4" /> Orders
+                      </Link>
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        <Settings className="w-4 h-4" /> Settings
                       </Link>
                       <div className="my-1 border-t border-border/40" />
-                      <button onClick={() => { handleLogout(); setIsUserMenuOpen(false); }} className="w-full text-center px-4 py-2.5 text-[13px] font-medium text-red-500 hover:bg-red-50/50 transition-colors">
-                        Logout
+                      <button onClick={() => { handleLogout(); setIsUserMenuOpen(false); }} className="flex items-center justify-center gap-2 w-full text-center px-4 py-2.5 text-[13px] font-medium text-[#5B7763] hover:bg-[#5B7763]/10 transition-colors">
+                         Logout
                       </button>
                     </>
                   ) : (
                     <>
-                    <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 my-2 py-2.5  text-[13px] text-center bg-[#5B7763] font-medium text-white mx-3  hover:bg-secondary/50 transition-colors">
-                      Login 
+                    {/* drop down items 2*/}
+                    <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center shadow-2xl justify-center gap-2 px-4 my-2 py-2.5 text-[13px] text-center bg-[#5B7763] font-medium text-white mx-3 hover:bg-opacity-90 transition-colors">
+                      <LogIn className="w-4 h-4" /> Login 
                      </Link>
                       <div className="my-1 border-t border-border/40" />
 
-                     <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
-                        My Profile
+                     <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        <User className="w-4 h-4" /> My Profile
                       </Link>
-                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
-                        Orders
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        <Package className="w-4 h-4" /> Orders
                       </Link>
-                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
-                        Settings
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        <Settings className="w-4 h-4" /> Settings
                       </Link>
                     </>
                   )}
@@ -283,7 +290,7 @@ export default function Header() {
           <Link href="/cart" className="relative text-text-main hover:text-black transition-colors">
             <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.5} />
             <span className="absolute -top-1.5 -right-2 bg-[#5B7763] text-white text-[9px] font-bold rounded-full w-[14px] h-[14px] flex items-center justify-center">
-              {cart?.length || 0}
+              {cart?.reduce((acc, item: any) => acc + (item.quantity || 1), 0) || 0}
             </span>
           </Link>
 

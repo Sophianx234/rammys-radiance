@@ -1,17 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bell, Search, LogOut, Settings, Menu, LayoutDashboard, Package2, ShoppingCart, UsersRound } from "lucide-react";
+import { Bell, Search, LogOut, Settings, Menu, LayoutDashboard, Package2, ShoppingCart, UsersRound, User, Package } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useDashStore } from "@/lib/store";
@@ -22,26 +14,26 @@ export default function Topbar() {
   const { user, setUser } = useDashStore();
   const [loading, setLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close mobile menu when clicking outside
+  // Close menus when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMobileMenuOpen(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
     }
 
-    if (mobileMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [mobileMenuOpen]);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -64,110 +56,113 @@ export default function Topbar() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="sticky top-0 z-50 w-dvw sm:w-full h-16 flex items-center justify-between border-b border-border bg-gradient-to-r from-neutral-900/90 to-black/80 backdrop-blur-xl px-6 shadow-sm"
+        className="sticky top-0 z-50 w-full h-20 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-xl px-6 md:px-10"
       >
         {/* Left: Menu button */}
         <div className="flex items-center gap-3">
           <Menu
             onClick={() => setMobileMenuOpen(prev => !prev)}
-            className="md:hidden text-muted-foreground hover:text-foreground"
+            className="md:hidden text-text-muted hover:text-[#5B7763] cursor-pointer transition-colors"
           />
         </div>
 
         {/* Center: Search bar (Desktop only) */}
-        <div className="hidden md:flex items-center relative w-1/3">
+        <div className="hidden md:flex items-center relative w-full max-w-md">
           <Search
-            size={18}
-            className="absolute left-3 text-muted-foreground pointer-events-none"
+            size={16}
+            className="absolute left-4 text-text-muted pointer-events-none"
           />
           <Input
             placeholder="Search products, orders, or users..."
-            className="pl-10 pr-4 h-9 bg-neutral-800/60 border-neutral-700 focus-visible:ring-rose-500/30 text-sm placeholder:text-neutral-500"
+            className="pl-11 pr-4 h-11 bg-secondary/30 border-transparent focus-visible:ring-1 focus-visible:ring-[#5B7763]/30 text-[13px] text-[#222222] placeholder:text-text-muted/70 rounded-none w-full transition-all"
           />
         </div>
 
         {/* Right: Notifications + Profile */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-6">
           {/* Notifications */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative hover:bg-transparent border border-transparent hover:border-gray-300 transition-all hover:border text-muted-foreground hover:text-white"
+            className="relative hover:bg-secondary/50 border-none transition-all text-text-muted hover:text-[#5B7763] rounded-none h-10 w-10"
           >
-            <Bell size={20} />
+            <Bell size={18} strokeWidth={1.5} />
             {notifications > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+              <span className="absolute top-2 right-2 flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[#5B7763] opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5B7763]" />
               </span>
             )}
           </Button>
 
           {/* Profile dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <div className="relative flex items-center h-full" ref={userMenuRef}>
+            <button 
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="group flex items-center gap-3 hover:bg-secondary/30 transition-colors p-1.5 pr-4 rounded-none outline-none focus:outline-none"
+            >
               {user ? (
-                <button className="group flex items-center gap-3 rounded-full bg-neutral-900/70 border border-neutral-700 hover:border-neutral-600 hover:bg-neutral-800/80 transition p-1.5 pr-3">
+                <>
                   {user.profile ? (
                     <img
                       src={user.profile}
                       alt={user.name}
                       width={36}
                       height={36}
-                      className="rounded-full size-9 object-cover border border-neutral-700"
+                      className="rounded-full size-10 object-cover border border-border/40"
                     />
                   ) : (
-                    <div className="w-9 h-9 flex items-center justify-center rounded-full bg-neutral-700 border border-neutral-700 text-white font-semibold text-sm">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary border border-border/40 text-[#222222] font-semibold text-sm">
                       {user.name
                         ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
                         : "U"}
                     </div>
                   )}
 
-                  <div className="hidden sm:flex flex-col items-start">
-                    <span className="text-sm font-semibold text-white leading-tight">
+                  <div className="hidden sm:flex flex-col items-start gap-0.5">
+                    <span className="text-[13px] font-semibold text-[#222222] leading-none">
                       {user.name || "Unknown"}
                     </span>
-                    <span className="text-[11px] text-neutral-400">Admin</span>
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-[#5B7763] leading-none">
+                      Admin
+                    </span>
                   </div>
-                </button>
+                </>
               ) : (
-                <div className="flex items-center gap-3 rounded-full bg-neutral-900/70 border border-neutral-700 p-1.5 pr-3 animate-pulse">
-                  <div className="w-9 h-9 rounded-full bg-neutral-700/70" />
-                  <div className="hidden sm:flex flex-col items-start gap-1">
-                    <div className="h-3 w-20 rounded bg-neutral-700/70" />
-                    <div className="h-2.5 w-14 rounded bg-neutral-700/70" />
+               <div className="flex items-center gap-3 animate-pulse">
+                  <div className="w-10 h-10 rounded-full bg-secondary" />
+                  <div className="hidden sm:flex flex-col items-start gap-1.5">
+                    <div className="h-3 w-20 bg-secondary" />
+                    <div className="h-2 w-12 bg-secondary" />
                   </div>
                 </div>
               )}
-            </DropdownMenuTrigger>
+            </button>
 
-            <DropdownMenuContent
-              align="end"
-              className="w-52 bg-neutral-900 border border-neutral-800 text-neutral-200"
-            >
-              <DropdownMenuLabel className="text-neutral-400 text-xs">
-                Account
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-neutral-800" />
+            <div className={`absolute top-[4.5rem] right-0 pt-4 w-56 transition-all duration-300 z-50 ${isUserMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+              <div className={`relative bg-white border border-border/40 shadow-sm flex flex-col transform transition-transform duration-300 ${isUserMenuOpen ? 'translate-y-0' : 'translate-y-2'}`}>
+                {/* Pointed Edge (Caret) */}
+                <div className="absolute -top-[7px] right-[24px] w-[13px] h-[13px] bg-white border-t border-l border-border/40 transform rotate-45 z-0"></div>
+                
+                <div className="flex flex-col relative z-10 py-2">
+                  <div className="px-4 py-2">
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-text-muted">Account</span>
+                  </div>
+                  <div className="border-t border-border/40 my-1" />
 
-              <DropdownMenuItem className="hover:bg-neutral-800">
-                <Link href="/admin/settings" className="w-full flex items-center">
-                  <Settings className="mr-2 h-4 w-4 text-neutral-400" /> Settings
-                </Link>
-              </DropdownMenuItem>
+                  <Link href="/admin/settings" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                    <Settings className="w-4 h-4" /> Settings
+                  </Link>
 
-              <DropdownMenuSeparator className="bg-neutral-800" />
+                  <div className="border-t border-border/40 my-1" />
 
-              <div
-                onClick={handleLogout}
-                className="text-rose-500 hover:text-rose-400 hover:bg-neutral-800 flex items-center px-3 py-2 cursor-pointer"
-              >
-                <LogOut className="mr-2 h-4 w-4" />{" "}
-                {loading ? "Logging out..." : "Logout"}
+                  <button onClick={() => { handleLogout(); setIsUserMenuOpen(false); }} className="flex items-center justify-center gap-2 w-full text-center px-4 py-2.5 text-[13px] font-medium text-[#5B7763] hover:bg-[#5B7763]/10 transition-colors">
+                     {loading ? "Logging out..." : "Logout"}
+                  </button>
+                </div>
               </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </div>
+          </div>
         </div>
       </motion.header>
 
@@ -180,33 +175,33 @@ export default function Topbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="md:hidden sticky top-16 left-0 w-full z-40 bg-neutral-900 border-b border-neutral-800 shadow-xl"
+            className="md:hidden sticky top-20 left-0 w-full z-40 bg-white border-b border-border/40 shadow-lg"
           >
-            <div className="flex flex-col p-3 space-y-2">
+            <div className="flex flex-col p-4 space-y-1">
               {user?.role === "admin" && (
                 <>
                   <Link
                     href="/admin/overview"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg text-neutral-300 hover:bg-neutral-800"
+                    className="flex items-center gap-3 px-4 py-3 text-[12px] uppercase tracking-wider font-bold text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors"
                   >
-                    <LayoutDashboard size={18} /> Overview
+                    <LayoutDashboard size={16} strokeWidth={1.5} /> Overview
                   </Link>
 
                   <Link
                     href="/admin/products"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg text-neutral-300 hover:bg-neutral-800"
+                    className="flex items-center gap-3 px-4 py-3 text-[12px] uppercase tracking-wider font-bold text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors"
                   >
-                    <Package2 size={18} /> Products
+                    <Package2 size={16} strokeWidth={1.5} /> Products
                   </Link>
 
                   <Link
                     href="/admin/customers"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg text-neutral-300 hover:bg-neutral-800"
+                    className="flex items-center gap-3 px-4 py-3 text-[12px] uppercase tracking-wider font-bold text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors"
                   >
-                    <UsersRound size={18} /> Customers
+                    <UsersRound size={16} strokeWidth={1.5} /> Customers
                   </Link>
                 </>
               )}
@@ -214,16 +209,16 @@ export default function Topbar() {
               <Link
                 href="/admin/orders"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-neutral-300 hover:bg-neutral-800"
+                className="flex items-center gap-3 px-4 py-3 text-[12px] uppercase tracking-wider font-bold text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors"
               >
-                <ShoppingCart size={18} /> Orders
+                <ShoppingCart size={16} strokeWidth={1.5} /> Orders
               </Link>
 
               <div
                 onClick={handleLogout}
-                className="flex items-center text-red-400 gap-3 px-4 py-2 rounded-lg hover:bg-neutral-800 cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 text-[12px] uppercase tracking-wider font-bold text-red-600 hover:bg-red-50/50 cursor-pointer transition-colors mt-2"
               >
-                <LogOut size={18} /> {loading ? 'logging out...' : "logout"}
+                <LogOut size={16} strokeWidth={1.5} /> {loading ? 'Logging out...' : "Logout"}
               </div>
             </div>
           </motion.div>
