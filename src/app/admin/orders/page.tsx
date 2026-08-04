@@ -23,20 +23,8 @@ import {
   SlidersHorizontal,
   Copy
 } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,14 +42,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 import StatusSelector from "./status-selector";
 import PaymentBadge from "./payment-badge";
 import OrderDetailsSheetContent from "./order-details";
@@ -121,28 +104,29 @@ export const STATUS_CONFIG: Record<
   string,
   { label: string; color: string; icon: any }
 > = {
-  processing: { label: "Processing", color: "bg-blue-50 text-blue-700", icon: Clock },
-  paid: { label: "Paid", color: "bg-emerald-50 text-emerald-700", icon: CreditCard },
-  ready_for_pickup: { label: "Ready for Pickup", color: "bg-indigo-50 text-indigo-700", icon: Package },
-  packed: { label: "Packed", color: "bg-indigo-50 text-indigo-700", icon: Package },
-  ready_for_dispatch: { label: "Ready for Dispatch", color: "bg-violet-50 text-violet-700", icon: Truck },
-  dispatched: { label: "Dispatched", color: "bg-purple-50 text-purple-700", icon: Truck },
-  in_transit: { label: "In Transit", color: "bg-orange-50 text-orange-700", icon: Truck },
-  arrived: { label: "Arrived", color: "bg-sky-50 text-sky-700", icon: Truck },
-  delivery_attempted: { label: "Delivery Attempted", color: "bg-yellow-50 text-yellow-700", icon: AlertCircle },
-  delivered: { label: "Delivered", color: "bg-green-50 text-green-700", icon: CheckCircle },
-  cancelled: { label: "Cancelled", color: "bg-red-50 text-red-700", icon: XCircle },
-  failed: { label: "Failed", color: "bg-red-50 text-red-700", icon: AlertCircle },
+  processing: { label: "Processing", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: Clock },
+  paid: { label: "Paid", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CreditCard },
+  ready_for_pickup: { label: "Ready for Pickup", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Package },
+  packed: { label: "Packed", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Package },
+  ready_for_dispatch: { label: "Ready for Dispatch", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
+  dispatched: { label: "Dispatched", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
+  in_transit: { label: "In Transit", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
+  arrived: { label: "Arrived", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
+  delivery_attempted: { label: "Delivery Attempted", color: "bg-orange-50 text-orange-700 border-orange-200", icon: AlertCircle },
+  delivered: { label: "Delivered", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CheckCircle },
+  cancelled: { label: "Cancelled", color: "bg-red-50 text-red-700 border-red-200", icon: XCircle },
+  failed: { label: "Failed", color: "bg-red-50 text-red-700 border-red-200", icon: AlertCircle },
 };
 
 const Toast = withReactContent(Swal).mixin({
   toast: true,
-  position: "top-end",
+  position: "bottom-right",
   showConfirmButton: false,
   timer: 2000,
   timerProgressBar: false,
   customClass: {
-    popup: "text-sm font-medium rounded-lg shadow-md",
+    popup: "rounded-none border border-border/40 bg-white",
+    title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
   },
 });
 
@@ -200,25 +184,31 @@ export default function OrdersManagement() {
       });
       if (!res.ok) throw new Error("Update failed");
       setOrders((prev) => prev.map((o) => (o.paymentReference === paymentReference ? { ...o, orderStatus: newStatus as OrderStatus } : o)));
-      Toast.fire({ icon: "success", title: "Order status updated" });
+      Toast.fire({ icon: "success", title: "ORDER STATUS UPDATED" });
       if (selectedOrder && selectedOrder.paymentReference === paymentReference) {
         setSelectedOrder({ ...selectedOrder, orderStatus: newStatus as OrderStatus });
       }
     } catch (err) {
-      Toast.fire({ icon: "error", title: "Update failed" });
+      Toast.fire({ icon: "error", title: "UPDATE FAILED" });
     }
   };
 
   const handleDelete = async (orderId: string) => {
     setIsSheetOpen(false);
     const result = await Swal.fire({
-      title: "Are you sure?",
+      title: "ARE YOU SURE?",
       text: "This action cannot be undone.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#ef4444",
-      confirmButtonText: "Yes, delete it",
-      customClass: { popup: "rounded-xl" },
+      confirmButtonText: "YES, DELETE IT",
+      cancelButtonText: "CANCEL",
+      customClass: { 
+        popup: "rounded-none border border-border/40 bg-white",
+        title: "text-[14px] uppercase tracking-widest font-bold text-[#222222]",
+        confirmButton: "rounded-none text-[11px] uppercase tracking-wider font-bold",
+        cancelButton: "rounded-none text-[11px] uppercase tracking-wider font-bold"
+      },
     });
 
     if (result.isConfirmed) {
@@ -226,10 +216,10 @@ export default function OrdersManagement() {
         const res = await fetch(`/api/orders/${orderId}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Delete failed");
         setOrders((prev) => prev.filter((o) => o._id !== orderId));
-        Toast.fire({ icon: "success", title: "Order deleted" });
+        Toast.fire({ icon: "success", title: "ORDER DELETED" });
         setIsSheetOpen(false);
       } catch (err) {
-        Toast.fire({ icon: "error", title: "Delete failed" });
+        Toast.fire({ icon: "error", title: "DELETE FAILED" });
       }
     }
   };
@@ -287,288 +277,307 @@ export default function OrdersManagement() {
         : [...prev, statusKey]
     );
   };
-  if(loading) return (<div className="absolute sm:relative flex inset-0  sm:h-dvh  items-center justify-center">
-        <GridLoader size={24} color="#ffaf9f" />
-      </div>)
+
+  if(loading) return (
+    <div className="absolute sm:relative flex inset-0 sm:h-dvh items-center justify-center">
+      <GridLoader size={18} color="#5B7763" />
+    </div>
+  )
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-6 max-w-7xl mx-auto space-y-8 pb-20"
+    >
+      {/* HEADER */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage and track customer orders.</p>
+          <h2 className="text-[18px] uppercase tracking-widest font-bold text-[#222222]">Orders Management</h2>
+          <p className="text-[12px] text-text-muted mt-1 tracking-wider font-medium">
+            Track and process all customer orders
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={fetchOrders}
+            disabled={loading}
+            className="border border-border/40 bg-white text-[#222222] px-6 py-3 text-[11px] uppercase tracking-wider font-bold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} /> {loading ? "REFRESHING..." : "REFRESH"}
+          </button>
+        </div>
+      </header>
+
+      {/* FILTER BAR */}
+      <div className="bg-white border border-border/40 p-4 flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+        {/* Left: Search */}
+        <div className="relative w-full lg:w-96 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted group-focus-within:text-[#5B7763] transition-colors" />
+          <Input
+            placeholder="SEARCH ORDER #, PHONE OR NAME..."
+            className="pl-11 pr-10 bg-secondary/20 border-border/40 text-[11px] uppercase tracking-wider h-12 rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763]"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm("")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-[#222222]"
+            >
+              <X className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          )}
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <Button variant="outline" size="sm" onClick={fetchOrders} disabled={loading}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-          
+        {/* Right: Filters */}
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          {/* Status Multi-Select Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className={`h-12 px-4 border border-border/40 flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold transition-colors ${statusFilter.length > 0 ? "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20" : "bg-white text-text-muted hover:text-[#222222] hover:bg-secondary/50"}`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                STATUS
+                {statusFilter.length > 0 && (
+                  <>
+                    <span className="w-px h-4 bg-border/40 mx-1" />
+                    <span>{statusFilter.length} SELECTED</span>
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64 rounded-none border-border/40 shadow-sm p-2">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-text-muted font-bold px-2 py-2">Filter by Status</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-border/40" />
+              {Object.keys(STATUS_CONFIG).map((key) => (
+                <DropdownMenuCheckboxItem
+                  key={key}
+                  checked={statusFilter.includes(key)}
+                  onCheckedChange={() => toggleStatusFilter(key)}
+                  className="text-[12px] rounded-none focus:bg-secondary/50 focus:text-[#222222] py-2 cursor-pointer"
+                >
+                  {STATUS_CONFIG[key].label}
+                </DropdownMenuCheckboxItem>
+              ))}
+              {statusFilter.length > 0 && (
+                <>
+                  <DropdownMenuSeparator className="bg-border/40" />
+                  <DropdownMenuItem 
+                    onSelect={() => setStatusFilter([])}
+                    className="justify-center text-center text-[10px] uppercase tracking-wider font-bold text-[#222222] hover:bg-secondary/50 rounded-none cursor-pointer py-2"
+                  >
+                    CLEAR STATUS
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Date Range Selector */}
+          <Select value={dateFilter} onValueChange={setDateFilter}>
+            <SelectTrigger className={`h-12 w-[180px] rounded-none text-[11px] uppercase tracking-wider font-bold focus:ring-0 ${dateFilter !== 'all' ? "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20" : "bg-white text-text-muted border-border/40"}`}>
+               <div className="flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                  <SelectValue placeholder="DATE RANGE" />
+               </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-none border-border/40">
+               <SelectItem value="all" className="text-[11px] uppercase tracking-wider cursor-pointer">All Time</SelectItem>
+               <SelectItem value="today" className="text-[11px] uppercase tracking-wider cursor-pointer">Today</SelectItem>
+               <SelectItem value="week" className="text-[11px] uppercase tracking-wider cursor-pointer">Last 7 Days</SelectItem>
+               <SelectItem value="month" className="text-[11px] uppercase tracking-wider cursor-pointer">Last 30 Days</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Global Reset Button */}
+          {isFilterActive && (
+            <button 
+              onClick={clearFilters}
+              className="h-12 px-3 text-text-muted hover:text-red-600 transition-colors flex items-center justify-center"
+              title="Reset Filters"
+            >
+              <XCircle className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          )}
         </div>
       </div>
 
-      <Card>
-        {/* --- SOPHISTICATED FILTER BAR --- */}
-        <CardHeader className="border-b p-4">
-          <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-            
-            {/* Left: Search */}
-            <div className="relative w-full lg:w-96 group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <Input
-                placeholder="Search order #, phone or name..."
-                className="pl-10 pr-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              {searchTerm && (
-                <button 
-                  onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            {/* Right: Filters */}
-            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-              
-              {/* Status Multi-Select Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className={`h-9 border-dashed ${statusFilter.length > 0 ? "bg-accent/50 border-primary/50 text-primary" : "text-muted-foreground"}`}
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    Status
-                    {statusFilter.length > 0 && (
-                      <>
-                        <Separator orientation="vertical" className="mx-2 h-4" />
-                        <Badge variant="secondary" className="h-5 px-1 rounded-sm text-[10px] font-normal lg:hidden">
-                          {statusFilter.length}
-                        </Badge>
-                        <span className="hidden lg:inline text-xs font-medium">
-                          {statusFilter.length} selected
-                        </span>
-                      </>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {Object.keys(STATUS_CONFIG).map((key) => (
-                    <DropdownMenuCheckboxItem
-                      key={key}
-                      checked={statusFilter.includes(key)}
-                      onCheckedChange={() => toggleStatusFilter(key)}
-                      className="capitalize scrollbar-hide"
-                    >
-                      {STATUS_CONFIG[key].label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                  {statusFilter.length > 0 && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        onSelect={() => setStatusFilter([])}
-                        className="justify-center text-center text-xs font-medium"
-                      >
-                        Clear status
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Date Range Selector (Simplified) */}
-              <Select value={dateFilter} onValueChange={setDateFilter}>
-                <SelectTrigger className={`h-9 w-[160px] ${dateFilter !== 'all' ? "bg-accent/50 border-primary/50 text-primary" : "text-muted-foreground border-dashed"}`}>
-                   <div className="flex items-center truncate">
-                      <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
-                      <SelectValue placeholder="Date Range" />
-                   </div>
-                </SelectTrigger>
-                <SelectContent align="end">
-                   <SelectItem value="all">All Time</SelectItem>
-                   <SelectItem value="today">Today</SelectItem>
-                   <SelectItem value="week">Last 7 Days</SelectItem>
-                   <SelectItem value="month">Last 30 Days</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Global Reset Button */}
-              {isFilterActive && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={clearFilters}
-                  className="h-9 px-2 lg:px-3 text-muted-foreground hover:text-destructive"
-                >
-                  <span className="sr-only lg:not-sr-only">Reset</span>
-                  <XCircle className="ml-0 lg:ml-2 w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-
-        {/* Content */}
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-[160px]">Reference</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Payment</TableHead>
-                <TableHead className="">Total</TableHead>
-                <TableHead className="hidden md:table-cell">Date</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
+      {/* ORDERS TABLE */}
+      <div className="bg-white border border-border/40">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-border/40 bg-secondary/20">
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Reference</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Customer</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Status</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Payment</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted text-right">Total</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted hidden md:table-cell">Date</th>
+                <th className="py-4 px-6 w-12"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/40">
               {loading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Skeleton className="h-4 w-40" />
-                        <Skeleton className="h-3 w-24" />
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i}>
+                    <td className="py-4 px-6"><div className="h-4 bg-secondary animate-pulse w-24"></div></td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-secondary animate-pulse rounded-full"></div>
+                        <div className="space-y-2">
+                          <div className="h-3 bg-secondary animate-pulse w-24"></div>
+                          <div className="h-2 bg-secondary animate-pulse w-16"></div>
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell><Skeleton className="h-6 w-28 rounded-full" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                    <TableCell className="text-right"><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-28" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-8 rounded-md" /></TableCell>
-                  </TableRow>
+                    </td>
+                    <td className="py-4 px-6"><div className="h-6 bg-secondary animate-pulse w-24"></div></td>
+                    <td className="py-4 px-6"><div className="h-6 bg-secondary animate-pulse w-16"></div></td>
+                    <td className="py-4 px-6 text-right"><div className="h-4 bg-secondary animate-pulse w-16 ml-auto"></div></td>
+                    <td className="py-4 px-6 hidden md:table-cell"><div className="h-4 bg-secondary animate-pulse w-24"></div></td>
+                    <td className="py-4 px-6"><div className="h-6 bg-secondary animate-pulse w-6"></div></td>
+                  </tr>
                 ))
               ) : paginated.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-64 text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <div className="bg-muted/50 p-4 rounded-full mb-3">
-                         <SlidersHorizontal className="h-8 w-8 opacity-50" />
+                <tr>
+                  <td colSpan={7} className="py-20 text-center">
+                    <div className="flex flex-col items-center justify-center text-text-muted">
+                      <div className="bg-secondary/20 p-4 rounded-full mb-4">
+                         <SlidersHorizontal className="h-6 w-6 opacity-50" />
                       </div>
-                      <p className="font-medium">No orders found.</p>
-                      <p className="text-xs mt-1">Try adjusting your filters or search query.</p>
+                      <p className="text-[13px] font-bold uppercase tracking-wider text-[#222222]">No orders found</p>
+                      <p className="text-[11px] mt-2 tracking-wider">Try adjusting your filters or search query.</p>
                       {isFilterActive && (
-                        <Button variant="link" onClick={clearFilters} className="mt-2 text-primary">
-                          Clear all filters
-                        </Button>
+                        <button onClick={clearFilters} className="mt-4 text-[11px] uppercase tracking-wider font-bold text-[#5B7763] hover:underline">
+                          CLEAR ALL FILTERS
+                        </button>
                       )}
                     </div>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 paginated.map((order) => (
-                  <TableRow key={order._id} className="group hover:bg-muted/30 transition-colors">
-                    <TableCell className="font-mono font-medium text-xs">
+                  <tr key={order._id} className="group hover:bg-secondary/10 transition-colors">
+                    <td className="py-4 px-6 font-mono text-[11px] font-medium text-[#222222]">
                       {order.paymentReference}
-                    </TableCell>
+                    </td>
 
-                    <TableCell>
+                    <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <img
                           src={order.user?.profile || `https://ui-avatars.com/api/?name=${encodeURIComponent(order.user?.name || "Guest")}`}
                           alt={order.user?.name || "Guest"}
-                          className="w-9 h-9 rounded-full object-cover border bg-muted"
+                          className="w-9 h-9 object-cover border border-border/40"
                         />
                         <div className="flex flex-col">
-                          <span className="font-medium text-sm">{order.user?.name ?? "Guest"}</span>
-                          <span className="text-xs text-muted-foreground">{order.customer?.phone}</span>
+                          <span className="text-[13px] font-bold text-[#222222]">{order.user?.name ?? "Guest"}</span>
+                          <span className="text-[11px] text-text-muted tracking-wider">{order.customer?.phone}</span>
                         </div>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell>
+                    <td className="py-4 px-6">
                        <StatusSelector
                           current={order.orderStatus}
                           onChange={(v) => handleStatusUpdate(order.paymentReference, v)}
                         />
-                    </TableCell>
+                    </td>
 
-                    <TableCell>
+                    <td className="py-4 px-6">
                       <PaymentBadge status={order.paymentStatus} />
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="text-right font-semibold">
+                    <td className="py-4 px-6 text-right text-[13px] font-bold text-[#222222]">
                       {formatCurrency(order.totalAmount)}
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
+                    <td className="py-4 px-6 hidden md:table-cell text-[11px] text-text-muted tracking-wider">
                       {formatDate(order.createdAt)}
-                    </TableCell>
+                    </td>
 
-                    <TableCell>
+                    <td className="py-4 px-6">
                       <DropdownMenu>
-                        {user?.role === "admin" &&<DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>}
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        {user?.role === "admin" && (
+                          <DropdownMenuTrigger asChild>
+                            <button className="h-8 w-8 flex items-center justify-center text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors border border-transparent hover:border-border/40">
+                              <MoreVertical className="h-4 w-4" strokeWidth={1.5} />
+                            </button>
+                          </DropdownMenuTrigger>
+                        )}
+                        <DropdownMenuContent align="end" className="rounded-none border-border/40 shadow-sm w-48">
+                          <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-text-muted font-bold px-3 py-2">Actions</DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedOrder(order);
                               setIsSheetOpen(true);
                             }}
+                            className="text-[11px] uppercase tracking-wider font-bold text-[#222222] cursor-pointer rounded-none focus:bg-secondary/50 py-2.5 px-3"
                           >
-                            <ExternalLink className="mr-2 h-4 w-4" /> View Details
+                            <ExternalLink className="mr-2 h-3.5 w-3.5" /> View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigator.clipboard.writeText(order.paymentReference)}>
-                            <Copy className="mr-2 h-4 w-4" /> Copy Reference
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              navigator.clipboard.writeText(order.paymentReference);
+                              Toast.fire({ icon: "success", title: "COPIED TO CLIPBOARD" });
+                            }}
+                            className="text-[11px] uppercase tracking-wider font-bold text-[#222222] cursor-pointer rounded-none focus:bg-secondary/50 py-2.5 px-3"
+                          >
+                            <Copy className="mr-2 h-3.5 w-3.5" /> Copy Reference
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDelete(order._id)} className="text-red-600 focus:text-red-600">
+                          <DropdownMenuSeparator className="bg-border/40" />
+                          <DropdownMenuItem 
+                            onClick={() => handleDelete(order._id)} 
+                            className="text-[11px] uppercase tracking-wider font-bold text-red-600 cursor-pointer rounded-none focus:bg-red-50 focus:text-red-700 py-2.5 px-3"
+                          >
                             Delete Order
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))
               )}
-            </TableBody>
-          </Table>
-        </CardContent>
+            </tbody>
+          </table>
+        </div>
 
-        {/* Footer / Pagination */}
-        <div className="border-t p-4 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
+        {/* PAGINATION */}
+        <div className="border-t border-border/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-secondary/10">
+          <span className="text-[11px] uppercase tracking-wider text-text-muted font-bold">
             Page {page} of {totalPages}
           </span>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" disabled={page === 1 || loading} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" disabled={page === totalPages || loading} onClick={() => setPage((p) => p + 1)}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+            <button 
+              disabled={page === 1 || loading} 
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="h-9 w-9 flex items-center justify-center border border-border/40 bg-white text-text-muted hover:text-[#222222] hover:bg-secondary/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
+            </button>
+            <button 
+              disabled={page === totalPages || loading} 
+              onClick={() => setPage((p) => p + 1)}
+              className="h-9 w-9 flex items-center justify-center border border-border/40 bg-white text-text-muted hover:text-[#222222] hover:bg-secondary/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="h-4 w-4" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
-      </Card>
+      </div>
 
-      {/* Details Sheet */}
+      {/* DETAILS SHEET */}
       <Sheet open={isSheetOpen} onOpenChange={(v) => { setIsSheetOpen(v); if (!v) setSelectedOrder(null); }}>
-        <SheetContent className="sm:max-w-2xl w-full overflow-y-auto">
+        <SheetContent className="sm:max-w-xl w-full overflow-y-auto border-l border-border/40 bg-white p-0 shadow-xl rounded-none">
           {selectedOrder ? <OrderDetailsSheetContent order={selectedOrder} onDelete={handleDelete} onStatusChange={handleStatusUpdate} /> : (
-            <div className="p-6">
-              <Skeleton className="h-6 w-44 mb-4" />
-              <Skeleton className="h-48" />
+            <div className="p-8">
+              <div className="h-6 bg-secondary animate-pulse w-44 mb-6"></div>
+              <div className="h-48 bg-secondary animate-pulse w-full border border-border/40"></div>
             </div>
           )}
         </SheetContent>
       </Sheet>
-    </div>
+    </motion.div>
   );
 }
