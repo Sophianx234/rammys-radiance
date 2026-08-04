@@ -159,13 +159,12 @@ export default function ProfilePage() {
 
   return (
     <main>
-      <Header />
 
       {/* Page Header */}
-      <section className="bg-secondary border-b border-border py-8">
+      <section className="bg-secondary/20 border-b border-border/40 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-bold">
-            My Account
+          <h1 className="text-[22px] uppercase tracking-widest font-bold text-[#222222]">
+            My Profile
           </h1>
         </div>
       </section>
@@ -175,18 +174,18 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Sidebar Navigation */}
           <div className="md:col-span-1">
-            <Card className="bg-card border-border p-6 space-y-4">
-              <div className="flex flex-col items-center gap-3 pb-4 border-b border-border">
+            <Card className="bg-white border-border/40 p-6 space-y-4 rounded-none shadow-sm">
+              <div className="flex flex-col items-center gap-3 pb-4 border-b border-border/40">
                 <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                  <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center overflow-hidden border-2 border-primary/20">
+                  <div className="w-24 h-24 bg-secondary/50 rounded-none flex items-center justify-center overflow-hidden border border-border/40">
                     {user.profile ? (
-                      <Image src={user.profile} alt="Profile" width={80} height={80} className="object-cover w-full h-full" />
+                      <Image src={user.profile} alt="Profile" width={96} height={96} className="object-cover w-full h-full" />
                     ) : (
-                      <User size={32} className="text-primary-foreground" />
+                      <User size={32} className="text-text-muted" strokeWidth={1.5} />
                     )}
                   </div>
-                  <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <Camera className="text-white w-6 h-6" />
+                  <div className="absolute inset-0 bg-[#222222]/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-none">
+                    <Camera className="text-white w-6 h-6" strokeWidth={1.5} />
                   </div>
                   <input 
                     type="file" 
@@ -196,77 +195,77 @@ export default function ProfilePage() {
                     onChange={handleImageUpload}
                   />
                 </div>
-                <div className="text-center">
-                  <p className="font-semibold text-sm">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
-                  {isUpdating && <p className="text-[10px] text-primary mt-1 flex items-center justify-center gap-1"><Loader2 className="w-3 h-3 animate-spin"/> Updating...</p>}
+                <div className="text-center mt-2">
+                  <p className="font-bold text-[13px] text-[#222222] uppercase tracking-wider">{user.name}</p>
+                  <p className="text-[11px] text-text-muted mt-1">{user.email}</p>
+                  {isUpdating && <p className="text-[10px] text-[#5B7763] mt-2 flex items-center justify-center gap-1 uppercase tracking-widest font-bold"><Loader2 className="w-3 h-3 animate-spin"/> Updating...</p>}
                 </div>
               </div>
 
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
                   activeTab === "overview"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-secondary"
+                    ? "bg-[#5B7763] text-white border-[#5B7763]"
+                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
                 }`}
               >
-                <span className="flex items-center gap-2 text-sm font-medium">
-                  <User size={18} />
+                <span className="flex items-center gap-3">
+                  <User size={16} strokeWidth={1.5} />
                   Account Overview
                 </span>
               </button>
 
               <button
                 onClick={() => setActiveTab("orders")}
-                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
                   activeTab === "orders"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-secondary"
+                    ? "bg-[#5B7763] text-white border-[#5B7763]"
+                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
                 }`}
               >
-                <span className="flex items-center gap-2 text-sm font-medium">
-                  <MapPin size={18} />
+                <span className="flex items-center gap-3">
+                  <MapPin size={16} strokeWidth={1.5} />
                   My Orders
                 </span>
               </button>
 
               <button
                 onClick={() => setActiveTab("wishlist")}
-                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
                   activeTab === "wishlist"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-secondary"
+                    ? "bg-[#5B7763] text-white border-[#5B7763]"
+                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
                 }`}
               >
-                <span className="flex items-center gap-2 text-sm font-medium">
-                  <Heart size={18} />
+                <span className="flex items-center gap-3">
+                  <Heart size={16} strokeWidth={1.5} />
                   Wishlist
                 </span>
               </button>
 
               <button
                 onClick={() => setActiveTab("settings")}
-                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
                   activeTab === "settings"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-secondary"
+                    ? "bg-[#5B7763] text-white border-[#5B7763]"
+                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
                 }`}
               >
-                <span className="flex items-center gap-2 text-sm font-medium">
-                  <Settings size={18} />
+                <span className="flex items-center gap-3">
+                  <Settings size={16} strokeWidth={1.5} />
                   Settings
                 </span>
               </button>
 
-              <hr className="border-border" />
+              <hr className="border-border/40" />
 
               <Button
                 variant="outline"
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 bg-transparent text-sm font-medium"
+                className="w-full flex items-center justify-center gap-3 bg-transparent border-border/40 text-[11px] uppercase tracking-wider font-bold text-[#222222] hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-none h-10"
               >
-                <LogOut size={18} />
+                <LogOut size={16} strokeWidth={1.5} />
                 Sign Out
               </Button>
             </Card>
@@ -276,8 +275,8 @@ export default function ProfilePage() {
           <div className="md:col-span-3">
             {activeTab === "overview" && (
               <div className="space-y-6">
-                <Card className="bg-card border-border p-6">
-                  <h2 className="text-xl font-semibold mb-6">
+                <Card className="bg-white border-border/40 p-6 rounded-none shadow-sm">
+                  <h2 className="text-[14px] uppercase tracking-widest font-bold mb-6 text-[#222222]">
                     Profile Information
                   </h2>
                   <form onSubmit={handleProfileUpdate} className="space-y-4 max-w-xl">
@@ -321,8 +320,8 @@ export default function ProfilePage() {
 
             {activeTab === "settings" && (
               <div className="space-y-6">
-                <Card className="bg-card border-border p-6">
-                  <h2 className="text-xl font-semibold mb-6">
+                <Card className="bg-white border-border/40 p-6 rounded-none shadow-sm">
+                  <h2 className="text-[14px] uppercase tracking-widest font-bold mb-6 text-[#222222]">
                     Change Password
                   </h2>
                   <form onSubmit={handlePasswordUpdate} className="space-y-4 max-w-xl">
