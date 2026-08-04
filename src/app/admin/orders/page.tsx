@@ -416,7 +416,7 @@ export default function OrdersManagement() {
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Payment</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted text-right">Total</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted hidden md:table-cell">Date</th>
-                <th className="py-4 px-6 w-12"></th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted text-center w-24">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40">
@@ -499,13 +499,11 @@ export default function OrdersManagement() {
 
                     <td className="py-4 px-6">
                       <DropdownMenu>
-                        {user?.role === "admin" && (
                           <DropdownMenuTrigger asChild>
                             <button className="h-8 w-8 flex items-center justify-center text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors border border-transparent hover:border-border/40">
                               <MoreVertical className="h-4 w-4" strokeWidth={1.5} />
                             </button>
                           </DropdownMenuTrigger>
-                        )}
                         <DropdownMenuContent align="end" className="rounded-none border-border/40 shadow-sm w-48">
                           <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-text-muted font-bold px-3 py-2">Actions</DropdownMenuLabel>
                           <DropdownMenuItem
