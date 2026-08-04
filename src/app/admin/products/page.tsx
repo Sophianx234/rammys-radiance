@@ -6,12 +6,19 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+} from "@/components/ui/table";
+import {
   Plus,
   Search,
   ListFilter,
   ChevronDown,
 } from "lucide-react";
-import { ProductCard } from "./product-card";
+import { ProductTableRow } from "./product-table-row";
 import Link from "next/link";
 import { GridLoader } from "react-spinners";
 
@@ -125,12 +132,12 @@ export default function ProductsTab() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="bg-secondary/50 text-[#222222] border border-border/40 px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-secondary transition-colors flex items-center gap-2">
+          <Link href="/admin/products/add-category" className="bg-secondary/50 text-[#222222] border border-border/40 px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-secondary transition-colors flex items-center gap-2">
             <Plus className="w-3.5 h-3.5" /> New Category
-          </button>
-          <button className="bg-[#5B7763] text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
+          </Link>
+          <Link href="/admin/products/add" className="bg-[#5B7763] text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
             <Plus className="w-3.5 h-3.5" /> Add New Product
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -183,14 +190,28 @@ export default function ProductsTab() {
         </div>
       </div>
 
-      {/* Product Grid */}
+      {/* Product Table */}
       {loading ? (
         <div className="text-center p-16 text-text-muted text-[11px] uppercase tracking-wider font-bold">Loading products...</div>
       ) : sortedProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {sortedProducts.map((product, i) => (
-            <ProductCard key={product._id} product={product} index={i} />
-          ))}
+        <div className="bg-white border border-border/40 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-border/40">
+                <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Product</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Category</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Price</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Stock</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Rating</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedProducts.map((product) => (
+                <ProductTableRow key={product._id} product={product} />
+              ))}
+            </TableBody>
+          </Table>
         </div>
       ) : (
         <div className="text-center p-16 bg-white border border-border/40 mt-8 flex flex-col items-center justify-center gap-4">

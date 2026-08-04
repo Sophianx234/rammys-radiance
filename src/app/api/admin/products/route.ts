@@ -41,6 +41,10 @@ export async function POST(req: NextRequest) {
     const stock = Number(formData.get("stock"));
     const category = formData.get("category") as string;
     const isFeatured = formData.get("isFeatured") === "true";
+    const rating = Number(formData.get("rating") || 0);
+    const reviewsCount = Number(formData.get("reviewsCount") || 0);
+    const discountPrice = formData.has("discountPrice") ? Number(formData.get("discountPrice")) : undefined;
+    const discountBadge = formData.get("discountBadge") as string | undefined;
 
     if (!name || !description || !price || !category) {
       return NextResponse.json(
@@ -106,10 +110,14 @@ export async function POST(req: NextRequest) {
       description,
       category,
       price,
+      discountPrice,
+      discountBadge,
       images: uploadedImages,
       features,
       stock,
       inStock: stock > 0,
+      rating,
+      reviewsCount,
       variants,
       isFeatured,
     });
