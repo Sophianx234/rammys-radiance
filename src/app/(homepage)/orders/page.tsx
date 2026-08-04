@@ -38,7 +38,6 @@ export default function OrdersPage() {
 
   return (
     <main className="min-h-screen bg-[#fdfbf7]">
-      <Header />
       
       {/* Page Header */}
       <section className="bg-secondary/20 border-b border-border/40 py-8">
@@ -69,7 +68,6 @@ export default function OrdersPage() {
         )}
       </div>
 
-      <Footer />
     </main>
   )
 }

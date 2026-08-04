@@ -67,10 +67,10 @@ export default function Bestsellers() {
             transition={{ duration: 0.6 }}
             className="mb-12"
           >
-            <h2 className="text-4xl text-[#5B7763] md:text-5xl font-bold mb-4 uppercase tracking-widest">
+            <h2 className="text-4xl  md:text-5xl font-bold mb-4  tracking-widest">
               Bestsellers
             </h2>
-            <p className="text-[#222222] mb-12 uppercase tracking-wider text-[12px] font-bold">
+            <p className="text-[#222222] mb-12  tracking-wider text-[12px] font-bold">
               Discover our most loved beauty essentials, crafted for elegance.
             </p>
           </motion.div>

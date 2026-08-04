@@ -38,7 +38,7 @@ export default function FeaturedProducts() {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-3">
-          <h2 className="text-3xl md:text-4xl font-medium text-text-main tracking-tight uppercase tracking-widest font-bold">
+          <h2 className="text-3xl md:text-4xl font-medium text-text-main tracking-tight  tracking-widest font-bold">
             Our Featured Products
           </h2>
           <p className="text-text-muted text-sm md:text-base">
