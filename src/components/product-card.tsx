@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -11,10 +12,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { user, toggleWishlist } = useDashStore();
+  const { user } = useDashStore();
   const router = useRouter();
   
-  const isFavorite = user?.wishlist?.some((id: any) => id.toString() === product._id.toString()) ?? false;
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    setIsFavorite(user?.wishlist?.some((id: any) => id.toString() === product._id.toString()) ?? false);
+  }, [user, product._id]);
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
     }
 
     // Optimistic UI update
-    toggleWishlist(product._id);
+    setIsFavorite(!isFavorite);
 
     try {
       const res = await fetch("/api/users/wishlist", {
@@ -37,12 +42,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
       if (!res.ok) {
         // Revert on failure
-        toggleWishlist(product._id);
+        setIsFavorite(isFavorite);
+        return;
       }
+      
+      const data = await res.json();
+      setIsFavorite(data.isFavorite);
+      
+      // Notify header and others to refetch from server
+      window.dispatchEvent(new Event("wishlistUpdated"));
+      
     } catch (err) {
       console.error("Wishlist failed:", err);
       // Revert on failure
-      toggleWishlist(product._id);
+      setIsFavorite(isFavorite);
     }
   };
 

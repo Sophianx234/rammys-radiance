@@ -89,6 +89,7 @@ const navLinks = [
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const { user, cart, setUser } = useDashStore();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -107,6 +108,31 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const fetchWishlistCount = async () => {
+      try {
+        const res = await fetch("/api/users/wishlist");
+        if (res.ok) {
+          const data = await res.json();
+          setWishlistCount(data.wishlist.length);
+        }
+      } catch (err) {
+        console.error("Failed to fetch wishlist count");
+      }
+    };
+
+    if (user) {
+      fetchWishlistCount();
+    }
+
+    const handleWishlistUpdated = () => {
+      fetchWishlistCount();
+    };
+
+    window.addEventListener("wishlistUpdated", handleWishlistUpdated);
+    return () => window.removeEventListener("wishlistUpdated", handleWishlistUpdated);
+  }, [user]);
 
   // Fetch user session on mount since Zustand state clears on hard refresh
   useEffect(() => {
@@ -282,9 +308,9 @@ export default function Header() {
 
           <Link href="/wishlist" className="relative text-text-main hover:text-black transition-colors hidden sm:block">
             <Star className="w-[18px] h-[18px]" strokeWidth={1.5} />
-            {user?.wishlist && user.wishlist.length > 0 && (
+            {wishlistCount > 0 && (
               <span className="absolute -top-1.5 -right-2 bg-[#5B7763] text-white text-[9px] font-bold rounded-full w-[14px] h-[14px] flex items-center justify-center">
-                {user.wishlist.length}
+                {wishlistCount}
               </span>
             )}
           </Link>
