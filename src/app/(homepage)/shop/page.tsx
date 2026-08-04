@@ -7,7 +7,7 @@ import { Heart, ChevronDown, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useDashStore } from "@/lib/store";
-import ProductCard from "./product-card";
+import { ProductCard } from "@/components/product-card";
 import { GridLoader } from "react-spinners";
 
 interface Product {
