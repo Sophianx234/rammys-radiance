@@ -412,12 +412,12 @@ export default function OrdersManagement() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-border/40 bg-secondary/20">
-                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Reference</th>
-                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Customer</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">Customer</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">Reference</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Status</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Payment</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted text-right">Total</th>
-                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted hidden md:table-cell">Date</th>
+                <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted hidden md:table-cell whitespace-nowrap">Date</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted text-center w-24">Actions</th>
               </tr>
             </thead>
@@ -425,7 +425,6 @@ export default function OrdersManagement() {
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}>
-                    <td className="py-4 px-6"><div className="h-4 bg-secondary animate-pulse w-24"></div></td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-secondary animate-pulse rounded-full"></div>
@@ -435,6 +434,7 @@ export default function OrdersManagement() {
                         </div>
                       </div>
                     </td>
+                    <td className="py-4 px-6"><div className="h-4 bg-secondary animate-pulse w-24"></div></td>
                     <td className="py-4 px-6"><div className="h-6 bg-secondary animate-pulse w-24"></div></td>
                     <td className="py-4 px-6"><div className="h-6 bg-secondary animate-pulse w-16"></div></td>
                     <td className="py-4 px-6 text-right"><div className="h-4 bg-secondary animate-pulse w-16 ml-auto"></div></td>
@@ -462,22 +462,22 @@ export default function OrdersManagement() {
               ) : (
                 paginated.map((order) => (
                   <tr key={order._id} className="group hover:bg-secondary/10 transition-colors">
-                    <td className="py-4 px-6 font-mono text-[11px] font-medium text-[#222222]">
-                      {order.paymentReference}
-                    </td>
-
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <img
                           src={order.user?.profile || `https://ui-avatars.com/api/?name=${encodeURIComponent(order.user?.name || "Guest")}`}
                           alt={order.user?.name || "Guest"}
-                          className="w-9 h-9 object-cover border border-border/40"
+                          className="w-9 h-9 object-cover border border-border/40 shrink-0"
                         />
                         <div className="flex flex-col">
-                          <span className="text-[13px] font-bold text-[#222222]">{order.user?.name ?? "Guest"}</span>
+                          <span className="text-[13px] font-bold text-[#222222] whitespace-nowrap">{order.user?.name ?? "Guest"}</span>
                           <span className="text-[11px] text-text-muted tracking-wider">{order.customer?.phone}</span>
                         </div>
                       </div>
+                    </td>
+
+                    <td className="py-4 px-6 font-mono text-[11px] font-medium text-[#222222] whitespace-nowrap">
+                      {order.paymentReference}
                     </td>
 
                     <td className="py-4 px-6">
@@ -495,7 +495,7 @@ export default function OrdersManagement() {
                       {formatCurrency(order.totalAmount)}
                     </td>
 
-                    <td className="py-4 px-6 hidden md:table-cell text-[11px] text-text-muted tracking-wider">
+                    <td className="py-4 px-6 hidden md:table-cell text-[11px] text-text-muted tracking-wider whitespace-nowrap">
                       {formatDate(order.createdAt)}
                     </td>
 
