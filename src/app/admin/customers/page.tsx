@@ -391,7 +391,7 @@ export default function AdminUsersPage() {
 
       {/* DETAILED USER VIEW DIALOG */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent showCloseButton={false} className="max-w-4xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#fdfbf7] rounded-none border border-border/40">
+        <DialogContent showCloseButton={false} className="max-w-6xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#fdfbf7] rounded-none border border-border/40">
           
           {selectedUser && (
             <>

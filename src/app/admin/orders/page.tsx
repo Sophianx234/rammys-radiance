@@ -569,7 +569,7 @@ export default function OrdersManagement() {
 
       {/* DETAILS DIALOG */}
       <Dialog open={isSheetOpen} onOpenChange={(v) => { setIsSheetOpen(v); if (!v) setSelectedOrder(null); }}>
-        <DialogContent showCloseButton={false} className="max-w-4xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#fdfbf7] rounded-none border border-border/40">
+        <DialogContent showCloseButton={false} className="max-w-6xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#fdfbf7] rounded-none border border-border/40">
           {selectedOrder ? <OrderDetailsSheetContent order={selectedOrder} onDelete={handleDelete} onStatusChange={handleStatusUpdate} onClose={() => setIsSheetOpen(false)} /> : (
             <div className="p-8">
               <div className="h-6 bg-secondary animate-pulse w-44 mb-6"></div>
