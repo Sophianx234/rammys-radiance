@@ -446,9 +446,9 @@ export default function OrdersManagement() {
       </div>
 
       {/* ORDERS TABLE */}
-      <div className="bg-white border border-border/40 relative">
+      <div className="bg-white border border-border/40">
         {selectedOrders.size > 0 && (
-          <div className="bg-[#eef1ef] border-b border-[#5B7763]/20 px-6 py-3 flex flex-wrap items-center justify-between gap-4 absolute top-0 left-0 right-0 z-10 w-full h-[53px]">
+          <div className="bg-[#eef1ef] border-b border-[#5B7763]/20 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <input 
                 type="checkbox" 
