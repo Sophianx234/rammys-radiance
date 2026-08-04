@@ -53,6 +53,8 @@ export async function POST(req: Request) {
         address: data.formData.address,
         city: data.formData.city,
         region: data.formData.region,
+        lat: data.formData.lat,
+        lng: data.formData.lng,
       },
 
       items: data.cart.map((item: any) => ({

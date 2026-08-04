@@ -3,16 +3,18 @@ import withReactContent from "sweetalert2-react-content";
 import { formatCurrency, formatDate, OrderItem, ProductSummary, ServerOrder, STATUS_CONFIG } from "./page";
 import { ExternalLink, MapPin, Package, User, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SheetClose } from "@/components/ui/sheet";
+
 
 export default function OrderDetailsSheetContent({
   order,
   onDelete,
   onStatusChange,
+  onClose,
 }: {
   order: ServerOrder;
   onDelete: (id: string) => void;
   onStatusChange: (ref: string, newStatus: string) => void;
+  onClose: () => void;
 }) {
   const Toast = withReactContent(Swal).mixin({
     toast: true,
@@ -42,10 +44,13 @@ export default function OrderDetailsSheetContent({
   return (
     <div className="flex flex-col h-full bg-[#fdfbf7]">
       {/* HEADER */}
-      <div className="px-6 py-8 bg-white border-b border-border/40 relative">
-        <SheetClose className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center border border-border/40 text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors">
+      <div className="px-8 py-8 bg-white border-b border-border/40 relative">
+        <button 
+          onClick={onClose}
+          className="absolute top-8 right-8 w-8 h-8 flex items-center justify-center border border-border/40 text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors"
+        >
           <X className="w-4 h-4" strokeWidth={1.5} />
-        </SheetClose>
+        </button>
 
         <div className="flex flex-col gap-6">
           <div className="flex justify-between items-start pt-6">
@@ -164,6 +169,19 @@ export default function OrderDetailsSheetContent({
                   <div className="text-[12px] text-[#222222] mt-1 font-medium">{order.deliveryAddress.region}</div>
                 </div>
               </div>
+
+              {order.deliveryAddress.lat && order.deliveryAddress.lng && (
+                <div className="pt-4 border-t border-border/40">
+                  <div className="text-[9px] uppercase tracking-widest font-bold text-text-muted mb-2">Location Map</div>
+                  <div className="w-full h-32 bg-secondary/20 border border-border/40 overflow-hidden relative">
+                    <img
+                      src={`https://api.maptiler.com/maps/streets-v2/static/${order.deliveryAddress.lng},${order.deliveryAddress.lat},15/600x300.png?markers=${order.deliveryAddress.lng},${order.deliveryAddress.lat}&key=${process.env.NEXT_PUBLIC_MAPTILER_PUBLIC_KEY}`}
+                      alt="Delivery Location"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -171,7 +189,7 @@ export default function OrderDetailsSheetContent({
       </div>
 
       {/* FOOTER ACTIONS */}
-      <div className="px-6 py-4 bg-white border-t border-border/40 flex flex-wrap items-center justify-between gap-4">
+      <div className="px-8 py-4 bg-white border-t border-border/40 flex flex-wrap items-center justify-between gap-4 mt-auto">
         <div className="text-[10px] uppercase tracking-widest font-bold text-text-muted">
           Created: {formatDate(order.createdAt)}
         </div>

@@ -38,6 +38,8 @@ export interface IOrder extends Document {
     address: string;   // street
     city: string;
     region: string;    // Shadcn select
+    lat?: number;
+    lng?: number;
   };
 
   orderStatus: OrderStatus;
@@ -84,6 +86,8 @@ const orderSchema = new Schema<IOrder>(
       address: { type: String, required: true }, // street
       city: { type: String, required: true },
       region: { type: String, required: true },
+      lat: { type: Number },
+      lng: { type: Number },
     },
 
     orderStatus: {

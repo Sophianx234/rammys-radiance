@@ -7,7 +7,7 @@ import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
 import { MapPin } from "lucide-react";
 
 interface DeliveryMapProps {
-  onAddressSelect: (address: string, city: string, region: string) => void;
+  onAddressSelect: (address: string, city: string, region: string, lat?: number, lng?: number) => void;
 }
 
 export default function DeliveryMap({ onAddressSelect }: DeliveryMapProps) {
@@ -74,7 +74,7 @@ export default function DeliveryMap({ onAddressSelect }: DeliveryMapProps) {
             if (feature.place_type.includes("region")) region = feature.text;
           }
 
-          onAddressSelect(address, city, region);
+          onAddressSelect(address, city, region, lngLat.lat, lngLat.lng);
         }
       } catch (error) {
         console.error("Reverse geocoding error:", error);
@@ -109,7 +109,7 @@ export default function DeliveryMap({ onAddressSelect }: DeliveryMapProps) {
           if (r) region = r.text;
         }
 
-        onAddressSelect(address, city, region);
+        onAddressSelect(address, city, region, lat, lng);
       }
     });
 

@@ -20,6 +20,8 @@ export default function CheckoutPage() {
     address: "",
     city: "",
     region: "",
+    lat: undefined as number | undefined,
+    lng: undefined as number | undefined,
   });
   const searchParams = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -58,7 +60,7 @@ export default function CheckoutPage() {
     setError("");
   };
 
-  const handleMapAddressSelect = (address: string, city: string, region: string) => {
+  const handleMapAddressSelect = (address: string, city: string, region: string, lat?: number, lng?: number) => {
     setFormData((prev) => {
       let matchedRegion = prev.region;
       if (region) {
@@ -77,6 +79,8 @@ export default function CheckoutPage() {
         address: address || prev.address,
         city: city || prev.city,
         region: matchedRegion,
+        lat,
+        lng,
       };
     });
   };

@@ -42,9 +42,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import StatusSelector from "./status-selector";
 import PaymentBadge from "./payment-badge";
 import OrderDetailsSheetContent from "./order-details";
@@ -88,6 +88,8 @@ export type ServerOrder = {
     address: string;
     city: string;
     region: string;
+    lat?: number;
+    lng?: number;
   };
   items: any[];
   totalAmount: number;
@@ -565,17 +567,17 @@ export default function OrdersManagement() {
         </div>
       </div>
 
-      {/* DETAILS SHEET */}
-      <Sheet open={isSheetOpen} onOpenChange={(v) => { setIsSheetOpen(v); if (!v) setSelectedOrder(null); }}>
-        <SheetContent className="sm:max-w-xl w-full overflow-y-auto border-l border-border/40 bg-white p-0 shadow-xl rounded-none">
-          {selectedOrder ? <OrderDetailsSheetContent order={selectedOrder} onDelete={handleDelete} onStatusChange={handleStatusUpdate} /> : (
+      {/* DETAILS DIALOG */}
+      <Dialog open={isSheetOpen} onOpenChange={(v) => { setIsSheetOpen(v); if (!v) setSelectedOrder(null); }}>
+        <DialogContent showCloseButton={false} className="max-w-4xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#fdfbf7] rounded-none border border-border/40">
+          {selectedOrder ? <OrderDetailsSheetContent order={selectedOrder} onDelete={handleDelete} onStatusChange={handleStatusUpdate} onClose={() => setIsSheetOpen(false)} /> : (
             <div className="p-8">
               <div className="h-6 bg-secondary animate-pulse w-44 mb-6"></div>
               <div className="h-48 bg-secondary animate-pulse w-full border border-border/40"></div>
             </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
