@@ -67,12 +67,12 @@ export default function Bestsellers() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-12"
+            className="text-center mb-16 space-y-3"
           >
-            <h2 className="text-4xl  md:text-5xl font-bold mb-4  tracking-widest">
+            <h2 className="text-3xl md:text-4xl font-medium text-text-main tracking-widest font-bold">
               Bestsellers
             </h2>
-            <p className="text-[#222222] mb-12  tracking-wider text-[12px] font-bold">
+            <p className="text-text-muted text-sm md:text-base">
               Discover our most loved beauty essentials, crafted for elegance.
             </p>
           </motion.div>
