@@ -47,8 +47,24 @@ export default function FeaturedProducts() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <GridLoader size={16} color="#5B7763" />
+          <div className="relative px-2 sm:px-12">
+            <div className="flex -ml-4 md:-ml-6 overflow-hidden">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="pl-4 md:pl-6 min-w-0 flex-shrink-0 flex-grow-0 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <div className="flex flex-col w-full">
+                    {/* Image Skeleton */}
+                    <div className="aspect-[4/5] bg-gray-200 animate-pulse mb-5 rounded-none" />
+                    
+                    {/* Details Skeleton */}
+                    <div className="flex flex-col items-center space-y-2.5">
+                      <div className="h-3 w-16 bg-gray-200 animate-pulse rounded-none" />
+                      <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded-none" />
+                      <div className="h-3 w-20 bg-gray-200 animate-pulse rounded-none" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="relative px-2 sm:px-12">
