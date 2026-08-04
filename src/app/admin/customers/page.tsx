@@ -12,6 +12,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { GridLoader } from "react-spinners";
+import { format, parseISO } from "date-fns";
+import { useDashStore } from "@/lib/store";
 
 // --- Types based on your Schemas ---
 
@@ -72,6 +74,7 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function AdminUsersPage() {
+  const { user } = useDashStore();
   // --- State ---
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -373,12 +376,14 @@ export default function AdminUsersPage() {
                           <Copy className="mr-2 h-3.5 w-3.5" /> Copy Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-border/40" />
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteUser(user._id)} 
-                          className="text-[11px] uppercase tracking-wider font-bold text-red-600 cursor-pointer rounded-none focus:bg-red-50 focus:text-red-700 py-2.5 px-3"
-                        >
-                          <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete User
-                        </DropdownMenuItem>
+                        {user?.role === "admin" && (
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteUser(user._id)} 
+                            className="text-[11px] uppercase tracking-wider font-bold text-red-600 cursor-pointer rounded-none focus:bg-red-50 focus:text-red-700 py-2.5 px-3"
+                          >
+                            <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete User
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </td>

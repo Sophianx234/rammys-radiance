@@ -98,8 +98,8 @@ export default function Sidebar() {
       {/* NAVIGATION */}
       <nav className="flex-1 flex flex-col gap-1 p-4 overflow-y-auto overflow-x-hidden">
         {navItems.map(({ name, key, icon: Icon }) => {
-          // Only show "Orders" to non-admin users
-          // if (user?.role !== "admin" && key !== "orders") return null;
+          const role = user?.role === "dispatcher" ? "dispatch" : (user?.role === "customer" ? "user" : user?.role);
+          if (role === "dispatch" && key !== "orders") return null;
 
           const isActive = activeTab === key;
 

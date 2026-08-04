@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useState } from "react";
+import { useDashStore } from "@/lib/store";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,8 @@ import ImageSlider from "./image-slider";
 export function ProductTableRow({ product }: { product: any }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
+  const { user } = useDashStore();
+  
   const stockClass =
     product.stock > 10
       ? "text-[#5B7763]"
@@ -138,12 +140,14 @@ export function ProductTableRow({ product }: { product: any }) {
                 <Pencil className="w-3.5 h-3.5" strokeWidth={1.5} /> Edit Product
               </DropdownMenuItem>
               <div className="border-t border-border/40 my-1" />
-              <DropdownMenuItem 
-                onClick={handleDelete}
-                className="flex items-center gap-3 px-3 py-2 text-[12px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 focus:bg-red-50 focus:text-red-700 rounded-none cursor-pointer"
-              >
-                <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} /> Delete
-              </DropdownMenuItem>
+              {user?.role === "admin" && (
+                <DropdownMenuItem 
+                  onClick={handleDelete}
+                  className="flex items-center gap-3 px-3 py-2 text-[12px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 focus:bg-red-50 focus:text-red-700 rounded-none cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} /> Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>

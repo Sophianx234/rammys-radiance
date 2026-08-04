@@ -447,7 +447,7 @@ export default function OrdersManagement() {
 
       {/* ORDERS TABLE */}
       <div className="bg-white border border-border/40">
-        {selectedOrders.size > 0 && (
+        {user?.role !== "dispatch" && user?.role !== "dispatcher" && selectedOrders.size > 0 && (
           <div className="bg-[#eef1ef] border-b border-[#5B7763]/20 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <input 
@@ -480,14 +480,16 @@ export default function OrdersManagement() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-border/40 bg-secondary/20 h-[53px]">
-                <th className="py-4 px-6 w-12 text-center">
-                  <input 
-                    type="checkbox" 
-                    className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
-                    checked={paginated.length > 0 && paginated.every((o) => selectedOrders.has(o.paymentReference))}
-                    onChange={handleSelectAll}
-                  />
-                </th>
+                {user?.role !== "dispatch" && user?.role !== "dispatcher" && (
+                  <th className="py-4 px-6 w-12 text-center">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
+                      checked={paginated.length > 0 && paginated.every((o) => selectedOrders.has(o.paymentReference))}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
+                )}
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">Customer</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">Reference</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Status</th>
@@ -501,9 +503,11 @@ export default function OrdersManagement() {
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}>
-                    <td className="py-4 px-6 w-12 text-center">
-                      <div className="w-4 h-4 border border-border/40 rounded-sm ml-1.5 bg-secondary animate-pulse"></div>
-                    </td>
+                    {user?.role !== "dispatch" && user?.role !== "dispatcher" && (
+                      <td className="py-4 px-6 w-12 text-center">
+                        <div className="w-4 h-4 border border-border/40 rounded-sm ml-1.5 bg-secondary animate-pulse"></div>
+                      </td>
+                    )}
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-secondary animate-pulse rounded-full"></div>
@@ -541,14 +545,16 @@ export default function OrdersManagement() {
               ) : (
                 paginated.map((order) => (
                   <tr key={order._id} className={`group transition-colors ${selectedOrders.has(order.paymentReference) ? 'bg-[#5B7763]/5' : 'hover:bg-secondary/10'}`}>
-                    <td className="py-4 px-6 w-12 text-center" onClick={(e) => e.stopPropagation()}>
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
-                        checked={selectedOrders.has(order.paymentReference)}
-                        onChange={() => handleSelectOrder(order.paymentReference)}
-                      />
-                    </td>
+                    {user?.role !== "dispatch" && user?.role !== "dispatcher" && (
+                      <td className="py-4 px-6 w-12 text-center" onClick={(e) => e.stopPropagation()}>
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
+                          checked={selectedOrders.has(order.paymentReference)}
+                          onChange={() => handleSelectOrder(order.paymentReference)}
+                        />
+                      </td>
+                    )}
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <img
@@ -568,10 +574,16 @@ export default function OrdersManagement() {
                     </td>
 
                     <td className="py-4 px-6">
-                       <StatusSelector
-                          current={order.orderStatus}
-                          onChange={(v) => handleStatusUpdate(order.paymentReference, v)}
-                        />
+                      {user?.role === "dispatch" || user?.role === "dispatcher" ? (
+                        <div className="h-8 text-[9px] uppercase tracking-wider w-[140px] px-2 flex items-center font-bold text-text-muted">
+                          {STATUS_CONFIG[order.orderStatus]?.label}
+                        </div>
+                      ) : (
+                         <StatusSelector
+                            current={order.orderStatus}
+                            onChange={(v) => handleStatusUpdate(order.paymentReference, v)}
+                          />
+                      )}
                     </td>
 
                     <td className="py-4 px-6">
@@ -657,7 +669,7 @@ export default function OrdersManagement() {
       {/* DETAILS DIALOG */}
       <Dialog open={isSheetOpen} onOpenChange={(v) => { setIsSheetOpen(v); if (!v) setSelectedOrder(null); }}>
         <DialogContent showCloseButton={false} className="max-w-6xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#fdfbf7] rounded-none border border-border/40">
-          {selectedOrder ? <OrderDetailsSheetContent order={selectedOrder} onDelete={handleDelete} onStatusChange={handleStatusUpdate} onClose={() => setIsSheetOpen(false)} /> : (
+          {selectedOrder ? <OrderDetailsSheetContent order={selectedOrder} onDelete={handleDelete} onStatusChange={handleStatusUpdate} onClose={() => setIsSheetOpen(false)} userRole={user?.role} /> : (
             <div className="p-8">
               <div className="h-6 bg-secondary animate-pulse w-44 mb-6"></div>
               <div className="h-48 bg-secondary animate-pulse w-full border border-border/40"></div>

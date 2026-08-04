@@ -15,6 +15,7 @@ export default function OrderDetailsSheetContent({
   onDelete: (id: string) => void;
   onStatusChange: (ref: string, newStatus: string) => void;
   onClose: () => void;
+  userRole?: string;
 }) {
   const Toast = withReactContent(Swal).mixin({
     toast: true,
@@ -64,18 +65,24 @@ export default function OrderDetailsSheetContent({
 
           <div className="flex items-center gap-4">
              <div className="text-[11px] uppercase tracking-wider font-bold text-text-muted">Status:</div>
-             <Select value={order.orderStatus} onValueChange={(v) => onStatusChange(order.paymentReference, v)} >
-                <SelectTrigger className="h-9 w-56 text-[11px] uppercase tracking-wider font-bold border-border/40 rounded-none focus:ring-0 bg-white shadow-none">
-                  <SelectValue>{STATUS_CONFIG[order.orderStatus]?.label ?? order.orderStatus}</SelectValue>
-                </SelectTrigger>
-                <SelectContent className="rounded-none border-border/40 shadow-sm">
-                  {Object.entries(STATUS_CONFIG).map(([k, c]) => (
-                    <SelectItem key={k} value={k} className="text-[11px] uppercase tracking-wider cursor-pointer rounded-none focus:bg-secondary/50">
-                      {c.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-             </Select>
+             {userRole === "dispatch" || userRole === "dispatcher" ? (
+               <div className="h-9 w-56 px-3 flex items-center border border-border/40 text-[11px] uppercase tracking-wider font-bold bg-secondary/10">
+                 {STATUS_CONFIG[order.orderStatus]?.label ?? order.orderStatus}
+               </div>
+             ) : (
+               <Select value={order.orderStatus} onValueChange={(v) => onStatusChange(order.paymentReference, v)} >
+                  <SelectTrigger className="h-9 w-56 text-[11px] uppercase tracking-wider font-bold border-border/40 rounded-none focus:ring-0 bg-white shadow-none">
+                    <SelectValue>{STATUS_CONFIG[order.orderStatus]?.label ?? order.orderStatus}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="rounded-none border-border/40 shadow-sm">
+                    {Object.entries(STATUS_CONFIG).map(([k, c]) => (
+                      <SelectItem key={k} value={k} className="text-[11px] uppercase tracking-wider cursor-pointer rounded-none focus:bg-secondary/50">
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+               </Select>
+             )}
           </div>
         </div>
       </div>
@@ -200,12 +207,14 @@ export default function OrderDetailsSheetContent({
           >
             <ExternalLink className="w-3.5 h-3.5" /> Download Invoice
           </button>
-          <button 
-            onClick={() => onDelete(order._id)}
-            className="border border-red-200 bg-red-50 text-red-600 px-4 py-2.5 text-[10px] uppercase tracking-wider font-bold hover:bg-red-100 transition-colors"
-          >
-            Delete Order
-          </button>
+          {userRole === "admin" && (
+            <button 
+              onClick={() => onDelete(order._id as string)}
+              className="border border-red-200 bg-red-50 text-red-600 px-4 py-2.5 text-[10px] uppercase tracking-wider font-bold hover:bg-red-100 transition-colors"
+            >
+              Delete Order
+            </button>
+          )}
         </div>
       </div>
     </div>

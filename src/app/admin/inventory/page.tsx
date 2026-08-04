@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useDashStore } from "@/lib/store";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -74,6 +75,7 @@ const formatDate = (dateString: string) => {
 };
 
 export default function InventoryPage() {
+  const { user } = useDashStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -237,9 +239,11 @@ export default function InventoryPage() {
                             Copy ID
                           </DropdownMenuItem>
                           <DropdownMenuItem>Edit Product</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                            Delete Product
-                          </DropdownMenuItem>
+                          {user?.role === "admin" && (
+                            <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                              Delete Product
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
