@@ -16,7 +16,7 @@ export default function ProductClient({ product }: { product: IProduct }) {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [reviewMessage, setReviewMessage] = useState<{ type: 'success' | 'error' | 'warning', text: string } | null>(null);
-  const { setCart } = useDashStore();
+  const { setCart, user, toggleWishlist } = useDashStore();
 
   const [userRating, setUserRating] = useState(product?.rating || 0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -59,18 +59,32 @@ export default function ProductClient({ product }: { product: IProduct }) {
   };
 
   const handleWishlist = async () => {
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
+    
     try {
       setIsFavorite(isFavorite => !isFavorite);
+      toggleWishlist(product._id); // Update global store instantly
       const res = await fetch("/api/users/wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product._id }),
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        // revert on failure
+        setIsFavorite(isFavorite => !isFavorite);
+        toggleWishlist(product._id);
+        return;
+      }
       const data = await res.json();
       setIsFavorite(data.isFavorite);
     } catch (err) {
       console.error("Wishlist failed:", err);
+      // revert on failure
+      setIsFavorite(isFavorite => !isFavorite);
+      toggleWishlist(product._id);
     }
   };
 

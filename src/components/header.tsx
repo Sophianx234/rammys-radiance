@@ -282,9 +282,11 @@ export default function Header() {
 
           <Link href="/wishlist" className="relative text-text-main hover:text-black transition-colors hidden sm:block">
             <Star className="w-[18px] h-[18px]" strokeWidth={1.5} />
-            <span className="absolute -top-1.5 -right-2 bg-[#5B7763] text-white text-[9px] font-bold rounded-full w-[14px] h-[14px] flex items-center justify-center">
-              0
-            </span>
+            {user?.wishlist && user.wishlist.length > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-[#5B7763] text-white text-[9px] font-bold rounded-full w-[14px] h-[14px] flex items-center justify-center">
+                {user.wishlist.length}
+              </span>
+            )}
           </Link>
 
           <Link href="/cart" className="relative text-text-main hover:text-black transition-colors">

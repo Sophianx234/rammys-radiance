@@ -1,13 +1,51 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
-import { IProduct } from "@/models/Product";
+import { Star, Heart } from "lucide-react";
+import { useDashStore } from "@/lib/store";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
-  product: any; // We use 'any' here or a Partial<IProduct> for frontend to avoid Mongoose Document type conflicts, but it's structurally the same
+  product: any;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { user, toggleWishlist } = useDashStore();
+  const router = useRouter();
+  
+  const isFavorite = user?.wishlist?.some((id: any) => id.toString() === product._id.toString()) ?? false;
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    // Optimistic UI update
+    toggleWishlist(product._id);
+
+    try {
+      const res = await fetch("/api/users/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product._id }),
+      });
+
+      if (!res.ok) {
+        // Revert on failure
+        toggleWishlist(product._id);
+      }
+    } catch (err) {
+      console.error("Wishlist failed:", err);
+      // Revert on failure
+      toggleWishlist(product._id);
+    }
+  };
+
   const priceDisplay = `₵${(product.price).toLocaleString()}`;
   const discountPriceDisplay = product.discountPrice ? `₵${(product.discountPrice).toLocaleString()}` : undefined;
 
@@ -20,6 +58,18 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.discountBadge}
           </div>
         )}
+        
+        {/* Wishlist Button */}
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-3 right-3 z-20 p-2 bg-white/80 backdrop-blur rounded-full hover:bg-white transition-colors"
+        >
+          <Heart
+            size={16}
+            className={`transition-colors ${isFavorite ? "fill-[#5B7763] text-[#5B7763]" : "text-gray-500 hover:text-[#5B7763]"}`}
+          />
+        </button>
+
         <div className="relative w-full h-full transition-transform duration-700 ">
           <Image
             src={product.images?.[0] || "/placeholder.svg"}

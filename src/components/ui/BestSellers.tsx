@@ -34,11 +34,8 @@ export default function Bestsellers() {
     <section className="relative bg-[#fdfbf7] py-24">
       <div className="max-w-7xl mx-auto px-6 text-center">
         {/* Header (Always Visible instantly) */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <div
+          
           className="text-center mb-16 space-y-3"
         >
           <h2 className="text-3xl md:text-4xl font-medium text-text-main tracking-widest font-bold">
@@ -47,7 +44,7 @@ export default function Bestsellers() {
           <p className="text-text-muted text-sm md:text-base">
             Discover our most loved beauty essentials, crafted for elegance.
           </p>
-        </motion.div>
+        </div>
 
         {/* Product Grid or Skeleton */}
         {loading ? (
