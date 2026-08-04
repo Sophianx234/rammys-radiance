@@ -117,8 +117,8 @@ const FEATURED_FALLBACKS = [
   }
 ];
 
-export default async function ProductPage(props: { params: { slug: string } }) {
-  const { slug } = props.params;
+export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params;
   
   let data = null;
 
