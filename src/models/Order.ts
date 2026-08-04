@@ -2,13 +2,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export type OrderStatus =
   | "processing"
-  | "packed"
-  |'ready_for_pickup'
-  | "ready_for_dispatch"
-  | "dispatched"
   | "in_transit"
   | "arrived"
-  | "delivery_attempted"
   | "delivered"
   | "cancelled";
 
@@ -94,13 +89,8 @@ const orderSchema = new Schema<IOrder>(
       type: String,
       enum: [
         "processing",
-        "ready_for_pickup",
-        "packed",
-        "ready_for_dispatch",
-        "dispatched",
         "in_transit",
         "arrived",
-        "delivery_attempted",
         "delivered",
         "cancelled",
       ],

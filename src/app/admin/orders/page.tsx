@@ -108,13 +108,8 @@ export const STATUS_CONFIG: Record<
 > = {
   processing: { label: "Processing", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: Clock },
   paid: { label: "Paid", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CreditCard },
-  ready_for_pickup: { label: "Ready for Pickup", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Package },
-  packed: { label: "Packed", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Package },
-  ready_for_dispatch: { label: "Ready for Dispatch", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
-  dispatched: { label: "Dispatched", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
   in_transit: { label: "In Transit", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
   arrived: { label: "Arrived", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
-  delivery_attempted: { label: "Delivery Attempted", color: "bg-orange-50 text-orange-700 border-orange-200", icon: AlertCircle },
   delivered: { label: "Delivered", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CheckCircle },
   cancelled: { label: "Cancelled", color: "bg-red-50 text-red-700 border-red-200", icon: XCircle },
   failed: { label: "Failed", color: "bg-red-50 text-red-700 border-red-200", icon: AlertCircle },
