@@ -28,7 +28,7 @@ export default function Bestsellers() {
 
   if (loading) {
     return (
-      <section className="relative bg-white py-24">
+      <section className="relative bg-[#fdfbf7] py-24">
         <div className="max-w-7xl mx-auto px-6 text-center">
           {/* Header Skeleton */}
           <div className="mb-12 space-y-4">
@@ -39,14 +39,16 @@ export default function Bestsellers() {
           {/* Product Grid Skeleton */}
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-gray-100 rounded-none p-4 flex flex-col gap-4 animate-pulse"
-              >
-                <div className="h-52 bg-gray-200 rounded-none" />
-                <div className="h-6 w-3/4 bg-gray-200 rounded-none" />
-                <div className="h-6 w-1/2 bg-gray-200 rounded-none" />
-                <div className="h-10 w-full bg-gray-200 rounded-none" />
+              <div key={i} className="flex flex-col w-full text-center">
+                {/* Image Skeleton */}
+                <div className="aspect-[4/5] bg-gray-200 animate-pulse mb-5 rounded-none" />
+                
+                {/* Details Skeleton */}
+                <div className="flex flex-col items-center space-y-2.5">
+                  <div className="h-3 w-16 bg-gray-200 animate-pulse rounded-none" />
+                  <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded-none" />
+                  <div className="h-3 w-20 bg-gray-200 animate-pulse rounded-none" />
+                </div>
               </div>
             ))}
           </div>
