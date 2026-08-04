@@ -18,8 +18,34 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    setIsFavorite(user?.wishlist?.some((id: any) => id.toString() === product._id.toString()) ?? false);
-  }, [user, product._id]);
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch("/api/users/wishlist");
+        if (res.ok) {
+          const data = await res.json();
+          setIsFavorite(data.wishlist.some((id: any) => id.toString() === product._id.toString()));
+        }
+      } catch (err) {}
+    };
+
+    if (user) fetchStatus();
+
+    const handleWishlistChange = (e: any) => {
+      if (e.detail && Array.isArray(e.detail)) {
+        setIsFavorite(e.detail.some((id: any) => id.toString() === product._id.toString()));
+      } else {
+        fetchStatus();
+      }
+    };
+    
+    window.addEventListener("wishlistUpdated", handleWishlistChange);
+    window.addEventListener("wishlistFetched", handleWishlistChange);
+    
+    return () => {
+      window.removeEventListener("wishlistUpdated", handleWishlistChange);
+      window.removeEventListener("wishlistFetched", handleWishlistChange);
+    };
+  }, [product._id, user]);
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();

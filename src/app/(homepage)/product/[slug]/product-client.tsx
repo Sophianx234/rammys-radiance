@@ -12,11 +12,28 @@ import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
 export default function ProductClient({ product }: { product: IProduct }) {
-  const [isFavorite, setIsFavorite] = useState(product?.isFeatured || false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [reviewMessage, setReviewMessage] = useState<{ type: 'success' | 'error' | 'warning', text: string } | null>(null);
   const { setCart, user } = useDashStore();
+
+  // Fetch true wishlist status on mount
+  useEffect(() => {
+    if (!product?._id || !user) return;
+    const fetchWishlistStatus = async () => {
+      try {
+        const res = await fetch("/api/users/wishlist");
+        if (res.ok) {
+          const data = await res.json();
+          setIsFavorite(data.wishlist.some((id: any) => id.toString() === product._id.toString()));
+        }
+      } catch (err) {
+        console.error("Failed to fetch wishlist status");
+      }
+    };
+    fetchWishlistStatus();
+  }, [product?._id, user]);
 
   const [userRating, setUserRating] = useState(product?.rating || 0);
   const [hoverRating, setHoverRating] = useState(0);

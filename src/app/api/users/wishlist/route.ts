@@ -45,9 +45,9 @@ export async function POST(req: NextRequest) {
     const user = await User.findById((decoded as DecodedToken).userId);
     if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });
 
-    const alreadyInWishlist = user.wishlist.includes(productId);
+    const alreadyInWishlist = user.wishlist.some((id: any) => id.toString() === productId.toString());
     if (alreadyInWishlist) {
-      user.wishlist = user.wishlist.filter(id => id.toString() !== productId);
+      user.wishlist = user.wishlist.filter((id: any) => id.toString() !== productId.toString());
     } else {
       user.wishlist.push(productId);
     }

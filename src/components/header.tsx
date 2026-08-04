@@ -116,6 +116,7 @@ export default function Header() {
         if (res.ok) {
           const data = await res.json();
           setWishlistCount(data.wishlist.length);
+          window.dispatchEvent(new CustomEvent("wishlistFetched", { detail: data.wishlist }));
         }
       } catch (err) {
         console.error("Failed to fetch wishlist count");
@@ -126,12 +127,20 @@ export default function Header() {
       fetchWishlistCount();
     }
 
-    const handleWishlistUpdated = () => {
-      fetchWishlistCount();
+    const handleWishlistUpdated = (e: any) => {
+      if (e.detail && Array.isArray(e.detail)) {
+        setWishlistCount(e.detail.length);
+      } else {
+        fetchWishlistCount();
+      }
     };
 
     window.addEventListener("wishlistUpdated", handleWishlistUpdated);
-    return () => window.removeEventListener("wishlistUpdated", handleWishlistUpdated);
+    window.addEventListener("wishlistFetched", handleWishlistUpdated);
+    return () => {
+      window.removeEventListener("wishlistUpdated", handleWishlistUpdated);
+      window.removeEventListener("wishlistFetched", handleWishlistUpdated);
+    };
   }, [user]);
 
   // Fetch user session on mount since Zustand state clears on hard refresh
