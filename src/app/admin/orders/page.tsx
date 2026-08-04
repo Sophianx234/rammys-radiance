@@ -148,7 +148,8 @@ export default function OrdersManagement() {
   const [page, setPage] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<ServerOrder | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
-
+  const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
+  const [batchActionLoading, setBatchActionLoading] = useState(false);
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
@@ -216,6 +217,51 @@ export default function OrdersManagement() {
       } catch (err) {
         Toast.fire({ icon: "error", title: "DELETE FAILED" });
       }
+    }
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedOrders(new Set(paginated.map((o) => o.paymentReference)));
+    } else {
+      setSelectedOrders(new Set());
+    }
+  };
+
+  const handleSelectOrder = (paymentReference: string) => {
+    setSelectedOrders((prev) => {
+      const next = new Set(prev);
+      if (next.has(paymentReference)) next.delete(paymentReference);
+      else next.add(paymentReference);
+      return next;
+    });
+  };
+
+  const handleBatchStatusUpdate = async (newStatus: string) => {
+    if (!newStatus) return;
+    setBatchActionLoading(true);
+    try {
+      const promises = Array.from(selectedOrders).map(ref => 
+        fetch("/api/orders/update-status", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reference: ref, status: newStatus }),
+        })
+      );
+      
+      const results = await Promise.all(promises);
+      if (!results.every(res => res.ok)) throw new Error("Some updates failed");
+      
+      setOrders(prev => prev.map(o => 
+        selectedOrders.has(o.paymentReference) ? { ...o, orderStatus: newStatus as OrderStatus } : o
+      ));
+      
+      Toast.fire({ icon: "success", title: "BATCH STATUS UPDATED" });
+      setSelectedOrders(new Set());
+    } catch (err) {
+      Toast.fire({ icon: "error", title: "BATCH UPDATE FAILED" });
+    } finally {
+      setBatchActionLoading(false);
     }
   };
 
@@ -400,11 +446,48 @@ export default function OrdersManagement() {
       </div>
 
       {/* ORDERS TABLE */}
-      <div className="bg-white border border-border/40">
+      <div className="bg-white border border-border/40 relative">
+        {selectedOrders.size > 0 && (
+          <div className="bg-[#5B7763]/10 border-b border-[#5B7763]/20 px-6 py-3 flex flex-wrap items-center justify-between gap-4 absolute top-0 left-0 right-0 z-10 w-full h-[53px]">
+            <div className="flex items-center gap-4">
+              <input 
+                type="checkbox" 
+                className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
+                checked={paginated.length > 0 && paginated.every((o) => selectedOrders.has(o.paymentReference))}
+                onChange={handleSelectAll}
+              />
+              <span className="text-[11px] uppercase tracking-wider font-bold text-[#5B7763]">
+                {selectedOrders.size} order{selectedOrders.size > 1 ? "s" : ""} selected
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-[#5B7763]">Batch update to:</span>
+              <select 
+                disabled={batchActionLoading}
+                onChange={(e) => { handleBatchStatusUpdate(e.target.value); e.target.value = ""; }}
+                defaultValue=""
+                className="h-8 text-[10px] uppercase tracking-wider w-[140px] border border-[#5B7763]/30 text-[#5B7763] font-bold rounded-none focus:outline-none px-2 bg-white disabled:opacity-50 cursor-pointer"
+              >
+                <option value="" disabled>Select Status</option>
+                {Object.entries(STATUS_CONFIG).map(([k, c]) => (
+                  <option key={k} value={k}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border/40 bg-secondary/20">
+              <tr className="border-b border-border/40 bg-secondary/20 h-[53px]">
+                <th className="py-4 px-6 w-12 text-center">
+                  <input 
+                    type="checkbox" 
+                    className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
+                    checked={paginated.length > 0 && paginated.every((o) => selectedOrders.has(o.paymentReference))}
+                    onChange={handleSelectAll}
+                  />
+                </th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">Customer</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">Reference</th>
                 <th className="py-4 px-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">Status</th>
@@ -418,6 +501,9 @@ export default function OrdersManagement() {
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}>
+                    <td className="py-4 px-6 w-12 text-center">
+                      <div className="w-4 h-4 border border-border/40 rounded-sm ml-1.5 bg-secondary animate-pulse"></div>
+                    </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-secondary animate-pulse rounded-full"></div>
@@ -437,7 +523,7 @@ export default function OrdersManagement() {
                 ))
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-20 text-center">
+                  <td colSpan={8} className="py-20 text-center">
                     <div className="flex flex-col items-center justify-center text-text-muted">
                       <div className="bg-secondary/20 p-4 rounded-full mb-4">
                          <SlidersHorizontal className="h-6 w-6 opacity-50" />
@@ -454,7 +540,15 @@ export default function OrdersManagement() {
                 </tr>
               ) : (
                 paginated.map((order) => (
-                  <tr key={order._id} className="group hover:bg-secondary/10 transition-colors">
+                  <tr key={order._id} className={`group transition-colors ${selectedOrders.has(order.paymentReference) ? 'bg-[#5B7763]/5' : 'hover:bg-secondary/10'}`}>
+                    <td className="py-4 px-6 w-12 text-center" onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 accent-[#5B7763] cursor-pointer ml-1.5"
+                        checked={selectedOrders.has(order.paymentReference)}
+                        onChange={() => handleSelectOrder(order.paymentReference)}
+                      />
+                    </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <img
