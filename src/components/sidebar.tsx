@@ -26,7 +26,7 @@ export default function Sidebar() {
     { icon: ShoppingBag, label: "Shop", href: "/shop" },
     ...(isLoggedIn
       ? [
-          { icon: User, label: "Account", href: "/account" },
+          { icon: User, label: "Account", href: "/profile" },
           { icon: Heart, label: "Wishlist", href: "/wishlist" },
           { icon: BarChart3, label: "Admin", href: "/admin" },
         ]

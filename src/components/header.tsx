@@ -242,15 +242,15 @@ export default function Header() {
                   {/* drop down items */}
                   {user ? (
                     <>
-                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                      <Link href="/profile" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
                         <User className="w-4 h-4" /> My Profile
                       </Link>
-                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                      <Link href="/orders" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
                         <Package className="w-4 h-4" /> Orders
                       </Link>
-                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                      {/* <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
                         <Settings className="w-4 h-4" /> Settings
-                      </Link>
+                      </Link> */}
                       <div className="my-1 border-t border-border/40" />
                       <button onClick={() => { handleLogout(); setIsUserMenuOpen(false); }} className="flex items-center justify-center gap-2 w-full text-center px-4 py-2.5 text-[13px] font-medium text-[#5B7763] hover:bg-[#5B7763]/10 transition-colors">
                          Logout

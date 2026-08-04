@@ -67,6 +67,9 @@ export function middleware(req: NextRequest) {
       if (isOrdersApi && !pathname.includes("/update-status")) {
         // Allow creating orders
       } 
+      else if (pathname.includes("/update-profile")) {
+        // Allow any authenticated user to update their own profile
+      }
       else if (isAdminApi || isProductsApi || isCategoriesApi || isCustomersApi || (isOrdersApi && pathname.includes("/update-status"))) {
         if (!["admin", "manager"].includes(normalizedRole)) {
           return NextResponse.json({ error: "Forbidden. Create/Edit access required." }, { status: 403 });

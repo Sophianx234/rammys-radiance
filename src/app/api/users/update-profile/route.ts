@@ -2,6 +2,7 @@ import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import { connectToDatabase } from "@/lib/connectDB";
 import { User } from "@/models/User";
 import { NextResponse } from "next/server";
+import { encryptPassword } from "@/lib/bcrypt";
 
 export async function PATCH(req: Request) {
   try {
@@ -12,6 +13,8 @@ export async function PATCH(req: Request) {
     const userId = form.get("userId") as string | null;
     const name = form.get("name") as string | null;
     const email = form.get("email") as string | null;
+    const phone = form.get("phone") as string | null;
+    const password = form.get("password") as string | null;
     const file = form.get("profile") as File | null;
 
     if (!userId) {
@@ -33,6 +36,11 @@ export async function PATCH(req: Request) {
     // Update text fields
     if (name) user.name = name;
     if (email) user.email = email;
+    if (phone !== null) user.phone = phone; // Allow clearing phone if needed, but usually just updates
+
+    if (password) {
+      user.password = await encryptPassword(password);
+    }
 
     // Handle optional image update
     if (file) {
