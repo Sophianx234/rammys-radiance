@@ -7,13 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+
 
 const navLinks = [
   {
@@ -94,20 +88,43 @@ const navLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, cart, setUser } = useDashStore();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
     }
-    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
-    else document.removeEventListener("mousedown", handleClickOutside);
+    
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
+  }, []);
+
+  // Fetch user session on mount since Zustand state clears on hard refresh
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user session");
+      }
+    };
+    if (!user) {
+      fetchUser();
+    }
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -202,27 +219,59 @@ export default function Header() {
             <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
           </button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="text-text-main hover:text-black transition-colors">
-                <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-white border-border/40 rounded-none shadow-sm mt-4">
-              {user ? (
-                <>
-                  <DropdownMenuItem asChild><Link href="/profile" className="text-[13px] text-text-muted hover:text-black cursor-pointer">My Profile</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link href="/orders" className="text-[13px] text-text-muted hover:text-black cursor-pointer">Orders</Link></DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border/40" />
-                  <DropdownMenuItem asChild>
-                    <button onClick={handleLogout} className="w-full text-left text-[13px] text-red-500 cursor-pointer">Logout</button>
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem asChild><Link href="/login" className="text-[13px] text-text-muted hover:text-black cursor-pointer">Login / Register</Link></DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="relative flex items-center h-full" ref={userMenuRef}>
+            <button 
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="flex items-center justify-center gap-2 text-text-main hover:text-black transition-colors focus:outline-none"
+            >
+              <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
+              {user?.name ? (
+                <span className="text-[12px] font-medium tracking-wide hidden sm:block">
+                  Hi, {user.name.split(" ")[0]}
+                </span>
+              ) : <span className="text-[12px] font-medium tracking-wide hidden sm:block pt-1">Account</span>}
+            </button>
+            <div className={`absolute top-[3.5rem] right-0 pt-4 w-48 transition-all duration-300 z-50 ${isUserMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+              <div className={`relative bg-white border border-border/40 shadow-sm flex flex-col transform transition-transform duration-300 ${isUserMenuOpen ? 'translate-y-0' : 'translate-y-2'}`}>
+                {/* Pointed Edge (Caret) */}
+                <div className="absolute -top-[7px] right-[18px] w-[13px] h-[13px] bg-white border-t border-l border-border/40 transform rotate-45 z-0"></div>
+                
+                <div className="flex flex-col relative z-10 py-2">
+                  {user ? (
+                    <>
+                      <Link href="/profile" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        My Profile
+                      </Link>
+                      <Link href="/orders" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        Orders
+                      </Link>
+                      <div className="my-1 border-t border-border/40" />
+                      <button onClick={() => { handleLogout(); setIsUserMenuOpen(false); }} className="w-full text-center px-4 py-2.5 text-[13px] font-medium text-red-500 hover:bg-red-50/50 transition-colors">
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                    <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 my-2 py-2.5  text-[13px] text-center bg-[#5B7763] font-medium text-white mx-3  hover:bg-secondary/50 transition-colors">
+                      Login 
+                     </Link>
+                      <div className="my-1 border-t border-border/40" />
+
+                     <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        My Profile
+                      </Link>
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        Orders
+                      </Link>
+                      <Link href="/login" onClick={() => setIsUserMenuOpen(false)} className="px-4 py-2.5 text-[13px] font-medium text-text-muted hover:text-black hover:bg-secondary/50 transition-colors">
+                        Settings
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <Link href="/wishlist" className="relative text-text-main hover:text-black transition-colors hidden sm:block">
             <Star className="w-[18px] h-[18px]" strokeWidth={1.5} />

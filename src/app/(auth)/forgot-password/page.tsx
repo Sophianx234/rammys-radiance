@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="grid min-h-dvh lg:h-dvh font-sans bg-surface lg:grid-cols-2 overflow-hidden">
       {/* Left Section (Form) */}
-      <div className="flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto">
+      <div className="flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto scrollbar-hide">
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="flex justify-center mb-16">

@@ -6,7 +6,6 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useCart } from "@/components/cart-context";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { CheckCircle, ArrowLeft, AlertCircle } from "lucide-react";

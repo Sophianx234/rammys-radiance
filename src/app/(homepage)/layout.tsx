@@ -1,4 +1,3 @@
-import { CartProvider } from "@/components/cart-context";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import {
@@ -11,6 +10,8 @@ import {
 } from "next/font/google";
 import type React from "react";
 import "../globals.css";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -48,7 +49,9 @@ export default function RootLayout({
       <script src="https://js.paystack.co/v1/inline.js"></script>
 
       <body className={` ${inter.className} antialiased`}>
-        <CartProvider>{children}</CartProvider>
+        <Header />
+        {children}
+        <Footer />
         <Analytics />
       </body>
     </html>

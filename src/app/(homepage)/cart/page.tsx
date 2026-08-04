@@ -5,7 +5,6 @@ import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trash2, ShoppingBag } from "lucide-react";
-import { useCart } from "@/components/cart-context";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
@@ -14,8 +13,6 @@ import 'ldrs/react/Ring2.css'
 import {GridLoader, RiseLoader} from 'react-spinners'
 
 export default function CartPage() {
-  // const { items, removeItem, updateQuantity, total, clearCart } = useCart();
-  const { total } = useCart();
   const { cart, removeItem, updateQuantity, cartTotal, clearCart } =
     useDashStore();
   const [isLoaded, setIsLoaded] = useState(false);

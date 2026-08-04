@@ -1,26 +1,34 @@
 "use client"
 
 import type React from "react"
-
-import { useAuth } from "@/components/auth-context"
+import { useDashStore } from "@/lib/store"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, isLoading } = useAuth()
+export function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode, adminOnly?: boolean }) {
+  const { user } = useDashStore()
   const router = useRouter()
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    if (!isLoading && !isLoggedIn) {
-      router.push("/login")
-    }
-  }, [isLoggedIn, isLoading, router])
+    setIsMounted(true)
+  }, [])
 
-  if (isLoading) {
+  useEffect(() => {
+    if (isMounted) {
+      if (!user) {
+        router.push("/login")
+      } else if (adminOnly && user.role !== "admin") {
+        router.push("/")
+      }
+    }
+  }, [user, router, adminOnly, isMounted])
+
+  if (!isMounted || !user) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
   }
 
-  if (!isLoggedIn) {
+  if (adminOnly && user.role !== "admin") {
     return null
   }
 

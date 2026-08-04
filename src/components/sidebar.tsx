@@ -3,13 +3,23 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Menu, X, Home, ShoppingBag, User, Heart, LogOut, Sun, Moon, BarChart3 } from "lucide-react"
-import { useAuth } from "@/components/auth-context"
-import { useTheme } from "@/components/theme-context"
+import { useDashStore } from "@/lib/store"
+import { useTheme } from "next-themes"
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
-  const { user, logout, isLoggedIn } = useAuth()
-  const { theme, toggleTheme } = useTheme()
+  const { user, setUser } = useDashStore()
+  const isLoggedIn = !!user
+  const { theme, setTheme } = useTheme()
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark")
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" })
+      setUser(null)
+      window.location.href = "/login"
+    } catch(e) {}
+  }
 
   const navigationItems = [
     { icon: Home, label: "Home", href: "/" },
