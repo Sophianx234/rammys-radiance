@@ -16,6 +16,7 @@ import Link from "next/link";
 // Validation schema
 const productSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
+  slug: z.string().min(3, "Slug must be at least 3 characters").optional(),
   description: z.string().min(10, "Description is too short"),
   price: z.number().positive("Price must be positive"),
   discountPrice: z.number().min(0).optional(),
@@ -40,9 +41,11 @@ interface ICategoryOption {
 export default function AddProductPage() {
   const [categories, setCategories] = useState<ICategoryOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
 
   const [product, setProduct] = useState({
     name: "",
+    slug: "",
     description: "",
     price: 1,
     discountPrice: 0,
@@ -141,6 +144,7 @@ export default function AddProductPage() {
 
       const form = new FormData();
       form.append("name", validated.name);
+      if (validated.slug) form.append("slug", validated.slug);
       form.append("description", validated.description);
       form.append("price", String(validated.price));
       if (validated.discountPrice) form.append("discountPrice", String(validated.discountPrice));
@@ -232,16 +236,39 @@ export default function AddProductPage() {
             <h3 className="text-[14px] uppercase tracking-widest font-bold text-[#222222] mb-6 border-b border-border/40 pb-4">General Information</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Product Name</label>
                 <Input
                   type="text"
                   value={product.name}
-                  onChange={(e) => setProduct({ ...product, name: e.target.value })}
+                  onChange={(e) => {
+                    const newName = e.target.value;
+                    setProduct((prev) => ({
+                      ...prev,
+                      name: newName,
+                      slug: isSlugManuallyEdited ? prev.slug : newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+                    }));
+                  }}
                   placeholder="e.g. Shield Conditioner"
                   className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
                 />
                 {errors.name && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.name}</p>}
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">URL Slug</label>
+                <Input
+                  type="text"
+                  value={product.slug}
+                  onChange={(e) => {
+                    setIsSlugManuallyEdited(true);
+                    setProduct({ ...product, slug: e.target.value.toLowerCase().replace(/[^a-z0-9\-]+/g, '-') });
+                  }}
+                  placeholder="e.g. shield-conditioner"
+                  className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
+                />
+                <p className="text-[10px] text-text-muted mt-2 tracking-wider font-medium">Auto-generated from name.</p>
+                {errors.slug && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.slug}</p>}
               </div>
 
               <div>

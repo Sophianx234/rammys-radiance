@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
     const reviewsCount = Number(formData.get("reviewsCount") || 0);
     const discountPrice = formData.has("discountPrice") ? Number(formData.get("discountPrice")) : undefined;
     const discountBadge = formData.get("discountBadge") as string | undefined;
+    let slug = formData.get("slug") as string;
 
     if (!name || !description || !price || !category) {
       return NextResponse.json(
@@ -54,7 +55,11 @@ export async function POST(req: NextRequest) {
     }
 
     // ----- SLUG -----
-    const slug = slugify(name, { lower: true }) + "-" + Date.now();
+    if (!slug) {
+      slug = slugify(name, { lower: true }) + "-" + Date.now();
+    } else {
+      slug = slugify(slug, { lower: true });
+    }
 
     // ----- FEATURES -----
     const features = formData.getAll("features[]") as string[];
