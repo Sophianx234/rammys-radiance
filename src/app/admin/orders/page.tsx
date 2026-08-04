@@ -107,12 +107,10 @@ export const STATUS_CONFIG: Record<
   { label: string; color: string; icon: any }
 > = {
   processing: { label: "Processing", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: Clock },
-  paid: { label: "Paid", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CreditCard },
   in_transit: { label: "In Transit", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
   arrived: { label: "Arrived", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
   delivered: { label: "Delivered", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CheckCircle },
   cancelled: { label: "Cancelled", color: "bg-red-50 text-red-700 border-red-200", icon: XCircle },
-  failed: { label: "Failed", color: "bg-red-50 text-red-700 border-red-200", icon: AlertCircle },
 };
 
 const Toast = withReactContent(Swal).mixin({
