@@ -151,8 +151,14 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
-      <section className=" pb-12">
-        
+      {/* Page Header */}
+      <section className="pt-20 pb-16 text-center border-b border-border/40 bg-white mb-12">
+        <h1 className="text-3xl md:text-5xl font-sans font-medium text-[#222222] tracking-tight mb-4">
+          CHECKOUT
+        </h1>
+        <p className="text-[13px] text-text-muted max-w-xl mx-auto px-4 uppercase tracking-[0.2em] font-medium">
+          Finalize your order securely
+        </p>
       </section>
 
       <div className="max-w-6xl mx-auto px-6">
