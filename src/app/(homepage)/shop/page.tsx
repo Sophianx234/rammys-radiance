@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, ChevronDown, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useDashStore } from "@/lib/store";
 import { ProductCard } from "@/components/product-card";
 import { GridLoader } from "react-spinners";
@@ -36,26 +36,36 @@ import { Suspense } from "react";
 
 export function ShopPageContent() {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category");
+  const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
-  const [sortBy, setSortBy] = useState("featured");
-  const [priceRange, setPriceRange] = useState<string | null>(null);
+  
+  // URL state variables
+  const selectedCategory = searchParams.get("category");
+  const sortBy = searchParams.get("sortBy") || "featured";
+  const priceRange = searchParams.get("priceRange");
+  const page = parseInt(searchParams.get("page") || "1");
+
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
   const {user} = useDashStore()
   const [totalPages, setTotalPages] = useState(1);
 
-  // Sync state if URL changes
-  useEffect(() => {
-    const queryCat = searchParams.get("category");
-    setSelectedCategory(queryCat);
-  }, [searchParams]);
+  // Helper to update URL params safely
+  const updateURL = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
-  // Fetch products when filters change
+  // Fetch products when URL filters change
   useEffect(() => {
     fetchProducts();
   }, [selectedCategory, sortBy, priceRange, page]);
@@ -127,15 +137,11 @@ fetchWishlist()
   
 
   const handlePriceFilter = (range: string) => {
-    setPriceRange(range === priceRange ? null : range);
-    setPage(1);
+    updateURL({ priceRange: range === priceRange ? null : range, page: "1" });
   };
 
   const clearFilters = () => {
-    setSelectedCategory(null);
-    setPriceRange(null);
-    setSortBy("featured");
-    setPage(1);
+    updateURL({ category: null, priceRange: null, sortBy: null, page: "1" });
   };
 
   return (
@@ -156,7 +162,7 @@ fetchWishlist()
                 </h3>
                 <div className="space-y-4">
                   <button
-                    onClick={() => { setSelectedCategory(null); setPage(1); }}
+                    onClick={() => updateURL({ category: null, page: "1" })}
                     className={`block w-full text-left text-[13px] transition-colors ${
                       selectedCategory === null
                         ? "text-[#5B7763] font-bold"
@@ -168,7 +174,7 @@ fetchWishlist()
                   {categories.map((cat) => (
                     <button
                       key={cat._id}
-                      onClick={() => { setSelectedCategory(cat.slug); setPage(1); }}
+                      onClick={() => updateURL({ category: cat.slug, page: "1" })}
                       className={`w-full text-left flex justify-between items-center transition-colors ${
                         selectedCategory === cat.slug
                           ? "text-[#5B7763]"
@@ -235,7 +241,7 @@ fetchWishlist()
               <div className="relative group">
                 <select
                   value={sortBy}
-                  onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                  onChange={(e) => updateURL({ sortBy: e.target.value, page: "1" })}
                   className="appearance-none bg-transparent border-none text-[11px] font-bold uppercase tracking-[0.15em] text-[#222222] pr-6 cursor-pointer focus:outline-none"
                 >
                   <option value="featured">Sort by: Featured</option>
@@ -281,7 +287,7 @@ fetchWishlist()
                 {totalPages > 1 && (
                   <div className="flex justify-center gap-2 mt-20 pt-10 border-t border-border/40">
                     <button
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      onClick={() => updateURL({ page: Math.max(1, page - 1).toString() })}
                       disabled={page === 1}
                       className="w-10 h-10 flex items-center justify-center border border-border/60 text-text-muted hover:border-black hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
@@ -291,11 +297,11 @@ fetchWishlist()
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                         <button
                           key={p}
-                          onClick={() => setPage(p)}
-                          className={`w-10 h-10 flex items-center justify-center text-[12px] font-bold transition-colors ${
-                            page === p 
-                              ? "bg-black text-white" 
-                              : "border border-border/60 text-text-muted hover:border-black hover:text-black"
+                          onClick={() => updateURL({ page: p.toString() })}
+                          className={`w-10 h-10 flex items-center justify-center border transition-colors ${
+                            page === p
+                              ? "border-black bg-black text-white"
+                              : "border-border/60 text-text-muted hover:border-black hover:text-black"
                           }`}
                         >
                           {p}
@@ -303,7 +309,7 @@ fetchWishlist()
                       ))}
                     </div>
                     <button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() => updateURL({ page: Math.min(totalPages, page + 1).toString() })}
                       disabled={page === totalPages}
                       className="w-10 h-10 flex items-center justify-center border border-border/60 text-text-muted hover:border-black hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >

@@ -172,7 +172,7 @@ export default function Header() {
     }
   };
 
-  const [categories, setCategories] = useState<{name: string, _id: string}[]>([]);
+  const [categories, setCategories] = useState<{name: string, _id: string, slug: string}[]>([]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -201,7 +201,7 @@ export default function Header() {
                 { name: "All Products", href: "/shop" },
                 ...categories.map(cat => ({
                   name: cat.name,
-                  href: `/shop?category=${cat._id}` // We pass _id since shop page expects category _id (if we update it later)
+                  href: `/shop?category=${cat.slug}` 
                 }))
               ]
             }
