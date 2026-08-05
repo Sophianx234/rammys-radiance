@@ -90,6 +90,7 @@ export default function ProductClient({ product }: { product: IProduct }) {
       });
       if (!res.ok) {
         // revert on failure
+        console.error("Wishlist API failed:", res.status, await res.text());
         setIsFavorite(isFavorite => !isFavorite);
         return;
       }
@@ -97,7 +98,7 @@ export default function ProductClient({ product }: { product: IProduct }) {
       setIsFavorite(data.isFavorite);
       
       // Notify header to refetch from server
-      window.dispatchEvent(new Event("wishlistUpdated"));
+      window.dispatchEvent(new CustomEvent("wishlistUpdated", { detail: data.wishlist }));
     } catch (err) {
       console.error("Wishlist failed:", err);
       // revert on failure

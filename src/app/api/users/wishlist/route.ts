@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     const alreadyInWishlist = user.wishlist.some((id: any) => id.toString() === productId.toString());
     if (alreadyInWishlist) {
-      user.wishlist = user.wishlist.filter((id: any) => id.toString() !== productId.toString());
+      user.wishlist.pull(productId);
     } else {
       user.wishlist.push(productId);
     }
@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
       isFavorite: !alreadyInWishlist,
     });
 
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Wishlist POST error:", err);
+    return NextResponse.json({ message: "Server error", error: err.message }, { status: 500 });
   }
 }

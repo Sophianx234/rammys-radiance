@@ -68,6 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
       if (!res.ok) {
         // Revert on failure
+        console.error("Wishlist API failed:", res.status, await res.text());
         setIsFavorite(isFavorite);
         return;
       }
@@ -76,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
       setIsFavorite(data.isFavorite);
       
       // Notify header and others to refetch from server
-      window.dispatchEvent(new Event("wishlistUpdated"));
+      window.dispatchEvent(new CustomEvent("wishlistUpdated", { detail: data.wishlist }));
       
     } catch (err) {
       console.error("Wishlist failed:", err);
