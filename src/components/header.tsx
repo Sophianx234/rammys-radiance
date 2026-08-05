@@ -43,22 +43,22 @@ const navLinks = [
   },
   {
     name: "BLOG",
-    href: "#",
+    href: "/blog",
     megaMenu: [
       {
         title: "Topics",
         items: [
-          { name: "Skincare Tips", href: "#" },
-          { name: "Makeup Tutorials", href: "#" },
-          { name: "Brand News", href: "#" },
+          { name: "Skincare Tips", href: "/blog?topic=skincare-tips" },
+          { name: "Makeup Tutorials", href: "/blog?topic=makeup-tutorials" },
+          { name: "Brand News", href: "/blog?topic=brand-news" },
         ]
       },
       {
         title: "Latest Reads",
         items: [
-          { name: "Achieving the Glow", href: "#" },
-          { name: "Winter Routine", href: "#" },
-          { name: "Ingredient Spotlight", href: "#" },
+          { name: "Achieving the Glow", href: "/blog/achieving-the-glow" },
+          { name: "Winter Routine", href: "/blog/winter-routine" },
+          { name: "Ingredient Spotlight", href: "/blog/ingredient-spotlight" },
         ]
       }
     ],
