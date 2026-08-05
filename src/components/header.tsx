@@ -96,6 +96,19 @@ export default function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+      setIsSearchOpen(false);
+    }
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -292,9 +305,46 @@ export default function Header() {
 
         {/* Right: Icons */}
         <div className="flex items-center justify-end space-x-6 h-full flex-1">
-          <button className="text-text-main hover:text-black transition-colors">
-            <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
-          </button>
+          
+          {/* Search */}
+          <div className="relative flex items-center h-full">
+            <AnimatePresence>
+              {isSearchOpen && (
+                <motion.form
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 200, opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  onSubmit={handleSearchSubmit}
+                  className="absolute right-8 overflow-hidden flex items-center"
+                >
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search products..."
+                    className="w-full bg-transparent border-b border-border/60 pb-1 text-[13px] focus:outline-none focus:border-[#5B7763] text-[#222222] placeholder:text-text-muted/50"
+                  />
+                </motion.form>
+              )}
+            </AnimatePresence>
+            <button 
+              onClick={() => {
+                if (isSearchOpen && searchQuery.trim()) {
+                  handleSearchSubmit({ preventDefault: () => {} } as React.FormEvent);
+                } else {
+                  setIsSearchOpen(!isSearchOpen);
+                  if (!isSearchOpen) {
+                    setTimeout(() => searchInputRef.current?.focus(), 100);
+                  }
+                }
+              }}
+              className="text-text-main hover:text-[#5B7763] transition-colors z-10 h-full flex items-center"
+            >
+              <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
+            </button>
+          </div>
 
           <div className="relative flex items-center h-full" ref={userMenuRef}>
             {/* user button */}
