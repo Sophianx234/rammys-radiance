@@ -49,17 +49,16 @@ export async function POST(req: NextRequest) {
     const objId = new mongoose.Types.ObjectId(productId);
 
     const alreadyInWishlist = user.wishlist.some((id: any) => id.toString() === productId.toString());
-    if (alreadyInWishlist) {
-      user.wishlist.pull(objId);
-    } else {
-      user.wishlist.push(objId);
-    }
-
-    await user.save();
+    
+    const updateOp = alreadyInWishlist 
+      ? { $pull: { wishlist: objId } }
+      : { $push: { wishlist: objId } };
+      
+    const updatedUser = await User.findByIdAndUpdate(user._id, updateOp, { new: true });
 
     return NextResponse.json({
       message: "Wishlist updated",
-      wishlist: user.wishlist,
+      wishlist: updatedUser?.wishlist || [],
       isFavorite: !alreadyInWishlist,
     });
 
