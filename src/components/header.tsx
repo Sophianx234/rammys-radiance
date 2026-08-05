@@ -255,14 +255,16 @@ export default function Header() {
           </button>
 
           <div className="relative flex items-center h-full" ref={userMenuRef}>
+            {/* user button */}
             <button 
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center justify-center gap-2 text-text-main hover:text-black transition-colors focus:outline-none"
+              className="group flex items-center justify-center gap-2 hover:text-[#5B7763] text-text-main transition-colors focus:outline-none"
             >
               <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
               {user?.name ? (
-                <span className="text-[12px] font-medium tracking-wide hidden sm:block">
-                  Hi, {user.name.split(" ")[0]}
+                <span className="text-[12px] font-medium tracking-wide sm:flex items-center hidden sm:block">
+                  Hi, {user.name.split(" ")[0]} 
+                  <ChevronDown className="w-3.5 h-3.5 text-text-muted group-hover:text-[#5B7763] transition-all duration-300 group-hover:rotate-180 ml-1" strokeWidth={2} />
                 </span>
               ) : <span className="text-[12px] font-medium tracking-wide hidden sm:block pt-1">Account</span>}
             </button>

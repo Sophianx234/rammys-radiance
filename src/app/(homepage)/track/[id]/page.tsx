@@ -47,15 +47,7 @@ const filteredTimeline = order.timeline.filter(
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
-      {/* Page Header */}
-      <section className="pt-20 pb-16 text-center border-b border-border/40 bg-white">
-        <h1 className="text-3xl md:text-5xl font-sans font-medium text-[#222222] tracking-tight mb-4 uppercase">
-          TRACK ORDER
-        </h1>
-        <p className="text-[13px] text-text-muted max-w-xl mx-auto px-4 uppercase tracking-[0.2em] font-medium">
-          Order #{order.orderNumber}
-        </p>
-      </section>
+      
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         <Link
