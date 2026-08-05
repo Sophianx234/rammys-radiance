@@ -47,7 +47,7 @@ export default function ProductClient({ product }: { product: IProduct }) {
     if (!product?._id) return;
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`/api/admin/products/reviews/${product._id}`);
+        const res = await fetch(`/api/products/reviews/${product._id}`);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
@@ -121,7 +121,7 @@ export default function ProductClient({ product }: { product: IProduct }) {
     if (!reviewComment.trim()) return;
     setIsSubmittingReview(true);
     try {
-      const res = await fetch(`/api/admin/products/reviews/${product._id}`, {
+      const res = await fetch(`/api/products/reviews/${product._id}`, {
         method: "POST",
         body: JSON.stringify({ rating: userRating, comment: reviewComment }),
         headers: { "Content-Type": "application/json" },
@@ -136,6 +136,9 @@ export default function ProductClient({ product }: { product: IProduct }) {
         setReviewComment("");
         const MySwal = withReactContent(Swal);
         MySwal.fire({ toast: true, position: "top-end", icon: "success", title: "Review submitted successfully!", showConfirmButton: false, timer: 2000, timerProgressBar: true });
+      } else {
+        const errorText = await res.text();
+        setReviewMessage({ type: 'error', text: `Failed to submit review: ${errorText}` });
       }
     } catch (err) {
       setReviewMessage({ type: 'error', text: 'Failed to submit review. Please try again.' });
