@@ -49,28 +49,17 @@ export function middleware(req: NextRequest) {
   // 2. API Protection
   if (isApi) {
     const isAdminApi = pathname.startsWith("/api/admin");
-    const isProductsApi = pathname.includes("/products");
-    const isCategoriesApi = pathname.includes("/categories");
-    const isCustomersApi = pathname.includes("/customers") || pathname.includes("/users"); 
-    const isOrdersApi = pathname.includes("/orders");
 
-    // DELETE requires ADMIN
-    if (method === "DELETE" && (isAdminApi || isProductsApi || isCategoriesApi || isCustomersApi || isOrdersApi)) {
-      if (normalizedRole !== "admin") {
-        return NextResponse.json({ error: "Forbidden. Admin access required to delete." }, { status: 403 });
+    if (isAdminApi) {
+      // DELETE requires ADMIN
+      if (method === "DELETE") {
+        if (normalizedRole !== "admin") {
+          return NextResponse.json({ error: "Forbidden. Admin access required to delete." }, { status: 403 });
+        }
       }
-    }
 
-    // POST/PUT/PATCH (Create/Edit) requires ADMIN or MANAGER
-    if (["POST", "PUT", "PATCH"].includes(method)) {
-      // Exceptions for users placing orders or updating cart (open to authenticated users)
-      if (isOrdersApi && !pathname.includes("/update-status")) {
-        // Allow creating orders
-      } 
-      else if (pathname.includes("/update-profile")) {
-        // Allow any authenticated user to update their own profile
-      }
-      else if (isAdminApi || isProductsApi || isCategoriesApi || isCustomersApi || (isOrdersApi && pathname.includes("/update-status"))) {
+      // POST/PUT/PATCH (Create/Edit) requires ADMIN or MANAGER
+      if (["POST", "PUT", "PATCH"].includes(method)) {
         if (!["admin", "manager"].includes(normalizedRole)) {
           return NextResponse.json({ error: "Forbidden. Create/Edit access required." }, { status: 403 });
         }
