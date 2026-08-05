@@ -9,15 +9,24 @@ export default function SupportPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    // If there's a hash in the URL, scroll to it
-    const hash = window.location.hash.replace("#", "");
-    if (hash && ["contact", "faq", "shipping"].includes(hash)) {
-      setActiveSection(hash);
-      const element = document.getElementById(hash);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash && ["contact", "faq", "shipping"].includes(hash)) {
+        setActiveSection(hash);
+        const element = document.getElementById(hash);
+        if (element) {
+          const y = element.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
       }
-    }
+    };
+
+    // Run on initial mount
+    handleHashChange();
+
+    // Listen for subsequent hash changes
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   const scrollTo = (id: string) => {

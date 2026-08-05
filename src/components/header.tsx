@@ -66,7 +66,7 @@ const navLinks = [
   },
   { 
     name: "CONTACT", 
-    href: "#",
+    href: "/support",
     megaMenu: [
       {
         title: "Support",
