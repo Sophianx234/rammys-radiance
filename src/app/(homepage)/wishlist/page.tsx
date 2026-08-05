@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useDashStore } from "@/lib/store";
 import { useState, useEffect } from "react";
+import { ProductCard } from "@/components/product-card";
 
 export default function WishlistPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -35,28 +36,7 @@ export default function WishlistPage() {
     return () => window.removeEventListener("wishlistUpdated", handleUpdate);
   }, []);
 
-  const removeFromWishlist = async (productId: string) => {
-    try {
-      // Optimistic update
-      setItems(items.filter((item) => item._id !== productId));
-      
-      const res = await fetch("/api/users/wishlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        window.dispatchEvent(new CustomEvent("wishlistUpdated", { detail: data.wishlist }));
-      } else {
-        // Revert on failure
-        fetchWishlist();
-      }
-    } catch (err) {
-      console.error("Failed to remove from wishlist", err);
-      fetchWishlist();
-    }
-  };
+
 
   return (
     <main className="min-h-screen bg-background">
@@ -69,44 +49,9 @@ export default function WishlistPage() {
             <p className="text-muted-foreground">Loading your wishlist...</p>
           </div>
         ) : items?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {items.map((item) => (
-              <div
-                key={item._id}
-                className="bg-card border border-border overflow-hidden flex flex-col group relative"
-              >
-                <div className="relative aspect-[4/5] bg-[#F8F9FA] overflow-hidden flex items-center justify-center">
-                  <Image
-                    src={item.images?.[0] || "/placeholder.svg"}
-                    alt={item.name}
-                    fill
-                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <button
-                    onClick={() => removeFromWishlist(item._id)}
-                    className="absolute top-3 right-3 z-30 p-2 bg-white/80 backdrop-blur rounded-full hover:bg-white transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </button>
-                </div>
-                <div className="p-4 flex flex-col flex-1 items-center text-center">
-                  <h3 className="font-semibold text-sm mb-1 text-text-main group-hover:text-[#5B7763] transition-colors line-clamp-1">
-                    {item.name}
-                  </h3>
-                  <p className="text-xs font-semibold mb-4 text-text-main">
-                    ₵{(item.price || 0).toLocaleString()}
-                  </p>
-                  <Link href={`/product/${item.slug || item._id}`} className="mt-auto w-full">
-                    <Button
-                      variant="outline"
-                      className="w-full text-xs h-9 uppercase tracking-widest border-border hover:bg-[#5B7763] hover:text-white transition-colors"
-                    >
-                      <ShoppingCart className="w-3.5 h-3.5 mr-2" />
-                      View Product
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+              <ProductCard key={item._id} product={item} />
             ))}
           </div>
         ) : (
