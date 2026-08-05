@@ -11,6 +11,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
   const { slug } = await props.params;
   
   let data = null;
+  let similarProducts = [];
 
   try {
     await connectToDatabase();
@@ -24,6 +25,13 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
     
     if (product) {
       data = JSON.parse(JSON.stringify(product));
+      
+      const related = await Product.find({
+        category: product.category?._id || product.category,
+        _id: { $ne: product._id }
+      }).limit(4).lean();
+      
+      similarProducts = JSON.parse(JSON.stringify(related));
     }
   } catch (err) {
     console.error("Failed to fetch product from DB", err);
@@ -38,5 +46,5 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
     );
   }
 
-  return <ProductClient key={data._id} product={data as any} />;
+  return <ProductClient key={data._id} product={data as any} similarProducts={similarProducts as any} />;
 }

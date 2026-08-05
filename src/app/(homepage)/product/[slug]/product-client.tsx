@@ -10,8 +10,9 @@ import { useDashStore } from "@/lib/store";
 import ProductImageSlider from "./product-images-slider";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
+import { ProductCard } from "@/components/product-card";
 
-export default function ProductClient({ product }: { product: IProduct }) {
+export default function ProductClient({ product, similarProducts = [] }: { product: IProduct, similarProducts?: IProduct[] }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -371,6 +372,23 @@ export default function ProductClient({ product }: { product: IProduct }) {
           </div>
         </div>
       </section>
+
+      {/* Similar Products */}
+      {similarProducts && similarProducts.length > 0 && (
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-12 mt-32 border-t border-border/40 pt-20">
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-2xl font-medium tracking-tight">You May Also Like</h2>
+            <Link href="/shop" className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] hover:text-black transition-colors flex items-center gap-2">
+              View All <span className="text-lg leading-none">→</span>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {similarProducts.map(p => (
+              <ProductCard key={p._id} product={p as any} />
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
