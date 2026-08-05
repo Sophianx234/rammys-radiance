@@ -1,34 +1,23 @@
-import { toKey } from "@/lib/utils";
-import { OrderStatus } from "@/models/Order";
 import { AlertTriangle, CheckCircle2, Clock, Home, Navigation, Package, PackageCheck, Truck, TruckIcon, XCircle } from "lucide-react";
 
 interface TrackOrderCardProps {
   status: 'completed' | 'current' | 'upcoming'
-  title: OrderStatus
-  date: string
+  title: string
+  iconKey?: string
+  date?: string
   location?: string
-  description: string
-  nextStatus?: 'completed' | 'current' | 'upcoming'
+  description?: string
+  nextStatus?: 'completed' | 'current' | 'upcoming' | null
 }
 
 const getStatusIcon = (key: string) => {
   switch (key) {
     case "processing":
       return <Clock className="w-6 h-6" />;
-    case "ready_for_pickup":
-      return <Package className="w-6 h-6" />;
-    case "packed":
-      return <PackageCheck className="w-6 h-6" />;
-    case "ready_for_dispatch":
-      return <TruckIcon className="w-6 h-6" />;
-    case "dispatched":
-      return <Truck className="w-6 h-6" />;
     case "in_transit":
-      return <Navigation className="w-6 h-6" />;
+      return <Truck className="w-6 h-6" />;
     case "arrived":
       return <Home className="w-6 h-6" />;
-    case "delivery_attempted":
-      return <AlertTriangle className="w-6 h-6" />;
     case "delivered":
       return <CheckCircle2 className="w-6 h-6" />;
     case "cancelled":
@@ -38,9 +27,7 @@ const getStatusIcon = (key: string) => {
   }
 };
 
-
-export default function TrackOrderCard({ status, date, location, description,title,nextStatus }: TrackOrderCardProps) {
-  console.log("Rendering TrackOrderCard with status:", { status, title }, nextStatus);
+export default function TrackOrderCard({ status, date, location, description, title, nextStatus, iconKey }: TrackOrderCardProps) {
   
   return (
     <div className="flex gap-6 relative pb-10 last:pb-0">
@@ -61,7 +48,7 @@ export default function TrackOrderCard({ status, date, location, description,tit
             }
           `}
         >
-          {getStatusIcon(toKey(title))}
+          {getStatusIcon(iconKey || title.toLowerCase())}
         </div>
       </div>
 
