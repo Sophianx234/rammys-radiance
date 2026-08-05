@@ -239,6 +239,7 @@ export default function ProductClient({ product }: { product: IProduct }) {
               </div>
 
               {/* Wishlist */}
+              
               <div className="flex items-center gap-4">
                 <button 
                   onClick={handleWishlist} 

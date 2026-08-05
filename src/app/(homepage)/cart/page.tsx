@@ -160,8 +160,9 @@ export default function CartPage() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center text-text-muted hover:bg-[#5B7763] hover:text-white transition-colors"
+                            onClick={() => updateQuantity(item._id, Math.min(item.stock || 1, item.quantity + 1))}
+                            disabled={item.quantity >= (item.stock || 1)}
+                            className="w-8 h-8 flex items-center justify-center text-text-muted hover:bg-[#5B7763] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-text-muted"
                           >
                             +
                           </button>
