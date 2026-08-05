@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ProductCard } from "@/components/product-card";
 
 
 const navLinks = [
@@ -526,33 +527,9 @@ export default function Header() {
                       ) : (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                           {searchResults.map((product) => (
-                            <Link 
-                              href={`/product/${product.slug}`} 
-                              key={product._id} 
-                              onClick={() => setIsSearchOpen(false)}
-                              className="group block"
-                            >
-                              <div className="relative aspect-square w-full bg-surface mb-3 overflow-hidden">
-                                <Image 
-                                  src={product.images[0]} 
-                                  alt={product.name}
-                                  fill
-                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                  sizes="(max-width: 768px) 50vw, 25vw"
-                                />
-                              </div>
-                              <h4 className="text-[12px] font-bold text-[#222222] truncate">{product.name}</h4>
-                              <p className="text-[12px] text-text-muted mt-1">
-                                {product.discountPrice && product.discountPrice > 0 ? (
-                                  <>
-                                    <span className="line-through mr-2 text-border/80">${product.price.toFixed(2)}</span>
-                                    <span className="text-[#5B7763]">${product.discountPrice.toFixed(2)}</span>
-                                  </>
-                                ) : (
-                                  <span>${product.price.toFixed(2)}</span>
-                                )}
-                              </p>
-                            </Link>
+                            <div key={product._id} onClick={() => setIsSearchOpen(false)}>
+                              <ProductCard product={product} />
+                            </div>
                           ))}
                         </div>
                       )}
