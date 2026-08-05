@@ -6,14 +6,30 @@ import { useState, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
 import { GridLoader } from 'react-spinners';
 import Image from "next/image";
+import { ProductCard } from "@/components/product-card";
 
 export default function CartPage() {
   const { cart, removeItem, updateQuantity, cartTotal, clearCart } =
     useDashStore();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [suggestedProducts, setSuggestedProducts] = useState<any[]>([]);
 
   useEffect(() => {
     setIsLoaded(true);
+    
+    const fetchSuggested = async () => {
+      try {
+        const res = await fetch("/api/products?limit=4&sortBy=rating");
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestedProducts(data.products || data || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch suggested products", err);
+      }
+    };
+    
+    fetchSuggested();
   }, []);
 
   const handleRemoveCartItem = async (productId: string) => {
@@ -230,6 +246,23 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Suggested Products */}
+      {suggestedProducts && suggestedProducts.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 mt-32 border-t border-border/40 pt-20">
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-2xl font-medium tracking-tight">You May Also Like</h2>
+            <Link href="/shop" className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] hover:text-black transition-colors flex items-center gap-2">
+              Continue Shopping <span className="text-lg leading-none">→</span>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {suggestedProducts.map((p: any) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

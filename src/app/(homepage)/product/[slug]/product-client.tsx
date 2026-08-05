@@ -379,7 +379,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-2xl font-medium tracking-tight">You May Also Like</h2>
             <Link href="/shop" className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] hover:text-black transition-colors flex items-center gap-2">
-              View All <span className="text-lg leading-none">→</span>
+              View All 
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
