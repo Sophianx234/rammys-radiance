@@ -48,9 +48,9 @@ export default function Footer() {
               <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-main">Shop</h3>
               <ul className="space-y-4">
                 <li><Link href="/shop" className="text-[13px] text-text-muted hover:text-black transition-colors">All Products</Link></li>
-                <li><Link href="/shop/skincare" className="text-[13px] text-text-muted hover:text-black transition-colors">Skincare</Link></li>
-                <li><Link href="/shop/makeup" className="text-[13px] text-text-muted hover:text-black transition-colors">Makeup</Link></li>
-                <li><Link href="/shop/bestsellers" className="text-[13px] text-text-muted hover:text-black transition-colors">Bestsellers</Link></li>
+                <li><Link href="/shop?category=skincare" className="text-[13px] text-text-muted hover:text-black transition-colors">Skincare</Link></li>
+                <li><Link href="/shop?category=makeup" className="text-[13px] text-text-muted hover:text-black transition-colors">Makeup</Link></li>
+                <li><Link href="/shop?sortBy=rating" className="text-[13px] text-text-muted hover:text-black transition-colors">Bestsellers</Link></li>
               </ul>
             </div>
 
@@ -58,10 +58,10 @@ export default function Footer() {
             <div className="space-y-6">
               <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-main">Support</h3>
               <ul className="space-y-4">
-                <li><Link href="/faqs" className="text-[13px] text-text-muted hover:text-black transition-colors">FAQ</Link></li>
-                <li><Link href="/delivery" className="text-[13px] text-text-muted hover:text-black transition-colors">Delivery Options</Link></li>
-                <li><Link href="/returns" className="text-[13px] text-text-muted hover:text-black transition-colors">Returns & Exchanges</Link></li>
-                <li><Link href="/contact" className="text-[13px] text-text-muted hover:text-black transition-colors">Contact Us</Link></li>
+                <li><Link href="/support#faq" className="text-[13px] text-text-muted hover:text-black transition-colors">FAQ</Link></li>
+                <li><Link href="/support#shipping" className="text-[13px] text-text-muted hover:text-black transition-colors">Delivery Options</Link></li>
+                <li><Link href="/support#shipping" className="text-[13px] text-text-muted hover:text-black transition-colors">Returns & Exchanges</Link></li>
+                <li><Link href="/support#contact" className="text-[13px] text-text-muted hover:text-black transition-colors">Contact Us</Link></li>
               </ul>
             </div>
 
@@ -69,8 +69,8 @@ export default function Footer() {
             <div className="space-y-6">
               <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-main">Company</h3>
               <ul className="space-y-4">
-                <li><Link href="/about" className="text-[13px] text-text-muted hover:text-black transition-colors">Our Story</Link></li>
-                <li><Link href="/careers" className="text-[13px] text-text-muted hover:text-black transition-colors">Careers</Link></li>
+                <li><Link href="/corporate" className="text-[13px] text-text-muted hover:text-black transition-colors">Corporate Hub</Link></li>
+                <li><Link href="/corporate#careers" className="text-[13px] text-text-muted hover:text-black transition-colors">Careers</Link></li>
                 <li><Link href="/privacy" className="text-[13px] text-text-muted hover:text-black transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="text-[13px] text-text-muted hover:text-black transition-colors">Terms of Service</Link></li>
               </ul>
