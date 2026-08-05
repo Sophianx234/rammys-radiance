@@ -21,8 +21,8 @@ export default function CartPage() {
       try {
         const res = await fetch("/api/products?limit=4&sortBy=rating");
         if (res.ok) {
-          const data = await res.json();
-          setSuggestedProducts(data.products || data || []);
+          const resData = await res.json();
+          setSuggestedProducts(resData.data?.products || resData.products || []);
         }
       } catch (err) {
         console.error("Failed to fetch suggested products", err);
