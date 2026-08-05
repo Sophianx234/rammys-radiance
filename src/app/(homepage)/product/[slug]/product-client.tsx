@@ -90,8 +90,14 @@ export default function ProductClient({ product }: { product: IProduct }) {
       });
       if (!res.ok) {
         // revert on failure
-        console.error("Wishlist API failed:", res.status, await res.text());
+        const errorText = await res.text();
+        console.error("Wishlist API failed:", res.status, errorText);
         setIsFavorite(isFavorite => !isFavorite);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Failed to save to wishlist: ${errorText}`,
+        });
         return;
       }
       const data = await res.json();
@@ -99,10 +105,15 @@ export default function ProductClient({ product }: { product: IProduct }) {
       
       // Notify header to refetch from server
       window.dispatchEvent(new CustomEvent("wishlistUpdated", { detail: data.wishlist }));
-    } catch (err) {
+    } catch (err: any) {
       console.error("Wishlist failed:", err);
       // revert on failure
       setIsFavorite(isFavorite => !isFavorite);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err?.message || "An unexpected error occurred.",
+      });
     }
   };
 

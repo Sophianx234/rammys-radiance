@@ -3,6 +3,9 @@ import { connectToDatabase } from "@/lib/connectDB";
 import { User } from "@/models/User";
 import jwt from "jsonwebtoken";
 import { DecodedToken } from "@/lib/jwtConfig";
+import mongoose from "mongoose";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
@@ -32,6 +35,7 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const { productId } = await req.json();
+    if (!productId) return NextResponse.json({ message: "Product ID is required" }, { status: 400 });
     const token = req.cookies.get('token')?.value;
     if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
@@ -45,16 +49,19 @@ export async function POST(req: NextRequest) {
     const user = await User.findById((decoded as DecodedToken).userId);
     if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });
 
-    const mongoose = require("mongoose");
     const objId = new mongoose.Types.ObjectId(productId);
+    const currentWishlist = user.wishlist || [];
 
-    const alreadyInWishlist = user.wishlist.some((id: any) => id.toString() === productId.toString());
+    const alreadyInWishlist = currentWishlist.some((id: any) => id.toString() === productId.toString());
+    console.log(`[Wishlist POST] User: ${user._id}, Product: ${productId}, Already in wishlist: ${alreadyInWishlist}`);
     
     const updateOp = alreadyInWishlist 
       ? { $pull: { wishlist: objId } }
       : { $push: { wishlist: objId } };
       
     const updatedUser = await User.findByIdAndUpdate(user._id, updateOp, { new: true });
+
+    console.log(`[Wishlist POST] Updated array length: ${updatedUser?.wishlist.length}`);
 
     return NextResponse.json({
       message: "Wishlist updated",
