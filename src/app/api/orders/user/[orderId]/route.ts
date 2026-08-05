@@ -6,12 +6,12 @@ import { connectToDatabase } from "@/lib/connectDB";
 
 export async function GET(
   req: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
     await connectToDatabase();
 
-    const { orderId } = params;
+    const { orderId } = await params;
 
     const order = await Order.findById(orderId)
       .populate("items.product", "name images price")

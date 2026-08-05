@@ -4,10 +4,10 @@ import { User } from "@/models/User";
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/connectDB";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectToDatabase();
 
-  const { id } = params;
+  const { id } = await params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
   }
@@ -23,10 +23,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectToDatabase();
 
-  const { id } = params;
+  const { id } = await params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
   }

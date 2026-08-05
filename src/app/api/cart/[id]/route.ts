@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await connectToDatabase();
 
@@ -16,7 +16,7 @@ export async function DELETE(
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     const userId = (decoded as any).userId;
-    const productId = params.id;
+    const { id: productId } = await params;
 
     // Remove product from user's cart
     const updatedUser = await User.findByIdAndUpdate(

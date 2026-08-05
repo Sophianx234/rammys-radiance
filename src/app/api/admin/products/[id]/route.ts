@@ -4,11 +4,11 @@ import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
 
-    const { id } = params;
+    const { id } = await params;
     let product;
 
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
@@ -33,11 +33,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
-    const { id } = params;
+    const { id } = await params;
 
     await Product.findByIdAndDelete(id);
 
@@ -53,12 +53,12 @@ export async function DELETE(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
 
-    const { id } = params;
+    const { id } = await params;
     const formData = await req.formData();
 
     // ---------- BASIC FIELDS ----------
