@@ -264,7 +264,7 @@ export default function Header() {
               {user?.name ? (
                 <span className="text-[12px] font-medium tracking-wide sm:flex items-center hidden sm:block">
                   Hi, {user.name.split(" ")[0]} 
-                  <ChevronDown className="w-3.5 h-3.5 text-text-muted group-hover:text-[#5B7763] transition-all duration-300 group-hover:rotate-180 ml-1" strokeWidth={2} />
+                  <ChevronDown className={`w-3.5 h-3.5 text-text-muted group-hover:text-[#5B7763] transition-all duration-300 ml-1 ${isUserMenuOpen ? 'rotate-180' : ''}`} strokeWidth={2} />
                 </span>
               ) : <span className="text-[12px] font-medium tracking-wide hidden sm:block pt-1">Account</span>}
             </button>
