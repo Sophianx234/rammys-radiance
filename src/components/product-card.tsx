@@ -154,6 +154,15 @@ export function ProductCard({ product }: ProductCardProps) {
           ))}
           <span className="text-[10px] text-text-muted ml-1 font-medium">({product.reviewsCount || 0})</span>
         </div>
+
+        {/* Stock Quantity */}
+        <div className="text-[11px] font-bold tracking-wider uppercase mt-1">
+          {product.stock > 0 ? (
+            <span className="text-[#5B7763]">{product.stock} in stock</span>
+          ) : (
+            <span className="text-red-500">Out of stock</span>
+          )}
+        </div>
       </Link>
     </div>
   );
