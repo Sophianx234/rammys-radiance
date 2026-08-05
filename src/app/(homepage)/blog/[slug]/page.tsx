@@ -107,7 +107,12 @@ export default function BlogPost() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex-1 prose prose-lg prose-headings:font-bold prose-headings:text-[#222222] prose-p:text-[#444] prose-p:leading-relaxed max-w-none"
+          className="flex-1 max-w-none text-[#444] 
+            [&>h3]:text-2xl [&>h3]:md:text-3xl [&>h3]:font-bold [&>h3]:text-[#222222] [&>h3]:mt-12 [&>h3]:mb-4 [&>h3]:uppercase [&>h3]:tracking-wider
+            [&>p]:text-[15px] [&>p]:md:text-[17px] [&>p]:leading-loose [&>p]:mb-8
+            [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-8 [&>ul>li]:mb-2
+            [&>blockquote]:border-l-4 [&>blockquote]:border-[#5B7763] [&>blockquote]:pl-6 [&>blockquote]:italic [&>blockquote]:my-8 [&>blockquote]:text-lg
+          "
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
 
