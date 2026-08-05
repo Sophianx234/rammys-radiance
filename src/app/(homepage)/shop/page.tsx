@@ -131,15 +131,7 @@ fetchWishlist()
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
-      {/* Page Header */}
-      <section className="pt-20 pb-16 text-center border-b border-border/40 bg-white">
-        <h1 className="text-3xl md:text-5xl font-sans font-medium text-[#222222] tracking-tight mb-4">
-          SHOP ALL
-        </h1>
-        <p className="text-[13px] text-text-muted max-w-xl mx-auto px-4 uppercase tracking-[0.2em] font-medium">
-          Elevate your daily ritual with our curated essentials
-        </p>
-      </section>
+     
 
       {/* Main Content */}
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-16">
