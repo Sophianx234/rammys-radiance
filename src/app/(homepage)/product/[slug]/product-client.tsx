@@ -219,7 +219,11 @@ export default function ProductClient({ product }: { product: IProduct }) {
                     <Minus size={14} />
                   </button>
                   <span className="flex-1 text-center text-[13px] font-semibold">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-full flex items-center justify-center text-text-muted hover:text-black transition-colors">
+                  <button 
+                    onClick={() => setQuantity(Math.min(product.stock || 1, quantity + 1))} 
+                    disabled={quantity >= (product.stock || 1)}
+                    className="w-12 h-full flex items-center justify-center text-text-muted hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
                     <Plus size={14} />
                   </button>
                 </div>
@@ -227,8 +231,8 @@ export default function ProductClient({ product }: { product: IProduct }) {
                 {/* Add to Cart Button */}
                 <Button 
                   onClick={handleAddToCart} 
-                  disabled={product.inStock === false} 
-                  className="flex-1 w-full h-14 rounded-none bg-black hover:bg-black/80 text-white text-[12px] font-bold uppercase tracking-[0.2em] transition-colors"
+                  disabled={product.inStock === false || (product.stock !== undefined && product.stock < 1)} 
+                  className="flex-1 w-full h-14 rounded-none bg-black hover:bg-black/80 text-white text-[12px] font-bold uppercase tracking-[0.2em] transition-colors disabled:opacity-50"
                 >
                   {addedToCart ? "Added To Cart" : "Add To Bag"}
                 </Button>
@@ -236,9 +240,14 @@ export default function ProductClient({ product }: { product: IProduct }) {
 
               {/* Wishlist */}
               <div className="flex items-center gap-4">
-                <button onClick={handleWishlist} className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted hover:text-black transition-colors">
+                <button 
+                  onClick={handleWishlist} 
+                  disabled={!user}
+                  className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={!user ? "Please login to save to wishlist" : ""}
+                >
                   <Heart size={14} className={isFavorite ? "fill-[#5B7763] text-[#5B7763]" : ""} />
-                  {isFavorite ? "Saved to Wishlist" : "Save to Wishlist"}
+                  {isFavorite ? "Saved to Wishlist" : (!user ? "Login to Save" : "Save to Wishlist")}
                 </button>
               </div>
             </div>
@@ -276,36 +285,54 @@ export default function ProductClient({ product }: { product: IProduct }) {
               {/* Form */}
               <div className="bg-surface p-8 mb-12">
                 <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-6">Write a Review</h4>
-                <div className="flex items-center gap-1.5 mb-6">
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <Star
-                      key={value}
-                      size={20}
-                      onClick={() => setUserRating(value)}
-                      onMouseEnter={() => setHoverRating(value)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      className={`cursor-pointer transition-colors ${value <= finalRating ? "fill-[#5B7763] text-[#5B7763]" : "text-border"}`}
+                
+                {!user ? (
+                  <div className="p-4 bg-muted/30 text-center">
+                    <p className="text-[13px] text-text-muted mb-4">Please log in to share your experience with this product.</p>
+                    <Link href="/login">
+                      <Button variant="outline" className="text-[11px] font-bold uppercase tracking-widest border-border hover:bg-black hover:text-white">
+                        Login to Review
+                      </Button>
+                    </Link>
+                  </div>
+                ) : reviews.some((r: any) => r.user?._id === user?._id || r.user === user?._id) ? (
+                  <div className="p-4 bg-[#5B7763]/10 text-center border border-[#5B7763]/20">
+                    <p className="text-[13px] text-[#5B7763] font-medium">Thank you! You have already reviewed this product.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-1.5 mb-6">
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <Star
+                          key={value}
+                          size={20}
+                          onClick={() => setUserRating(value)}
+                          onMouseEnter={() => setHoverRating(value)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className={`cursor-pointer transition-colors ${value <= finalRating ? "fill-[#5B7763] text-[#5B7763]" : "text-border"}`}
+                        />
+                      ))}
+                    </div>
+                    <Textarea 
+                      placeholder="Share your experience..." 
+                      value={reviewComment} 
+                      onChange={(e) => setReviewComment(e.target.value)} 
+                      className="w-full bg-white border-border/60 rounded-none mb-4 resize-none h-24 focus:ring-black text-[13px] p-4"
                     />
-                  ))}
-                </div>
-                <Textarea 
-                  placeholder="Share your experience..." 
-                  value={reviewComment} 
-                  onChange={(e) => setReviewComment(e.target.value)} 
-                  className="w-full bg-white border-border/60 rounded-none mb-4 resize-none h-24 focus:ring-black text-[13px] p-4"
-                />
-                {reviewMessage && (
-                  <p className={`text-[12px] font-medium mb-4 ${reviewMessage.type === 'success' ? 'text-[#5B7763]' : 'text-red-500'}`}>
-                    {reviewMessage.text}
-                  </p>
+                    {reviewMessage && (
+                      <p className={`text-[12px] font-medium mb-4 ${reviewMessage.type === 'success' ? 'text-[#5B7763]' : 'text-red-500'}`}>
+                        {reviewMessage.text}
+                      </p>
+                    )}
+                    <Button 
+                      onClick={handleSubmitReview} 
+                      disabled={isSubmittingReview || !userRating || !reviewComment.trim()} 
+                      className="h-12 px-8 bg-black hover:bg-black/80 rounded-none text-white text-[11px] font-bold tracking-[0.2em] uppercase disabled:opacity-50"
+                    >
+                      {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                    </Button>
+                  </>
                 )}
-                <Button 
-                  onClick={handleSubmitReview} 
-                  disabled={isSubmittingReview} 
-                  className="h-12 px-8 bg-black hover:bg-black/80 rounded-none text-white text-[11px] font-bold tracking-[0.2em] uppercase"
-                >
-                  {isSubmittingReview ? "Submitting..." : "Submit Review"}
-                </Button>
               </div>
 
               {/* List */}
