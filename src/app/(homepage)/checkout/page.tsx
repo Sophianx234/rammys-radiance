@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { IOrder } from "@/models/Order";
 import Image from "next/image";
 import DeliveryMap from "@/components/delivery-map";
+import { usePaystackPayment } from "react-paystack";
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart, user } = useDashStore();
@@ -41,15 +42,7 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://js.paystack.co/v1/inline.js";
-    script.async = true;
-    script.onload = () => {
-      console.log("Paystack script loaded");
-    };
-    document.body.appendChild(script);
-  }, []);
+  // Paystack script is handled by react-paystack
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } } | React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -95,71 +88,66 @@ export default function CheckoutPage() {
     }
   };
 
+  const subtotal = cartTotal();
+  const delivery = cart.length > 0 ? 50 : 0;
+  const finalTotal = subtotal + delivery;
+
+  // Paystack Configuration using react-paystack
+  const paystackConfig = {
+    reference: `ORD-${Date.now()}`,
+    email: user?.email || "customer@example.com", // Fallback if user email is missing
+    amount: finalTotal * 100, // Paystack amount is in pesewas (1/100 of GHS)
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY as string,
+    currency: "GHS",
+    metadata: {
+      userId: user?._id,
+      custom_fields: [
+        {
+          display_name: "Customer Name",
+          variable_name: "customer_name",
+          value: formData.fullName,
+        },
+        {
+          display_name: "Phone Number",
+          variable_name: "phone_number",
+          value: formData.phone,
+        }
+      ],
+    },
+  };
+
+  const initializePayment = usePaystackPayment(paystackConfig);
+
+  const onSuccess = (paystackResponse: any) => {
+    localStorage.setItem(
+      "pendingOrder",
+      JSON.stringify({
+        userId: user?._id,
+        reference: paystackResponse.reference,
+        formData,
+        cart,
+        total: finalTotal,
+      })
+    );
+    router.push(`/checkout/verify?reference=${paystackResponse.reference}&totalAmount=${finalTotal}&items=${cart.length}`);
+  };
+
+  const onClose = () => {
+    setIsProcessing(false);
+    setError("Payment cancelled. Your order is not complete.");
+  };
+
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     setError("");
 
-    try {
-      const reference = `ORD-${Date.now()}`;
-
-      const initResponse = await fetch("/api/paystack/initialize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user?.email,
-          amount: finalTotal,
-          reference,
-        }),
-      });
-
-      const initData = await initResponse.json();
-
-      if (!initResponse.ok) {
-        throw new Error(initData.error || "Failed to initialize payment");
-      }
-
-      localStorage.setItem(
-        "pendingOrder",
-        JSON.stringify({
-          userId: user?._id,
-          reference,
-          formData,
-          cart,
-          total: finalTotal,
-        })
-      );
-
-      const paystack = (window as any).PaystackPop.setup({
-        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-        email: user?.email,
-        amount: finalTotal * 100,
-        ref: reference,
-        currency: "GHS",
-
-        callback: function (response: any) {
-          router.push(`/checkout/verify?reference=${response.reference}&totalAmount=${finalTotal}items=${cart.length}`);
-        },
-
-        onClose: function () {
-          setIsProcessing(false);
-          setError("Payment cancelled.");
-        }
-      });
-
-      paystack.openIframe();
-    } catch (err: any) {
-      console.error("[Payment Error]:", err);
-      setError(err.message || "Payment failed. Please try again.");
-      setIsProcessing(false);
-    }
+    // Initialize Paystack hook wrapper
+    initializePayment({
+      onSuccess,
+      onClose
+    } as any);
   };
-
-  const subtotal = cartTotal();
-  const delivery = cart.length > 0 ? 50 : 0;
-  const finalTotal = subtotal + delivery;
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
