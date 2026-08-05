@@ -45,11 +45,14 @@ export async function POST(req: NextRequest) {
     const user = await User.findById((decoded as DecodedToken).userId);
     if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });
 
+    const mongoose = require("mongoose");
+    const objId = new mongoose.Types.ObjectId(productId);
+
     const alreadyInWishlist = user.wishlist.some((id: any) => id.toString() === productId.toString());
     if (alreadyInWishlist) {
-      user.wishlist.pull(productId);
+      user.wishlist.pull(objId);
     } else {
-      user.wishlist.push(productId);
+      user.wishlist.push(objId);
     }
 
     await user.save();
