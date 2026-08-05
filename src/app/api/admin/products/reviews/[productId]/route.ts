@@ -10,11 +10,11 @@ import { reviewThankYouEmail } from "@/lib/email-templates";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   await connectToDatabase();
 
-  const { productId } = params;
+  const { productId } = await params;
 
   // Validate productId
   if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -38,7 +38,7 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
     await connectToDatabase();
@@ -66,9 +66,11 @@ export async function POST(
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
+    const { productId } = await params;
+
     const existingReview = await Review.findOne({
       user: userId,
-      product: params.productId,
+      product: productId,
       createdAt: { $gte: oneYearAgo }, // reviews in the last year
     });
 
@@ -82,7 +84,7 @@ export async function POST(
     // ✅ Create review
     const review = await Review.create({
       user: userId,
-      product: params.productId,
+      product: productId,
       rating,
       comment,
     });
