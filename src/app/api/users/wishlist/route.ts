@@ -20,10 +20,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Invalid token", wishlist: [] }, { status: 401 });
     }
 
-    const user = await User.findById((decoded as DecodedToken).userId);
+    const user = await User.findById((decoded as DecodedToken).userId).populate("wishlist");
     if (!user) return NextResponse.json({ message: "User not found", wishlist: [] }, { status: 404 });
 
-    return NextResponse.json({ wishlist: user.wishlist });
+    const wishlistIds = user.wishlist.map((item: any) => item._id ? item._id.toString() : item.toString());
+
+    return NextResponse.json({ 
+      wishlist: wishlistIds,
+      wishlistProducts: user.wishlist 
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: "Server error", wishlist: [] }, { status: 500 });
