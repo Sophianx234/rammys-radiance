@@ -43,36 +43,52 @@ export default function TrackOrderCard({ status, date, location, description,tit
   console.log("Rendering TrackOrderCard with status:", { status, title }, nextStatus);
   
   return (
-    <div className="flex gap-4 pb-8 relative">
-      <div className="flex flex-col items-center">
-       <div
-  className={`w-12 h-12 rounded-full flex items-center justify-center mb-4
-    ${
-      status === "completed"
-        ? "bg-green-500/20"
-        : status === "current"
-        ? "bg-blue-500/30"
-        : "bg-yellow-500/20" // upcoming
-    }
-  `}
->
-          <span className="text-xl">{getStatusIcon(toKey(title))}</span>
+    <div className="flex gap-6 relative pb-10 last:pb-0">
+      {/* Timeline Line */}
+      <div className="absolute left-6 top-12 bottom-0 w-[1px] bg-border/50" 
+           style={{ display: nextStatus ? 'block' : 'none' }} />
+      
+      {/* Icon Node */}
+      <div className="relative z-10 flex flex-col items-center">
+        <div
+          className={`w-12 h-12 flex items-center justify-center border
+            ${
+              status === "completed"
+                ? "bg-[#5B7763] text-white border-[#5B7763]"
+                : status === "current"
+                ? "bg-white text-[#5B7763] border-[#5B7763]"
+                : "bg-zinc-50 text-zinc-300 border-border/40" // upcoming
+            }
+          `}
+        >
+          {getStatusIcon(toKey(title))}
         </div>
-        <div className={`w-1 h-16 ${nextStatus ==='upcoming'?"bg-border":nextStatus==='completed'?'bg-green-500/40':'hidden'} `} />
       </div>
 
-      <div className="pt-2 pb-4">
-        <p className="font-semibold capitalize">{status === 'completed' || status === 'current' ? title:status}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-        {location && <p className="text-xs text-muted-foreground mt-2">{location}</p>}
-        {date?<p className="text-xs text-muted-foreground mt-2">
-          
-          {new Date(date).toLocaleDateString()} at{" "}
-          {new Date(date).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>:<p className="text-xs text-muted-foreground mt-2">Waiting for confirmation</p>}
+      {/* Content */}
+      <div className="pt-2">
+        <p className={`text-[12px] font-bold uppercase tracking-widest ${status === 'upcoming' ? 'text-zinc-400' : 'text-[#222222]'}`}>
+          {status === 'completed' || status === 'current' ? title : status}
+        </p>
+        
+        {description && (
+          <p className="text-[13px] text-text-muted mt-1">{description}</p>
+        )}
+        
+        {location && (
+          <p className="text-[11px] text-text-muted mt-2 flex items-center gap-1 uppercase tracking-wider">
+            <span className="w-1 h-1 bg-[#5B7763] rounded-full inline-block" /> {location}
+          </p>
+        )}
+        
+        {date ? (
+          <p className="text-[11px] text-text-muted mt-2 font-medium">
+            {new Date(date).toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' })} • {" "}
+            {new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </p>
+        ) : (
+          <p className="text-[11px] text-zinc-400 mt-2 uppercase tracking-wider">Pending</p>
+        )}
       </div>
     </div>
   )

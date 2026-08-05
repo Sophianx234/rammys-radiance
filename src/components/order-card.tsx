@@ -44,12 +44,12 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "processing": return <Package className="w-4 h-4 text-yellow-600" />;
-      case "in_transit": return <Truck className="w-4 h-4 text-blue-600" />;
-      case "arrived": return <CheckCircle className="w-4 h-4 text-[#5B7763]" />;
-      case "delivered": return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case "cancelled": return <XCircle className="w-4 h-4 text-red-600" />;
-      default: return <Package className="w-4 h-4 text-text-muted" />;
+      case "processing": return <Package className="w-4 h-4 " />;
+      case "in_transit": return <Truck className="w-4 h-4 " />;
+      case "arrived": return <CheckCircle className="w-4 h-4 " />;
+      case "delivered": return <CheckCircle className="w-4 h-4 " />;
+      case "cancelled": return <XCircle className="w-4 h-4 " />;
+      default: return <Package className="w-4 h-4 " />;
     }
   };
 
