@@ -101,16 +101,40 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/products?search=${encodeURIComponent(searchQuery.trim())}&limit=8`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data.data?.products || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch search results", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery("");
       setIsSearchOpen(false);
     }
   };
@@ -447,6 +471,7 @@ export default function Header() {
         )}
       </AnimatePresence>
       {mounted && createPortal(
+        /* search container */
         <AnimatePresence>
           {isSearchOpen && (
             <motion.div
@@ -480,22 +505,74 @@ export default function Header() {
 
               <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
                 <div className="max-w-4xl mx-auto">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] mb-6">Popular Searches</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {["Skincare", "Combo", "Serum", "Moisturizer", "Cleanser"].map((term) => (
-                      <button 
-                        key={term}
-                        onClick={() => {
-                          setSearchQuery(term);
-                          router.push(`/shop?search=${encodeURIComponent(term)}`);
-                          setIsSearchOpen(false);
-                        }}
-                        className="px-6 py-2 border border-border/60 text-[13px] font-medium text-text-muted hover:text-black hover:border-black transition-colors rounded-none"
-                      >
-                        {term}
-                      </button>
-                    ))}
-                  </div>
+                  {searchQuery.trim() ? (
+                    <div>
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763]">
+                          {isSearching ? "Searching..." : `Results for "${searchQuery}"`}
+                        </h3>
+                        {searchResults.length > 0 && !isSearching && (
+                          <button 
+                            onClick={handleSearchSubmit}
+                            className="text-[11px] font-bold uppercase tracking-widest text-[#222222] hover:text-[#5B7763] transition-colors"
+                          >
+                            View All Results &rarr;
+                          </button>
+                        )}
+                      </div>
+                      
+                      {!isSearching && searchResults.length === 0 ? (
+                        <p className="text-text-muted text-[13px]">No products found. Try a different search term.</p>
+                      ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                          {searchResults.map((product) => (
+                            <Link 
+                              href={`/product/${product.slug}`} 
+                              key={product._id} 
+                              onClick={() => setIsSearchOpen(false)}
+                              className="group block"
+                            >
+                              <div className="relative aspect-square w-full bg-surface mb-3 overflow-hidden">
+                                <Image 
+                                  src={product.images[0]} 
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                  sizes="(max-width: 768px) 50vw, 25vw"
+                                />
+                              </div>
+                              <h4 className="text-[12px] font-bold text-[#222222] truncate">{product.name}</h4>
+                              <p className="text-[12px] text-text-muted mt-1">
+                                {product.discountPrice && product.discountPrice > 0 ? (
+                                  <>
+                                    <span className="line-through mr-2 text-border/80">${product.price.toFixed(2)}</span>
+                                    <span className="text-[#5B7763]">${product.discountPrice.toFixed(2)}</span>
+                                  </>
+                                ) : (
+                                  <span>${product.price.toFixed(2)}</span>
+                                )}
+                              </p>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] mb-6">Popular Searches</h3>
+                      <div className="flex flex-wrap gap-3">
+                        {["Skincare", "Combo", "Serum", "Moisturizer", "Cleanser"].map((term) => (
+                          <button 
+                            key={term}
+                            onClick={() => setSearchQuery(term)}
+                            className="px-6 py-2 border border-border/60 text-[13px] font-medium text-text-muted hover:text-black hover:border-black transition-colors rounded-none"
+                          >
+                            {term}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
