@@ -306,45 +306,16 @@ export default function Header() {
         {/* Right: Icons */}
         <div className="flex items-center justify-end space-x-6 h-full flex-1">
           
-          {/* Search */}
-          <div className="relative flex items-center h-full">
-            <AnimatePresence>
-              {isSearchOpen && (
-                <motion.form
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 200, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  onSubmit={handleSearchSubmit}
-                  className="absolute right-8 overflow-hidden flex items-center"
-                >
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search products..."
-                    className="w-full bg-transparent border-b border-border/60 pb-1 text-[13px] focus:outline-none focus:border-[#5B7763] text-[#222222] placeholder:text-text-muted/50"
-                  />
-                </motion.form>
-              )}
-            </AnimatePresence>
-            <button 
-              onClick={() => {
-                if (isSearchOpen && searchQuery.trim()) {
-                  handleSearchSubmit({ preventDefault: () => {} } as React.FormEvent);
-                } else {
-                  setIsSearchOpen(!isSearchOpen);
-                  if (!isSearchOpen) {
-                    setTimeout(() => searchInputRef.current?.focus(), 100);
-                  }
-                }
-              }}
-              className="text-text-main hover:text-[#5B7763] transition-colors z-10 h-full flex items-center"
-            >
-              <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
-            </button>
-          </div>
+          {/* Search Button */}
+          <button 
+            onClick={() => {
+              setIsSearchOpen(true);
+              setTimeout(() => searchInputRef.current?.focus(), 100);
+            }}
+            className="text-text-main hover:text-[#5B7763] transition-colors z-10 h-full flex items-center"
+          >
+            <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
+          </button>
 
           <div className="relative flex items-center h-full" ref={userMenuRef}>
             {/* user button */}
@@ -467,6 +438,60 @@ export default function Header() {
               ))}
             </div>
           </motion.nav>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-md flex flex-col"
+          >
+            <div className="flex items-center justify-between px-6 lg:px-12 h-[100px] border-b border-border/40 bg-white">
+              <div className="flex-1 max-w-4xl mx-auto flex items-center relative">
+                <Search className="w-6 h-6 text-text-muted absolute left-0" strokeWidth={1.5} />
+                <form onSubmit={handleSearchSubmit} className="w-full">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search for products, categories..."
+                    className="w-full text-xl md:text-3xl bg-transparent border-none focus:outline-none pl-12 text-[#222222] placeholder:text-text-muted/40 font-medium tracking-tight"
+                  />
+                </form>
+              </div>
+              <button 
+                onClick={() => setIsSearchOpen(false)}
+                className="text-text-main hover:text-[#5B7763] transition-colors p-2 ml-4"
+              >
+                <X className="w-8 h-8" strokeWidth={1} />
+              </button>
+            </div>
+
+            <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
+              <div className="max-w-4xl mx-auto">
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] mb-6">Popular Searches</h3>
+                <div className="flex flex-wrap gap-3">
+                  {["Skincare", "Combo", "Serum", "Moisturizer", "Cleanser"].map((term) => (
+                    <button 
+                      key={term}
+                      onClick={() => {
+                        setSearchQuery(term);
+                        router.push(`/shop?search=${encodeURIComponent(term)}`);
+                        setIsSearchOpen(false);
+                      }}
+                      className="px-6 py-2 border border-border/60 text-[13px] text-text-muted hover:text-black hover:border-black transition-colors rounded-none"
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </header>
