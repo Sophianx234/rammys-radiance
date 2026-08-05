@@ -71,17 +71,17 @@ const navLinks = [
       {
         title: "Support",
         items: [
-          { name: "Customer Service", href: "#" },
-          { name: "FAQs", href: "#" },
-          { name: "Shipping & Returns", href: "#" },
+          { name: "Customer Service", href: "/support#contact" },
+          { name: "FAQs", href: "/support#faq" },
+          { name: "Shipping & Returns", href: "/support#shipping" },
         ]
       },
       {
         title: "Business",
         items: [
-          { name: "Wholesale Inquiry", href: "#" },
-          { name: "Press & Media", href: "#" },
-          { name: "Careers", href: "#" },
+          { name: "Wholesale Inquiry", href: "/corporate#wholesale" },
+          { name: "Press & Media", href: "/corporate#press" },
+          { name: "Careers", href: "/corporate#careers" },
         ]
       }
     ],
