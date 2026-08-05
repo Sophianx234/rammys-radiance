@@ -14,35 +14,68 @@ export default function VerifyPage() {
 
   useEffect(() => {
     const verifyPayment = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlReference = urlParams.get("reference");
+      const urlTotal = urlParams.get("totalAmount");
+      const urlItems = urlParams.get("items");
+      
       const pendingOrder = localStorage.getItem("pendingOrder");
-      if (!pendingOrder) return;
 
-      const orderData = JSON.parse(pendingOrder as string);
-      try {
-        const verifyResponse = await fetch(`/api/paystack/verify?reference=${orderData.reference}`);
-        const verifyData = await verifyResponse.json();
-
-        if (verifyResponse.ok && verifyData.status === "success") {
-          const order = await fetch("/api/orders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderData),
-          });
-          if (order.ok) {
-            const result = await order.json();
-            setOrderNumber(result?.order?.paymentReference || orderData.reference);
-            setPlacedOrder(result.order);
-          }
-
-          clearCart();
-          localStorage.removeItem("pendingOrder");
-        } else {
-          setError("Payment verification failed. Please contact support.");
-        }
-      } catch (e) {
-        setError("An error occurred during verification.");
-      } finally {
+      if (!pendingOrder && !urlReference) {
         setIsProcessing(false);
+        setError("No pending order found. Please return to checkout.");
+        return;
+      }
+
+      if (pendingOrder) {
+        const orderData = JSON.parse(pendingOrder as string);
+        try {
+          const verifyResponse = await fetch(`/api/paystack/verify?reference=${orderData.reference}`);
+          const verifyData = await verifyResponse.json();
+
+          if (verifyResponse.ok && verifyData.status === "success") {
+            const order = await fetch("/api/orders", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(orderData),
+            });
+            if (order.ok) {
+              const result = await order.json();
+              setOrderNumber(result?.order?.paymentReference || orderData.reference);
+              setPlacedOrder(result.order);
+            }
+
+            clearCart();
+            localStorage.removeItem("pendingOrder");
+          } else {
+            setError("Payment verification failed. Please contact support.");
+          }
+        } catch (e) {
+          setError("An error occurred during verification.");
+        } finally {
+          setIsProcessing(false);
+        }
+      } else if (urlReference) {
+        // Page was refreshed. Try to just verify Paystack transaction again to confirm,
+        // and reconstruct the display from URL params
+        try {
+          const verifyResponse = await fetch(`/api/paystack/verify?reference=${urlReference}`);
+          const verifyData = await verifyResponse.json();
+
+          if (verifyResponse.ok && verifyData.status === "success") {
+             setOrderNumber(urlReference);
+             setPlacedOrder({
+               items: Array.from({ length: Number(urlItems) || 1 }),
+               totalAmount: Number(urlTotal) || verifyData.data?.amount / 100 || 0
+             });
+          } else {
+            setError("Payment verification failed. Please contact support.");
+          }
+        } catch (e) {
+          setError("An error occurred during verification.");
+        } finally {
+          setIsProcessing(false);
+        }
       }
     };
 
