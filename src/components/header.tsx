@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, User, Star, ShoppingBag, ChevronDown, Menu, X, Package, LogOut, Settings, LogIn } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -99,6 +100,11 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -440,60 +446,63 @@ export default function Header() {
           </motion.nav>
         )}
       </AnimatePresence>
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-md flex flex-col"
-          >
-            <div className="flex items-center justify-between px-6 lg:px-12 h-[100px] border-b border-border/40 bg-white">
-              <div className="flex-1 max-w-4xl mx-auto flex items-center relative">
-                <Search className="w-6 h-6 text-text-muted absolute left-0" strokeWidth={1.5} />
-                <form onSubmit={handleSearchSubmit} className="w-full">
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search for products, categories..."
-                    className="w-full text-xl md:text-3xl bg-transparent border-none focus:outline-none pl-12 text-[#222222] placeholder:text-text-muted/40 font-medium tracking-tight"
-                  />
-                </form>
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="fixed inset-0 z-[9999] bg-white/95 backdrop-blur-md flex flex-col"
+            >
+              <div className="flex items-center justify-between px-6 lg:px-12 h-[100px] border-b border-border/40 bg-white shadow-sm">
+                <div className="flex-1 max-w-4xl mx-auto flex items-center relative">
+                  <Search className="w-6 h-6 text-text-muted absolute left-0" strokeWidth={1.5} />
+                  <form onSubmit={handleSearchSubmit} className="w-full">
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search for products, categories..."
+                      className="w-full text-xl md:text-3xl bg-transparent border-none focus:outline-none pl-12 text-[#222222] placeholder:text-text-muted/40 font-medium tracking-tight"
+                    />
+                  </form>
+                </div>
+                <button 
+                  onClick={() => setIsSearchOpen(false)}
+                  className="text-text-main hover:text-[#5B7763] transition-colors p-2 ml-4 bg-gray-100 hover:bg-gray-200 rounded-full"
+                >
+                  <X className="w-6 h-6" strokeWidth={1.5} />
+                </button>
               </div>
-              <button 
-                onClick={() => setIsSearchOpen(false)}
-                className="text-text-main hover:text-[#5B7763] transition-colors p-2 ml-4"
-              >
-                <X className="w-8 h-8" strokeWidth={1} />
-              </button>
-            </div>
 
-            <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
-              <div className="max-w-4xl mx-auto">
-                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] mb-6">Popular Searches</h3>
-                <div className="flex flex-wrap gap-3">
-                  {["Skincare", "Combo", "Serum", "Moisturizer", "Cleanser"].map((term) => (
-                    <button 
-                      key={term}
-                      onClick={() => {
-                        setSearchQuery(term);
-                        router.push(`/shop?search=${encodeURIComponent(term)}`);
-                        setIsSearchOpen(false);
-                      }}
-                      className="px-6 py-2 border border-border/60 text-[13px] text-text-muted hover:text-black hover:border-black transition-colors rounded-none"
-                    >
-                      {term}
-                    </button>
-                  ))}
+              <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
+                <div className="max-w-4xl mx-auto">
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] mb-6">Popular Searches</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {["Skincare", "Combo", "Serum", "Moisturizer", "Cleanser"].map((term) => (
+                      <button 
+                        key={term}
+                        onClick={() => {
+                          setSearchQuery(term);
+                          router.push(`/shop?search=${encodeURIComponent(term)}`);
+                          setIsSearchOpen(false);
+                        }}
+                        className="px-6 py-2 border border-border/60 text-[13px] font-medium text-text-muted hover:text-black hover:border-black transition-colors rounded-none"
+                      >
+                        {term}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </header>
   );
 }
