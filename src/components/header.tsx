@@ -30,9 +30,10 @@ const navLinks = [
       {
         title: "Featured",
         items: [
-          { name: "Bestsellers", href: "/shop/bestsellers" },
-          { name: "The Glow Routine", href: "/routine/glow" },
-          { name: "Autumn Edit", href: "/collection/autumn" },
+          { name: "Bestsellers", href: "/shop?sortBy=rating" },
+          { name: "Latest Products", href: "/shop?sortBy=newest" },
+          { name: "Combo Package", href: "/shop?search=combo" },
+          { name: "Discounted Products", href: "/shop?discounted=true" },
         ]
       }
     ],

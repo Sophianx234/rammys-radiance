@@ -36,6 +36,12 @@ export async function GET(request: NextRequest) {
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
     }
 
+    // Discounted filter
+    const discounted = searchParams.get("discounted");
+    if (discounted === "true") {
+      filter.discountPrice = { $exists: true, $ne: null };
+    }
+
     // Search filter
     if (search) {
       filter.$or = [

@@ -46,6 +46,8 @@ export function ShopPageContent() {
   const selectedCategory = searchParams.get("category");
   const sortBy = searchParams.get("sortBy") || "featured";
   const priceRange = searchParams.get("priceRange");
+  const discounted = searchParams.get("discounted");
+  const search = searchParams.get("search");
   const page = parseInt(searchParams.get("page") || "1");
 
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ export function ShopPageContent() {
   // Fetch products when URL filters change
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, sortBy, priceRange, page]);
+  }, [selectedCategory, sortBy, priceRange, discounted, search, page]);
 
   useEffect(() => {
   const fetchCategories = async () => {
@@ -102,6 +104,16 @@ export function ShopPageContent() {
         const [min, max] = priceRange.split("-");
         if (min) params.append("minPrice", min);
         if (max) params.append("maxPrice", max);
+      }
+
+      const discounted = searchParams.get("discounted");
+      if (discounted === "true") {
+        params.append("discounted", "true");
+      }
+      
+      const search = searchParams.get("search");
+      if (search) {
+        params.append("search", search);
       }
 
       const res = await fetch(`/api/products?${params}`);
