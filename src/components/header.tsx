@@ -172,6 +172,47 @@ export default function Header() {
     }
   };
 
+  const [categories, setCategories] = useState<{name: string, _id: string}[]>([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/admin/categories");
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories");
+      }
+    }
+    fetchCategories();
+  }, []);
+
+  const dynamicNavLinks = navLinks.map(link => {
+    if (link.name === "SHOP" && categories.length > 0) {
+      return {
+        ...link,
+        megaMenu: link.megaMenu?.map(col => {
+          if (col.title === "Category") {
+            return {
+              ...col,
+              items: [
+                { name: "All Products", href: "/shop" },
+                ...categories.map(cat => ({
+                  name: cat.name,
+                  href: `/shop?category=${cat._id}` // We pass _id since shop page expects category _id (if we update it later)
+                }))
+              ]
+            }
+          }
+          return col;
+        })
+      };
+    }
+    return link;
+  });
+
   return (
     <header className="sticky top-0 z-50 w-full flex flex-col bg-surface border-b border-border/40">
       <div className="bg-[#5B7763] text-white text-xs sm:text-[13px] tracking-wide text-center py-2.5 px-4 w-full font-medium">
@@ -181,7 +222,7 @@ export default function Header() {
       <div className="w-full px-6 lg:px-12 flex items-center justify-between h-[80px]">
         
         <nav className="hidden lg:flex items-center space-x-8 h-full flex-1">
-          {navLinks.map((link) => (
+          {dynamicNavLinks.map((link) => (
             <div key={link.name} className="relative group flex items-center h-full">
               <Link 
                 href={link.href} 
@@ -193,7 +234,7 @@ export default function Header() {
                 )}
               </Link>
 
-              {/* Mega Menu (used for all dropdowns now) */}
+              {/* Mega Menu */}
               {link.megaMenu && (
                 <div className="absolute top-16 left-[-20px] pt-4 w-[600px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                   <div className="relative bg-white border border-border/40 shadow-md flex p-8 gap-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">

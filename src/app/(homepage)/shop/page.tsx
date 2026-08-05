@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, ChevronDown, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useDashStore } from "@/lib/store";
 import { ProductCard } from "@/components/product-card";
 import { GridLoader } from "react-spinners";
@@ -31,11 +32,16 @@ interface Category {
   productCount: number;
 }
 
-export default function ShopPage() {
+import { Suspense } from "react";
+
+export function ShopPageContent() {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category");
+
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
   const [sortBy, setSortBy] = useState("featured");
   const [priceRange, setPriceRange] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,8 +49,11 @@ export default function ShopPage() {
   const {user} = useDashStore()
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch categories on mount
-
+  // Sync state if URL changes
+  useEffect(() => {
+    const queryCat = searchParams.get("category");
+    setSelectedCategory(queryCat);
+  }, [searchParams]);
 
   // Fetch products when filters change
   useEffect(() => {
@@ -309,4 +318,4 @@ fetchWishlist()
       </div>
     </main>
   );
-}
+}export default function ShopPage() { return ( <Suspense fallback={<div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><GridLoader color="#5B7763" /></div>}><ShopPageContent /></Suspense> ); }
