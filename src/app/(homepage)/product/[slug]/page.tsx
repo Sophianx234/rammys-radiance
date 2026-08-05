@@ -2,21 +2,31 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ProductClient from "./product-client";
 
+import { connectToDatabase } from "@/lib/connectDB";
+import { Product } from "@/models/Product";
+import { Category } from "@/models/Category";
+import mongoose from "mongoose";
+
 export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   
   let data = null;
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/products/${slug}`,
-      { cache: "no-store" }
-    );
-    if (res.ok) {
-      data = await res.json();
+    await connectToDatabase();
+    
+    let product;
+    if (/^[0-9a-fA-F]{24}$/.test(slug)) {
+      product = await Product.findById(slug).populate("category").lean();
+    } else {
+      product = await Product.findOne({ slug }).populate("category").lean();
+    }
+    
+    if (product) {
+      data = JSON.parse(JSON.stringify(product));
     }
   } catch (err) {
-    console.error("Failed to fetch from API", err);
+    console.error("Failed to fetch product from DB", err);
   }
 
   if (!data) {
