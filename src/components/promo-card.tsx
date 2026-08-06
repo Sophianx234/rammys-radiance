@@ -33,16 +33,11 @@ export function PromoCard({
           src={imageSrc}
           alt={title.replace('\n', ' ')}
           fill
-          className="object-cover object-center md:object-right transition-transform duration-700 group-hover:scale-105"
+          className="object-cover object-center md:object-right transition-transform duration-700 "
           sizes="(max-width: 768px) 100vw, 60vw"
         />
         {/* Gradient mask to blend the image seamlessly into the solid background on the left */}
-        <div 
-          className="absolute inset-0 w-full md:w-[75%] h-full pointer-events-none"
-          style={{
-            background: `linear-gradient(to right, ${bgHex} 45%, ${bgHex}CC 70%, transparent 100%)`
-          }}
-        />
+        
       </div>
 
       {/* Content */}
@@ -53,7 +48,7 @@ export function PromoCard({
           </p>
         )}
         
-        <h3 className="text-3xl sm:text-4xl font-medium text-text-main leading-[1.15] mb-3">
+        <h3 className="text-3xl sm:text-2xl font-medium text-text-main leading-[1.15] mb-3">
           {title.split('\n').map((line, i) => (
             <span key={i} className="block">{line}</span>
           ))}

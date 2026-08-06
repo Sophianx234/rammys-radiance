@@ -14,7 +14,7 @@ export default function PromoBannersSecondary() {
             title={"Intensive Glow C+\nSerum"}
             buttonText="Explore More"
             buttonLink="/collection/glow-c-serum"
-            imageSrc="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=1000"
+            imageSrc="/imgs/products/prod-8.jpeg"
             bgHex="#F7F7F7"
           />
 
@@ -24,7 +24,7 @@ export default function PromoBannersSecondary() {
             description="Makeup with extended range in colors for every human."
             buttonText="Explore More"
             buttonLink="/sale"
-            imageSrc="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=1000"
+            imageSrc="/imgs/products/prod-9.jpeg"
             bgHex="#B5CDB8"
           />
           

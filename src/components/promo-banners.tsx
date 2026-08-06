@@ -14,7 +14,7 @@ export default function PromoBanners() {
             title={"Discover Our\nAutumn Skincare"}
             buttonText="Explore More"
             buttonLink="/collection/autumn"
-            imageSrc="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&q=80&w=1200"
+            imageSrc="/imgs/products/lady-1.jpeg"
             bgHex="#F2F2F2"
             className="lg:col-span-3"
           />
@@ -25,7 +25,7 @@ export default function PromoBanners() {
             description="Makeup with extended range in colors for every human."
             buttonText="Shop Sale"
             buttonLink="/sale"
-            imageSrc="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=800"
+            imageSrc="/imgs/products/prod-7.jpeg"
             bgHex="#DFE5D4"
             className="lg:col-span-2"
           />
