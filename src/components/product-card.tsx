@@ -156,7 +156,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Stock Quantity */}
-        <div className="text-[11px] font-bold tracking-wider uppercase mt-1">
+        <div className="text-[11px] font-bold tracking-wider  mt-1">
           {product.stock > 0 ? (
             <span className="text-[#5B7763]">{product.stock} in stock</span>
           ) : (

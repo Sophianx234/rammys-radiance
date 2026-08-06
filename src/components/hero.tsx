@@ -5,27 +5,43 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 const slides = [
-  {
+   {
     id: 1,
     subtitle: "ESSENTIAL ITEMS",
     title: "Beauty Inspired\nby Real Life",
     description: "Made using clean, non-toxic ingredients, our products\nare designed for everyone.",
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=2000&auto=format&fit=crop",
+    image: "/imgs/products/prod-1.jpeg",
   },
   {
     id: 2,
     subtitle: "NEW ARRIVALS",
     title: "Glow From\nWithin",
     description: "Discover our new radiant serums, crafted with\nnature's finest botanicals.",
-    image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=2000&auto=format&fit=crop",
+    image: "/imgs/products/prod-3.jpeg",
   },
   {
     id: 3,
     subtitle: "BEST SELLERS",
     title: "Your Daily\nSkincare Ritual",
     description: "Elevate your routine with our award-winning\nhydration collection.",
-    image: "https://images.unsplash.com/photo-1615397323281-b6aeb63a9496?q=80&w=2000&auto=format&fit=crop",
+    image: "/imgs/products/prod-2.jpeg",
   },
+  
+  {
+   id: 4,
+   subtitle: "BEST SELLERS",
+   title: "Your Daily\nSkincare Ritual",
+   description: "Elevate your routine with our award-winning\nhydration collection.",
+   image: "/imgs/products/prod-5.jpeg",
+ },
+ 
+  {
+    id: 5,
+    subtitle: "BEST SELLERS",
+    title: "Your Daily\nSkincare Ritual",
+    description: "Elevate your routine with our award-winning\nhydration collection.",
+    image: "/imgs/products/prod-4.jpeg",
+  }, 
 ];
 
 export default function Hero() {
@@ -73,7 +89,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative w-full h-[calc(100dvh-120px)] min-h-[500px] overflow-hidden bg-[#F4F4F4]">
+    <section className={`relative w-full h-[calc(100dvh-120px)] min-h-[500px] overflow-hidden bg-[#F4F4F4]`}>
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={page}
@@ -89,7 +105,7 @@ export default function Hero() {
             <img
               src={slides[index].image}
               alt="Hero Background"
-              className="w-full h-full object-cover object-center lg:object-[80%_center]"
+              className={`w-full h-full object-cover max-lg:object-center md:[${index>2?'-object-position:100%_top':'object-position:100%_bottom'}]`}
             />
             {/* Subtle Gradient to ensure text readability against any image */}
             <div className="absolute inset-0 bg-gradient-to-r from-surface/90 via-surface/50 to-transparent md:w-2/3" />
