@@ -105,7 +105,7 @@ export default function Hero() {
             <img
               src={slides[index].image}
               alt="Hero Background"
-              className={`w-full h-full object-cover max-lg:object-center md:[${index>2?'-object-position:100%_top':'object-position:100%_bottom'}]`}
+              className={`w-full h-full object-cover max-lg:object-center ${index > 2 ? 'md:!-[object-position:100%_top]' : 'md:![object-position:100%_bottom]'}`}
             />
             {/* Subtle Gradient to ensure text readability against any image */}
             <div className="absolute inset-0 bg-gradient-to-r from-surface/90 via-surface/50 to-transparent md:w-2/3" />

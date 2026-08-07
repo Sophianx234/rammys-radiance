@@ -5,26 +5,26 @@ import { Star } from "lucide-react";
 export default function CustomerTestimonials() {
   const testimonials = [
     {
-      name: "Chioma A.",
-      location: "Lagos",
+      name: "Doreen B.",
+      location: "Accra",
       text: "Rammys Radiance is my go-to for authentic luxury makeup. The quality is unmatched and delivery is always prompt!",
       rating: 5,
     },
     {
-      name: "Zainab M.",
-      location: "Abuja",
+      name: "Michelin A.",
+      location: "Kumasi",
       text: "Finally found a trusted source for genuine premium cosmetics. The customer service is exceptional.",
       rating: 5,
     },
     {
-      name: "Temi O.",
-      location: "Port Harcourt",
+      name: "Prudence D.",
+      location: "Takoradi",
       text: "Love the curated collection and the attention to detail. Every product feels like a luxury investment.",
       rating: 5,
     },
     {
-      name: "Blessing K.",
-      location: "Ibadan",
+      name: "Santia M.",
+      location: "Tema",
       text: "Best shopping experience! Authentic products, beautiful packaging, and incredible support. Highly recommended!",
       rating: 5,
     },
