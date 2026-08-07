@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const { productId, quantity } = await req.json();
+    const body = await req.json();
 
     const token = req.cookies.get("token")?.value;
     // Get JWT from cookies
@@ -26,14 +26,28 @@ export async function POST(req: NextRequest) {
     if (!user)
       return NextResponse.json({ message: "User not found" }, { status: 404 });
 
-    const cartItem = user.cart.find(
-      (item) => item.product.toString() === productId
-    );
-
-    if (cartItem) {
-      cartItem.quantity = quantity;
+    if (Array.isArray(body)) {
+      for (const item of body) {
+        const cartItem = user.cart.find(
+          (c) => c.product.toString() === item.productId
+        );
+        if (cartItem) {
+          cartItem.quantity = item.quantity;
+        } else {
+          user.cart.push({ product: item.productId, quantity: item.quantity });
+        }
+      }
     } else {
-      user.cart.push({ product: productId, quantity });
+      const { productId, quantity } = body;
+      const cartItem = user.cart.find(
+        (item) => item.product.toString() === productId
+      );
+
+      if (cartItem) {
+        cartItem.quantity = quantity;
+      } else {
+        user.cart.push({ product: productId, quantity });
+      }
     }
 
     await user.save();

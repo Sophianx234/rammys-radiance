@@ -175,7 +175,7 @@ export default function Hero() {
               }}
               className={`rounded-full transition-all duration-300 flex items-center justify-center ${
                 isActive
-                  ? "w-[14px] h-[14px] border border-text-main bg-transparent"
+                  ? "w-[14px] h-[14px] border border-[#5B7763] bg-transparent"
                   : "w-[6px] h-[6px] bg-text-main hover:scale-125"
               }`}
               aria-label={`Go to slide ${idx + 1}`}

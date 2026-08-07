@@ -2,7 +2,7 @@
 import { useDashStore } from "@/lib/store";
 import { CheckCircle2, Package, MapPin, CalendarClock } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { GridLoader } from "react-spinners";
 
 export default function VerifyPage() {
@@ -11,8 +11,12 @@ export default function VerifyPage() {
   const [orderNumber, setOrderNumber] = useState<string>("");
   const [placedOrder, setPlacedOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasVerified = useRef(false);
 
   useEffect(() => {
+    if (hasVerified.current) return;
+    hasVerified.current = true;
+
     const verifyPayment = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const urlReference = urlParams.get("reference");
@@ -102,7 +106,7 @@ export default function VerifyPage() {
       <main className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center font-sans pb-24">
         <GridLoader size={18} color="#5B7763" />
         <h2 className="mt-8 text-[13px] font-bold uppercase tracking-[0.2em] text-[#222222]">
-          Verifying Secure Payment
+          Verifying  Payment
         </h2>
         <p className="mt-2 text-[11px] uppercase tracking-wider text-text-muted">
           Please do not close this window
@@ -128,16 +132,25 @@ export default function VerifyPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
-      <section className="pt-20 pb-16 text-center border-b border-border/40 bg-white">
-        <div className="flex justify-center mb-6">
-          <CheckCircle2 strokeWidth={1} className="w-16 h-16 text-[#5B7763]" />
+      {/* order confirmed header */}
+      <section className="relative pt-32 pb-24 text-center border-b border-border/40 overflow-hidden">
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-no-repeat"
+          style={{ backgroundImage: `url('/imgs/products/lady-2.jpeg')`, backgroundPosition: 'center 25%' }}
+        />
+        <div className="absolute inset-0 bg-black/50 z-0" />
+        
+        <div className="relative z-10 flex flex-col items-center justify-center">
+          <div className="flex justify-center mb-6">
+            <CheckCircle2 strokeWidth={1} className="w-16 h-16 text-white drop-shadow-md" />
+          </div>
+          <h1 className="text-3xl md:text-5xl font-sans font-medium text-white tracking-tight mb-4 drop-shadow-md">
+            ORDER CONFIRMED
+          </h1>
+          <p className="text-[13px] text-white/90 max-w-xl mx-auto px-4 uppercase tracking-[0.2em] font-medium drop-shadow-md">
+            Thank you for your purchase
+          </p>
         </div>
-        <h1 className="text-3xl md:text-5xl font-sans font-medium text-[#222222] tracking-tight mb-4">
-          ORDER CONFIRMED
-        </h1>
-        <p className="text-[13px] text-text-muted max-w-xl mx-auto px-4 uppercase tracking-[0.2em] font-medium">
-          Thank you for your purchase
-        </p>
       </section>
 
       <div className="max-w-3xl mx-auto px-6 py-16">
@@ -198,7 +211,7 @@ export default function VerifyPage() {
             </p>
             <Link 
               href="/orders" 
-              className="inline-flex items-center justify-center bg-black text-white px-8 py-4 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[#5B7763] transition-colors w-full sm:w-auto"
+              className="inline-flex items-center justify-center bg-black text-white px-8 py-4 text-[11px] font-bold uppercase tracking-[0.2em]  transition-colors w-full sm:w-auto"
             >
               Track Your Order
             </Link>

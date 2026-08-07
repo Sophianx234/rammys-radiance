@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,21 @@ export default function LoginPage() {
   const [role] = useState<"user" | "admin">("user");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [queryString, setQueryString] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setQueryString(window.location.search);
+    }
+  }, []);
+
+  let redirect = "";
+  let cartParam = "";
+  if (typeof window !== "undefined") {
+    const searchParams = new URLSearchParams(window.location.search);
+    redirect = searchParams.get("redirect") || "";
+    cartParam = searchParams.get("cart") || "";
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,9 +53,28 @@ export default function LoginPage() {
         const resMe = await fetch("/api/auth/me");
         const userData = await resMe.json();
         if (resMe.ok) {
-          if ((userData.user as IUser).role === "admin") {
+          const userRole = (userData.user as IUser).role;
+          
+          if (userRole === "user" && cartParam) {
+            try {
+              const cartItems = JSON.parse(decodeURIComponent(cartParam));
+              if (cartItems.length > 0) {
+                await fetch("/api/users/cart", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(cartItems),
+                });
+              }
+            } catch (e) {
+              console.error("Failed to sync cart", e);
+            }
+          }
+
+          if (redirect) {
+            window.location.href = redirect;
+          } else if (userRole === "admin") {
             router.push("/admin/products");
-          } else if ((userData.user as IUser).role === "dispatcher") {
+          } else if (userRole === "dispatcher") {
             router.push("/admin/orders");
           } else {
             router.push("/");
@@ -143,7 +177,7 @@ export default function LoginPage() {
 
           <p className="mt-4 text-center text-[12px] text-text-muted">
             Don't have an account?{" "}
-            <Link href="/signup" className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+            <Link href={queryString ? `/signup${queryString}` : "/signup"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
               Create One
             </Link>
           </p>

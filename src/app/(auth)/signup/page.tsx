@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +12,21 @@ export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [queryString, setQueryString] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setQueryString(window.location.search);
+    }
+  }, []);
+
+  let redirect = "";
+  let cartParam = "";
+  if (typeof window !== "undefined") {
+    const searchParams = new URLSearchParams(window.location.search);
+    redirect = searchParams.get("redirect") || "";
+    cartParam = searchParams.get("cart") || "";
+  }
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -92,9 +107,28 @@ export default function SignupPage() {
 
       const data = await res.json();
       if (res.ok) {
-        // Skip the image upload step and go straight to the home page.
+        if (cartParam) {
+          try {
+            const cartItems = JSON.parse(decodeURIComponent(cartParam));
+            if (cartItems.length > 0) {
+              await fetch("/api/users/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cartItems),
+              });
+            }
+          } catch (e) {
+            console.error("Failed to sync cart", e);
+          }
+        }
+
+        // Skip the image upload step and go straight to the home page or redirect.
         // Using window.location.href forces a hard reload so the Navbar updates with user info!
-        window.location.href = "/";
+        if (redirect) {
+          window.location.href = redirect;
+        } else {
+          window.location.href = "/";
+        }
       } else {
         setError(data.message || "Something went wrong");
       }
@@ -291,7 +325,7 @@ export default function SignupPage() {
 
               <p className="mt-10 text-center text-[12px] text-text-muted pb-4">
                 Already have an account?{" "}
-                <Link href="/login" className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+                <Link href={queryString ? `/login${queryString}` : "/login"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
                   Sign In
                 </Link>
               </p>

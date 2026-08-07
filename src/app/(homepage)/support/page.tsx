@@ -66,14 +66,15 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header Banner */}
-      <div className="w-full bg-[#5B7763] text-white py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center mix-blend-overlay"></div>
+      <div className="w-full text-white py-32 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-[url('/imgs/products/prod-1.jpeg')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-[32px] md:text-[52px] font-bold tracking-tight uppercase mb-4"
+            className="text-[32px] md:text-[52px] font-bold tracking-tight uppercase mb-4 drop-shadow-md"
           >
             How can we help?
           </motion.h1>
@@ -81,7 +82,7 @@ export default function SupportPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-[13px] tracking-widest uppercase text-white/80 max-w-lg"
+            className="text-[13px] tracking-widest uppercase text-white/90 max-w-lg drop-shadow-md"
           >
             Client care, frequently asked questions, and our shipping policies.
           </motion.p>

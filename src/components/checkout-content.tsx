@@ -150,16 +150,8 @@ export default function CheckoutPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
-      {/* Page Header */}
-      <section className="pt-20 pb-16 text-center border-b border-border/40 bg-white mb-12">
-        <h1 className="text-3xl md:text-5xl font-sans font-medium text-[#222222] tracking-tight mb-4">
-          CHECKOUT
-        </h1>
-        <p className="text-[13px] text-text-muted max-w-xl mx-auto px-4 uppercase tracking-[0.2em] font-medium">
-          Finalize your order securely
-        </p>
-      </section>
+    <main className="min-h-screen bg-[#FAFAFA] font-sans pt-6 pb-24">
+
 
       <div className="max-w-6xl mx-auto px-6">
         
@@ -267,7 +259,7 @@ export default function CheckoutPage() {
                   <div className="pt-8">
                     <button
                       type="submit"
-                      className="w-full bg-[#5B7763] text-white text-[12px] font-bold uppercase tracking-[0.2em] py-4 hover:bg-black transition-colors duration-300"
+                      className="w-full bg-black text-white text-[12px] font-bold uppercase tracking-[0.2em] py-4 hover:bg-black transition-colors duration-300"
                     >
                       CONTINUE TO PAYMENT
                     </button>
@@ -321,7 +313,7 @@ export default function CheckoutPage() {
                     <button
                       type="submit"
                       disabled={isProcessing}
-                      className="w-full bg-[#5B7763] text-white text-[12px] font-bold uppercase tracking-[0.2em] py-4 hover:bg-black disabled:bg-gray-400 transition-colors duration-300 flex justify-center items-center"
+                      className="w-full bg-black text-white text-[12px] font-bold uppercase tracking-[0.2em] py-4 hover:bg-black disabled:bg-gray-400 transition-colors duration-300 flex justify-center items-center"
                     >
                       {isProcessing
                         ? "PROCESSING..."

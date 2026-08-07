@@ -4,7 +4,9 @@ import { User } from "@/models/User";
 import { connectToDatabase } from "@/lib/connectDB";
 import "@/models/Product";
 import { Product } from "@/models/Product";
-import { orderConfirmationEmail } from "@/lib/email-templates";
+import * as React from "react";
+import { render } from "@react-email/render";
+import OrderConfirmationEmail from "@/components/mail/order-confirmation";
 import { sendMail } from "@/lib/mail";
 
 export async function POST(req: Request) { 
@@ -83,22 +85,24 @@ export async function POST(req: Request) {
       await sendMail({
         to: user.email,
         subject: "Your Order Has Been Confirmed – Rammy’s Closet",
-        html: orderConfirmationEmail({
-          name: user.name || "Customer",
-          orderId: newOrder._id.toString(),
-          items: await Promise.all(
-            newOrder.items.map(async (item: any) => {
-              const product = await Product.findById(item.product);
-              return {
-                name: product?.name || "Unknown Product",
-                quantity: item.quantity,
-                price: item.price,
-              };
-            })
-          ),
-          totalAmount: newOrder.totalAmount,
-          address: `${newOrder.deliveryAddress.address}, ${newOrder.deliveryAddress.city}, ${newOrder.deliveryAddress.region}`,
-        }),
+        html: await render(
+          React.createElement(OrderConfirmationEmail, {
+            name: user.name || "Customer",
+            orderId: newOrder._id.toString(),
+            items: await Promise.all(
+              newOrder.items.map(async (item: any) => {
+                const product = await Product.findById(item.product);
+                return {
+                  name: product?.name || "Unknown Product",
+                  quantity: item.quantity,
+                  price: item.price,
+                };
+              })
+            ),
+            totalAmount: newOrder.totalAmount,
+            address: `${newOrder.deliveryAddress.address}, ${newOrder.deliveryAddress.city}, ${newOrder.deliveryAddress.region}`,
+          })
+        ),
       });
     }
     return NextResponse.json({ success: true, order: newOrder });

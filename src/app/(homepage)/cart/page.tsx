@@ -9,7 +9,7 @@ import Image from "next/image";
 import { ProductCard } from "@/components/product-card";
 
 export default function CartPage() {
-  const { cart, removeItem, updateQuantity, cartTotal, clearCart } =
+  const { cart, removeItem, updateQuantity, cartTotal, clearCart, user } =
     useDashStore();
   const [isLoaded, setIsLoaded] = useState(false);
   const [suggestedProducts, setSuggestedProducts] = useState<any[]>([]);
@@ -109,7 +109,7 @@ export default function CartPage() {
             </p>
             <Link 
               href="/shop"
-              className="bg-[#5B7763] text-white text-[12px] font-bold uppercase tracking-[0.2em] px-10 py-4 hover:bg-black transition-colors duration-300"
+              className="bg-black text-white text-[12px] font-bold uppercase tracking-[0.2em] px-10 py-4 hover:bg-black transition-colors duration-300"
             >
               CONTINUE SHOPPING
             </Link>
@@ -123,7 +123,7 @@ export default function CartPage() {
                 <span className="text-[11px] font-bold text-text-muted uppercase tracking-[0.15em]">Product</span>
                 <button
                   onClick={handleClearCart}
-                  className="text-[11px] font-bold text-[#5B7763] hover:text-[#5B7763]/80 uppercase tracking-[0.15em] transition-colors"
+                  className="text-[11px] font-bold   uppercase tracking-[0.15em] transition-colors"
                 >
                   Clear Bag
                 </button>
@@ -220,8 +220,8 @@ export default function CartPage() {
                   </span>
                 </div>
 
-                <Link href="/checkout" className="block w-full">
-                  <button className="w-full bg-[#5B7763] text-white text-[12px] font-bold uppercase tracking-[0.2em] py-4 flex items-center justify-center gap-2 hover:bg-black transition-colors duration-300">
+                <Link href={user ? "/checkout" : `/login?redirect=/checkout&cart=${encodeURIComponent(JSON.stringify(cart.map(i => ({ productId: i._id, quantity: i.quantity }))))}`} className="block w-full">
+                  <button className="w-full bg-black text-white text-[12px] font-bold uppercase tracking-[0.2em] py-4 flex items-center justify-center gap-2 hover:bg-black transition-colors duration-300">
                     Checkout <ArrowRight size={14} />
                   </button>
                 </Link>

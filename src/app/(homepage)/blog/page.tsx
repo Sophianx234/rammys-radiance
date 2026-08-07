@@ -85,13 +85,15 @@ function BlogContent() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header Banner */}
-      <div className="w-full bg-[#E8EAE6] py-24 px-6 border-b border-border/40">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+      <div className="w-full text-white py-32 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-[url('/imgs/products/prod-3.jpeg')] bg-cover bg-[center_50%]"></div>
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
+        <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-[32px] md:text-[52px] font-bold tracking-tight uppercase mb-4 text-[#222222]"
+            className="text-[32px] md:text-[52px] font-bold tracking-tight uppercase mb-4 text-white drop-shadow-md"
           >
             The Radiance Journal
           </motion.h1>
@@ -99,7 +101,7 @@ function BlogContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-[13px] tracking-widest uppercase text-text-muted max-w-lg"
+            className="text-[13px] tracking-widest uppercase text-white/90 max-w-lg drop-shadow-md"
           >
             Insights, tutorials, and behind-the-scenes at Rammy's Radiance.
           </motion.p>

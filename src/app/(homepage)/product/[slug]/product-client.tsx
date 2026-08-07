@@ -289,10 +289,10 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
                 <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-6">Write a Review</h4>
                 
                 {!user ? (
-                  <div className="p-4 bg-muted/30 text-center">
+                  <div className="p-4 px-0 bg-muted/30 ">
                     <p className="text-[13px] text-text-muted mb-4">Please log in to share your experience with this product.</p>
                     <Link href="/login">
-                      <Button variant="outline" className="text-[11px] font-bold uppercase tracking-widest border-border hover:bg-black hover:text-white">
+                      <Button variant="outline" className="text-[11px] rounded-none font-bold uppercase tracking-widest shadow-none border-border bg-black text-white">
                         Login to Review
                       </Button>
                     </Link>

@@ -39,7 +39,7 @@ const navLinks = [
         ]
       }
     ],
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400"
+    image: "/imgs/products/h-2.jpeg"
   },
   {
     name: "BLOG",
@@ -62,7 +62,7 @@ const navLinks = [
         ]
       }
     ],
-    image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=400"
+    image: "/imgs/products/h-3.jpg"
   },
   { 
     name: "CONTACT", 
@@ -85,7 +85,7 @@ const navLinks = [
         ]
       }
     ],
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=400"
+    image: "/imgs/products/h-1.jpeg"
   },
 ];
 
@@ -93,7 +93,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const { user, cart, setUser } = useDashStore();
+  const { user, cart, setUser, loadCart } = useDashStore();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -196,6 +196,9 @@ export default function Header() {
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
+          if (data.user && data.user.cart) {
+            loadCart(data.user.cart);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch user session");
@@ -303,12 +306,12 @@ export default function Header() {
                       ))}
                     </div>
                     {link.image && (
-                      <div className="w-[220px] relative h-[180px] shrink-0 overflow-hidden bg-surface z-10">
+                      <div className="w-[160px] relative h-[200px] shrink-0 overflow-hidden bg-surface z-10">
                         <Image 
                           src={link.image} 
                           alt={`${link.name} Featured`} 
                           fill 
-                          className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                          className="object-cover transition-transform duration-700 " 
                           sizes="220px"
                         />
                       </div>
