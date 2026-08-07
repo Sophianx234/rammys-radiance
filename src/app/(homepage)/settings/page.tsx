@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { GridLoader } from "react-spinners";
 import Swal from "sweetalert2";
 import { z } from "zod";
+import { updateProfileAction, updateEmailAction, updatePasswordAction } from "@/app/actions/settings";
 
 /* ------------------ ZOD SCHEMAS ------------------ */
 const profileSchema = z.object({
@@ -80,34 +81,29 @@ export default function SettingsPage() {
   };
 
   /* ------------------ GENERIC UPDATE FUNCTION ------------------ */
-  const updateUserField = async (url: string, form: FormData, successMsg: string, btnSetter: (val: string) => void) => {
+  const runAction = async (action: (form: FormData) => Promise<any>, form: FormData, btnSetter: (val: string) => void, type: "profile" | "email" | "password") => {
     try {
       btnSetter("Saving...");
-      const res = await fetch(url, { method: "PATCH", body: form });
-      const data = await res.json();
+      const res = await action(form);
 
-      if (!res.ok) {
-        
-        Swal.fire({ toast: true, icon: "error", title: data.message || "Failed to update", position: "top-end", showConfirmButton: false, timer: 2000 ,background: "#1f1f1f",
-          color: "#fff",});
-        btnSetter(url.includes("profile") ? "Save Profile" : url.includes("email") ? "Update Email" : "Update Password");
+      if (!res.success) {
+        Swal.fire({ toast: true, icon: "error", title: res.message || "Failed to update", position: "top-end", showConfirmButton: false, timer: 2000, background: "#1f1f1f", color: "#fff" });
+        btnSetter(type === "profile" ? "Save Profile" : type === "email" ? "Update Email" : "Update Password");
         return;
       }
 
-      if (url.includes("profile") || url.includes("email")) {
-        setUser(data.user);
+      if (type === "profile" || type === "email") {
+        setUser(res.user);
       }
 
-      Swal.fire({ toast: true, icon: "success", title: successMsg, position: "top-end", showConfirmButton: false, timer: 2000,background: "#1f1f1f",
-          color: "#fff", });
-      btnSetter(url.includes("profile") ? "Save Profile" : url.includes("email") ? "Update Email" : "Update Password");
+      Swal.fire({ toast: true, icon: "success", title: res.message, position: "top-end", showConfirmButton: false, timer: 2000, background: "#1f1f1f", color: "#fff" });
+      btnSetter(type === "profile" ? "Save Profile" : type === "email" ? "Update Email" : "Update Password");
 
-      if (url.includes("profile")) setProfile((prev) => ({ ...prev, image: data.user.profile || prev.image, name: "" }));
-      if (url.includes("password")) setPasswords({ current: "", newPass: "", confirm: "" });
+      if (type === "profile") setProfile((prev) => ({ ...prev, image: res.user.profile || prev.image, name: "" }));
+      if (type === "password") setPasswords({ current: "", newPass: "", confirm: "" });
     } catch (err) {
-      Swal.fire({ toast: true, icon: "error", title: "Something went wrong", position: "top-end", showConfirmButton: false, timer: 2000,background: "#1f1f1f",
-          color: "#fff", });
-      btnSetter(url.includes("profile") ? "Save Profile" : url.includes("email") ? "Update Email" : "Update Password");
+      Swal.fire({ toast: true, icon: "error", title: "Something went wrong", position: "top-end", showConfirmButton: false, timer: 2000, background: "#1f1f1f", color: "#fff" });
+      btnSetter(type === "profile" ? "Save Profile" : type === "email" ? "Update Email" : "Update Password");
     }
   };
 
@@ -133,7 +129,7 @@ export default function SettingsPage() {
     if (profile.name) form.append("name", profile.name);
     if (profile.file) form.append("profile", profile.file);
 
-    await updateUserField("/api/users/update-profile", form, "Profile updated successfully", setBtnProfile);
+    await runAction(updateProfileAction, form, setBtnProfile, "profile");
   };
 
   /* ------------------ EMAIL UPDATE ------------------ */
@@ -150,7 +146,7 @@ export default function SettingsPage() {
     form.append("userId", user._id);
     form.append("email", profile.email || user.email);
 
-    await updateUserField("/api/users/update-email", form, "Email updated successfully", setBtnEmail);
+    await runAction(updateEmailAction, form, setBtnEmail, "email");
   };
 
   /* ------------------ PASSWORD UPDATE ------------------ */
@@ -169,7 +165,7 @@ export default function SettingsPage() {
     form.append("current", passwords.current);
     form.append("newPass", passwords.newPass);
 
-    await updateUserField("/api/users/update-password", form, "Password updated successfully", setBtnPass);
+    await runAction(updatePasswordAction, form, setBtnPass, "password");
   };
 
   return (

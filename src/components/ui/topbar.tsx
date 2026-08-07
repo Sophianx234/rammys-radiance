@@ -56,7 +56,7 @@ export default function Topbar() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="sticky top-0 z-50 w-full h-20 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-xl px-6 md:px-10"
+        className="sticky top-0 z-50 w-full h-20 flex items-center justify-between border-b border-border/40 bg-white px-6 md:px-10"
       >
         {/* Left: Menu button */}
         <div className="flex items-center gap-3">

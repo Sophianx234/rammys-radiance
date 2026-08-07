@@ -1,10 +1,5 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { AnimatedHeader, AnimatedFeaturedArticle, AnimatedArticleGridItem } from "./blog-animations";
 
 const articles = [
   {
@@ -71,9 +66,9 @@ const topics = [
   { name: "Brand News", slug: "brand-news" },
 ];
 
-function BlogContent() {
-  const searchParams = useSearchParams();
-  const currentTopic = searchParams.get("topic") || "all";
+export default async function BlogPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const searchParams = await props.searchParams;
+  const currentTopic = typeof searchParams.topic === 'string' ? searchParams.topic : "all";
 
   const filteredArticles = currentTopic === "all" 
     ? articles 
@@ -84,29 +79,7 @@ function BlogContent() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* Header Banner */}
-      <div className="w-full text-white py-32 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-[url('/imgs/products/prod-3.jpeg')] bg-cover bg-[center_50%]"></div>
-        <div className="absolute inset-0 bg-black/50 z-0"></div>
-        <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-[32px] md:text-[52px] font-bold tracking-tight uppercase mb-4 text-white drop-shadow-md"
-          >
-            The Radiance Journal
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-[13px] tracking-widest uppercase text-white/90 max-w-lg drop-shadow-md"
-          >
-            Insights, tutorials, and behind-the-scenes at Rammy's Radiance.
-          </motion.p>
-        </div>
-      </div>
+      <AnimatedHeader />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         {/* Topic Filters */}
@@ -123,69 +96,13 @@ function BlogContent() {
         </div>
 
         {/* Featured Article */}
-        {featuredArticle && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-24 group block"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-border/40 bg-white">
-              <div className="relative aspect-square lg:aspect-auto lg:h-full overflow-hidden">
-                <Image 
-                  src={featuredArticle.image} 
-                  alt={featuredArticle.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  priority
-                />
-              </div>
-              <div className="p-8 lg:p-16 flex flex-col justify-center">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-[#5B7763] mb-4">{featuredArticle.category}</span>
-                <h2 className="text-[28px] lg:text-[40px] font-bold leading-tight text-[#222222] mb-6">{featuredArticle.title}</h2>
-                <p className="text-[14px] leading-relaxed text-text-muted mb-8">{featuredArticle.excerpt}</p>
-                <div className="flex items-center justify-between mt-auto pt-8 border-t border-border/40">
-                  <span className="text-[11px] uppercase tracking-widest text-text-muted">{featuredArticle.date}</span>
-                  <Link href={`/blog/${featuredArticle.slug}`} className="text-[11px] font-bold uppercase tracking-widest text-[#222222] hover:text-[#5B7763] transition-colors">
-                    Read Article &rarr;
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
+        {featuredArticle && <AnimatedFeaturedArticle article={featuredArticle} />}
 
         {/* Grid Articles */}
         {gridArticles.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {gridArticles.map((article, idx) => (
-              <motion.div 
-                key={article.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 + (idx * 0.1) }}
-                className="group flex flex-col"
-              >
-                <Link href={`/blog/${article.slug}`} className="block overflow-hidden relative aspect-[4/3] mb-6 border border-border/40">
-                  <Image 
-                    src={article.image} 
-                    alt={article.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                </Link>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#5B7763] mb-3">{article.category}</span>
-                <Link href={`/blog/${article.slug}`}>
-                  <h3 className="text-[18px] font-bold leading-tight text-[#222222] mb-3 group-hover:text-[#5B7763] transition-colors line-clamp-2">{article.title}</h3>
-                </Link>
-                <p className="text-[13px] leading-relaxed text-text-muted mb-6 line-clamp-3">{article.excerpt}</p>
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/40">
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted">{article.date}</span>
-                  <Link href={`/blog/${article.slug}`} className="text-[10px] font-bold uppercase tracking-widest text-[#222222] hover:text-[#5B7763] transition-colors">
-                    Read
-                  </Link>
-                </div>
-              </motion.div>
+              <AnimatedArticleGridItem key={article.id} article={article} index={idx} />
             ))}
           </div>
         )}
@@ -195,16 +112,7 @@ function BlogContent() {
             <p className="text-[14px] text-text-muted">No articles found for this topic.</p>
           </div>
         )}
-
       </div>
     </div>
-  );
-}
-
-export default function BlogPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-surface flex items-center justify-center">Loading...</div>}>
-      <BlogContent />
-    </Suspense>
   );
 }

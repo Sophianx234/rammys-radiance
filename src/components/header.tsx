@@ -263,8 +263,11 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full flex flex-col bg-surface border-b border-border/40">
-      <div className="bg-[#5B7763] text-white text-xs sm:text-[13px] tracking-wide text-center py-2.5 px-4 w-full font-medium">
-        Free shipping on all U.S. orders $50+
+      <div className="bg-[#5B7763] text-white text-xs sm:text-[13px] tracking-wide text-center py-2.5 px-4 w-full font-medium flex items-center justify-center gap-2">
+        <span>All orders are delivered on Fridays.</span>
+        <Link href="/delivery" className="underline font-bold hover:text-white/80 transition-colors">
+          Learn more
+        </Link>
       </div>
 
       <div className="w-full px-6 lg:px-12 flex items-center justify-between h-[80px]">

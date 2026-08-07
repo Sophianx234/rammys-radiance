@@ -321,7 +321,7 @@ export default function EditProductPage({
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-[#5B7763] text-white px-6 py-3 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 shadow-sm"
+          className="bg-black text-white px-6 py-3 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 shadow-sm"
         >
           <Save className="w-3.5 h-3.5" /> {loading ? "Updating..." : "Update Product"}
         </button>

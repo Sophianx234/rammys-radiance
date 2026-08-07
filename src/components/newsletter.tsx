@@ -1,42 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import Image from "next/image";
+import { subscribeToNewsletter } from "@/app/actions/newsletter";
 
 export default function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<null | { type: "success" | "error"; text: string }>(null);
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      const response = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Subscription failed");
-      }
-      
-      const data = await response.json();
-      setMessage(data);
-      setEmail("");
-    } catch (err) {
-      setMessage({ type: "error", text: 'Something went wrong' });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [state, formAction, pending] = useActionState(subscribeToNewsletter, null);
 
   return (
     <section className="bg-[#E7EAE5] overflow-hidden">
@@ -62,12 +34,11 @@ export default function Newsletter() {
             Subscribe for curated trends, product drops, and insider beauty tips from industry experts designed to inspire your elegance.
           </p>
 
-          <form onSubmit={handleSubscribe} className="flex flex-col gap-8 w-full max-w-md">
+          <form action={formAction} className="flex flex-col gap-8 w-full max-w-md">
             <div className="relative w-full">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
                 placeholder="Enter your email address"
                 required
                 className="w-full bg-transparent border-b border-black/30 pb-3 text-sm focus:outline-none focus:border-black text-black placeholder-black/40 transition-colors rounded-none"
@@ -76,16 +47,16 @@ export default function Newsletter() {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={pending}
               className="bg-black hover:bg-black/80 text-white w-full sm:w-auto self-start px-12 h-[50px] rounded-none text-xs font-semibold uppercase tracking-widest transition-colors"
             >
-              {loading ? <ScaleLoader height={14} width={2} color="#fff" /> : "Subscribe"}
+              {pending ? <ScaleLoader height={14} width={2} color="#fff" /> : "Subscribe"}
             </Button>
           </form>
 
-          {message?.type && (
-            <p className={`mt-6 text-[13px] font-medium ${message.type === "success" ? "text-[#5B7763]" : "text-red-500"}`}>
-              {message.text}
+          {state?.text && (
+            <p className={`mt-6 text-[13px] font-medium ${state.type === "success" ? "text-[#5B7763]" : "text-red-500"}`}>
+              {state.text}
             </p>
           )}
 
@@ -102,9 +73,11 @@ export default function Newsletter() {
           viewport={{ once: true }}
           transition={{ duration: 1 }}
         >
-          <img
+          <Image
             src="/imgs/products/cta-1.jpeg"
             alt="Luxury beauty products"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="w-full h-full object-cover object-right "
           />
         </motion.div>

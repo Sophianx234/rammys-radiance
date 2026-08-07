@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
 import {
   Dialog,
@@ -18,21 +18,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TableRow, TableCell } from "@/components/ui/table";
-import { Eye, Pencil, Star, Trash2, MoreVertical } from "lucide-react";
+import { Eye, Pencil, Star, Trash2, MoreVertical, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import ImageSlider from "./image-slider";
 
 export function ProductTableRow({ product }: { product: any }) {
   const [open, setOpen] = useState(false);
+  const [showCaret, setShowCaret] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      // Show caret if we haven't scrolled to the bottom (with a 2px buffer)
+      setShowCaret(scrollHeight > clientHeight && scrollTop + clientHeight < scrollHeight - 2);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      // Small timeout to allow DOM to render and calculate heights
+      setTimeout(checkScroll, 100);
+    }
+  }, [open]);
   const router = useRouter();
   const { user } = useDashStore();
   
   const stockClass =
     product.stock > 10
-      ? "text-[#5B7763]"
+      ? ""
       : product.stock > 0
-      ? "text-orange-500"
-      : "text-red-600";
+      ? ""
+      : "";
 
   const handleDelete = async () => {
     const confirm = await Swal.fire({
@@ -103,7 +120,7 @@ export function ProductTableRow({ product }: { product: any }) {
         <TableCell>
           <div className="flex flex-col gap-1.5">
              <span className={`text-[11px] font-bold ${stockClass}`}>{product.stock} in stock</span>
-             <div className={`px-2 py-0.5 w-fit text-[9px] uppercase tracking-widest font-bold border ${product.inStock ? "border-[#5B7763]/20 bg-[#5B7763]/5 text-[#5B7763]" : "border-red-600/20 bg-red-50 text-red-600"}`}>
+             <div className={`px-2 py-0.5 w-fit text-[9px] uppercase tracking-widest font-bold border ${product.inStock ? "border-[#5B7763]/20 bg-[#5B7763]/5 " : "border-red-600/20 bg-red-50 text-red-600"}`}>
                {product.inStock ? "In Stock" : "Out of Stock"}
              </div>
           </div>
@@ -156,9 +173,9 @@ export function ProductTableRow({ product }: { product: any }) {
       {/* MODAL */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="max-w-xl max-h-[90vh] overflow-y-auto bg-white border-border/40 text-[#222222] rounded-none shadow-2xl p-0 custom-scrollbar"
+          className="max-w-xl max-h-[90vh] bg-white border-border/40 text-[#222222] rounded-none shadow-2xl p-0 flex flex-col overflow-hidden"
         >
-          <div className="p-6 pb-2 border-b border-border/40">
+          <div className="p-6 pb-2 border-b border-border/40 shrink-0">
             <DialogHeader>
               <DialogTitle className="text-[18px] uppercase tracking-widest font-bold">{product.name}</DialogTitle>
               <DialogDescription className="text-[12px] text-text-muted uppercase tracking-wider font-medium">
@@ -167,7 +184,11 @@ export function ProductTableRow({ product }: { product: any }) {
             </DialogHeader>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div 
+            ref={scrollRef}
+            onScroll={checkScroll}
+            className="p-6 space-y-6 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          >
             <ImageSlider images={product.images} />
 
             <p className="text-[13px] text-text-muted leading-relaxed">{product.description}</p>
@@ -182,6 +203,13 @@ export function ProductTableRow({ product }: { product: any }) {
               <p><span className="text-text-muted mr-2">Rating:</span> ⭐ {product.rating} ({product.reviewsCount})</p>
             </div>
           </div>
+
+          {/* Scrolling Caret */}
+          {showCaret && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none animate-bounce bg-white/80 p-1 rounded-full backdrop-blur-sm shadow-sm">
+              <ChevronDown className="w-5 h-5 text-[#222222]" />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 const slides = [
    {
@@ -102,10 +103,13 @@ export default function Hero() {
         >
           {/* Background Image */}
           <div className="absolute inset-0">
-            <img
+            <Image
               src={slides[index].image}
               alt="Hero Background"
-              className={`w-full h-full object-cover max-lg:object-center ${index > 2 ? 'md:!-[object-position:100%_top]' : 'md:![object-position:100%_bottom]'}`}
+              fill
+              priority={index === 0}
+              quality={90}
+              className={`object-cover max-lg:object-center ${index > 2 ? 'md:!-[object-position:100%_top]' : 'md:![object-position:100%_bottom]'}`}
             />
             {/* Subtle Gradient to ensure text readability against any image */}
             <div className="absolute inset-0 bg-gradient-to-r from-surface/90 via-surface/50 to-transparent md:w-2/3" />
