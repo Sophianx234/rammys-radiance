@@ -30,7 +30,7 @@ export default function BrandShowcase() {
               key={i}
               className="flex flex-col items-center gap-2 hover:opacity-100 transition-opacity"
             >
-              <Icon className="text-4xl text-primary" />
+              <Icon className="text-4xl text-[#5B7763]" />
               <span className="text-sm text-muted-foreground">{name}</span>
             </div>
           ))}

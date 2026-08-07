@@ -59,7 +59,7 @@ export default function CampaignVideo() {
         >
           <Link
             href="/shop"
-            className="inline-flex items-center justify-center bg-white text-black px-10 py-4 text-[13px] font-semibold hover:bg-black hover:text-white transition-colors duration-300 shadow-sm"
+            className="inline-flex items-center justify-center bg-black text-white px-10 py-4 text-[13px] font-semibold hover:bg-black hover:text-white transition-colors duration-300 shadow-sm"
           >
             Watch Campaign
           </Link>

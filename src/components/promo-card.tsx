@@ -63,7 +63,7 @@ export function PromoCard({
         <div className={!description ? "mt-5" : ""}>
           <Link
             href={buttonLink}
-            className="inline-flex items-center justify-center bg-white text-black px-8 py-3.5 text-xs font-semibold hover:bg-black hover:text-white transition-colors duration-300 shadow-sm"
+            className="inline-flex items-center justify-center  text-white px-8 py-3.5 text-xs font-semibold bg-black hover:text-white transition-colors duration-300 "
           >
             {buttonText}
           </Link>

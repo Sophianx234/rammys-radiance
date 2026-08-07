@@ -103,9 +103,9 @@ export default function Newsletter() {
           transition={{ duration: 1 }}
         >
           <img
-            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=1200"
+            src="/imgs/products/cta-1.jpeg"
             alt="Luxury beauty products"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-right "
           />
         </motion.div>
 
