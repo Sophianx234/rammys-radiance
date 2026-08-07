@@ -1,17 +1,10 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GalleryVerticalEnd } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -25,7 +18,6 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Check token on load
   useEffect(() => {
     if (!token) {
       setError("Invalid or missing token.");
@@ -73,93 +65,100 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="grid h-dvh overflow-hidden bg-gradient-to-b from-secondary to-background lg:grid-cols-2">
-      {/* Left Section */}
-      <div className="flex flex-col overflow-y-scroll scrollbar-hide p-6 md:p-10 gap-4">
-        
-        {/* Logo */}
-        <div className="flex justify-center md:justify-start gap-2">
-          <a href="/" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            <span className="text-primary">Rammys Closet</span>
-          </a>
-        </div>
-
-        {/* Form */}
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-
-              <FieldGroup>
-                <div className="flex flex-col items-center text-center gap-1">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Reset Password
-                  </h1>
-                  <p className="text-muted-foreground text-sm text-balance">
-                    Enter a new password for your account.
-                  </p>
-                </div>
-
-                {/* New Password */}
-                <Field>
-                  <FieldLabel className="text-foreground">New Password</FieldLabel>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-secondary text-foreground border border-border"
-                  />
-                </Field>
-
-                {/* Confirm Password */}
-                <Field>
-                  <FieldLabel className="text-foreground">Confirm Password</FieldLabel>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                    className="bg-secondary text-foreground border border-border"
-                  />
-                </Field>
-
-                {/* Error / Success */}
-                {error && <p className="text-red-500 text-center text-sm">{error}</p>}
-                {success && <p className="text-green-500 text-center text-sm">{success}</p>}
-
-                {/* Submit */}
-                <Button
-                  type="submit"
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={loading}
-                >
-                  {loading ? "Updating..." : "Reset Password"}
-                </Button>
-
-                <FieldDescription className="text-center text-muted-foreground">
-                  Remember your password?{" "}
-                  <a href="/login" className="text-primary hover:underline">
-                    Sign in
-                  </a>
-                </FieldDescription>
-              </FieldGroup>
-            </form>
+    <div className="grid min-h-dvh lg:h-dvh font-sans bg-surface lg:grid-cols-2 overflow-hidden">
+      {/* Left Section (Form) */}
+      <div className="flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto scrollbar-hide">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="flex justify-center mb-16">
+            <Link href="/">
+              <Image 
+                src="/imgs/logo.jpeg" 
+                alt="Rammy's Radiance" 
+                width={180} 
+                height={54} 
+                className="object-contain"
+                priority
+              />
+            </Link>
           </div>
+
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-text-main mb-4">
+              Update Password
+            </h1>
+            <p className="text-[13px] text-text-muted tracking-wide">
+              Create a new, secure password for your account.
+            </p>
+          </div>
+
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                New Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="confirm" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                Confirm Password
+              </label>
+              <input
+                id="confirm"
+                type="password"
+                placeholder="••••••••"
+                required
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+            )}
+            {success && (
+              <p className="text-[#5B7763] text-[12px] font-medium text-center">{success}</p>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
+            >
+              {loading ? "Updating..." : "Reset Password"}
+            </Button>
+          </form>
+
+          <p className="mt-12 text-center text-[12px] text-text-muted">
+            Remember your password?{" "}
+            <Link href="/login" className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+              Sign In
+            </Link>
+          </p>
         </div>
       </div>
 
-      {/* Right Image */}
-      <div className="bg-muted hidden lg:block relative">
-        <img
+      {/* Right Section (Image) */}
+      <div className="relative hidden lg:block bg-surface h-full">
+        <Image
           src="/imgs/c-5.jpg"
-          alt="Fashion display"
-          className="absolute inset-0 w-full h-full object-cover dark:brightness-[0.2] dark:grayscale"
+          alt="Rammy's Radiance Model"
+          fill
+          className="object-cover"
+          sizes="50vw"
+          priority
         />
+        <div className="absolute inset-0 bg-black/5" />
       </div>
     </div>
   );

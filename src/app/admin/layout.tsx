@@ -16,11 +16,11 @@ export default function AdminPage({ children }: { children: ReactNode}) {
 
       <body className={`font-sans    antialiased`}>
 
-    <div className="flex   bg-muted">
+    <div className="flex bg-[#F3F4F6] min-h-screen">
       <Sidebar  />
-      <div className="flex-1 flex w-full flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Topbar />
-        <main className=" p-2 sm:p-8">
+        <main className="p-2 sm:p-8">
          {children}
         </main>
       </div>

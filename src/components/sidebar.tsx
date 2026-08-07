@@ -1,22 +1,35 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Menu, X, Home, ShoppingBag, User, Heart, LogOut, Sun, Moon, BarChart3 } from "lucide-react"
-import { useAuth } from "@/components/auth-context"
-import { useTheme } from "@/components/theme-context"
+import { useDashStore } from "@/lib/store"
+import { useTheme } from "next-themes"
 
 export default function Sidebar() {
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
-  const { user, logout, isLoggedIn } = useAuth()
-  const { theme, toggleTheme } = useTheme()
+  const { user, setUser } = useDashStore()
+  const isLoggedIn = !!user
+  const { theme, setTheme } = useTheme()
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark")
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" })
+      setUser(null)
+      router.push("/login")
+      router.refresh()
+    } catch(e) {}
+  }
 
   const navigationItems = [
     { icon: Home, label: "Home", href: "/" },
     { icon: ShoppingBag, label: "Shop", href: "/shop" },
     ...(isLoggedIn
       ? [
-          { icon: User, label: "Account", href: "/account" },
+          { icon: User, label: "Account", href: "/profile" },
           { icon: Heart, label: "Wishlist", href: "/wishlist" },
           { icon: BarChart3, label: "Admin", href: "/admin" },
         ]

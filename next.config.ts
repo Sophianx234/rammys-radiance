@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
       {
@@ -35,6 +40,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ['10.21.44.167']
   
 };
 

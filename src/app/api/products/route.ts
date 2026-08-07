@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Category } from "@/models/Category";
 import { Product } from "@/models/Product";
@@ -23,9 +24,16 @@ export async function GET(request: NextRequest) {
 
     // Category filter
     if (category && category !== "all") {
-      const categoryDoc = await Category.findOne({ slug: category });
-      if (categoryDoc) {
-        filter.category = categoryDoc._id;
+      if (mongoose.isValidObjectId(category)) {
+        filter.category = category;
+      } else {
+        const categoryDoc = await Category.findOne({ slug: category });
+        if (categoryDoc) {
+          filter.category = categoryDoc._id;
+        } else {
+          // If a category slug was provided but not found, return empty results by setting an impossible match
+          filter.category = new mongoose.Types.ObjectId();
+        }
       }
     }
 
@@ -34,6 +42,12 @@ export async function GET(request: NextRequest) {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseFloat(minPrice);
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Discounted filter
+    const discounted = searchParams.get("discounted");
+    if (discounted === "true") {
+      filter.discountPrice = { $exists: true, $ne: null, $gt: 0 };
     }
 
     // Search filter

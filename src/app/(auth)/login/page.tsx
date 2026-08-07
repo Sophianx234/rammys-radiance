@@ -1,28 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { GalleryVerticalEnd } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
-import { IUser } from "@/models/User";
+import Image from "next/image";
 import Link from "next/link";
+import type { IUser } from "@/models/User";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"user" | "admin">("user");
+  const [role] = useState<"user" | "admin">("user");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [queryString, setQueryString] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setQueryString(window.location.search);
+    }
+  }, []);
+
+  let redirect = "";
+  let cartParam = "";
+  if (typeof window !== "undefined") {
+    const searchParams = new URLSearchParams(window.location.search);
+    redirect = searchParams.get("redirect") || "";
+    cartParam = searchParams.get("cart") || "";
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,9 +38,7 @@ export default function LoginPage() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role }),
       });
 
@@ -46,14 +50,33 @@ export default function LoginPage() {
       }
 
       if (res.ok) {
-        const res = await fetch("/api/auth/me");
-        const userData = await res.json();
-        if (res.ok) {
-          if ((userData.user as IUser).role === "admin") {
-            router.push("/admin/products");
-          } else if((userData.user as IUser).role === "dispatcher"){
-            router.push("/admin/orders");
+        const resMe = await fetch("/api/auth/me");
+        const userData = await resMe.json();
+        if (resMe.ok) {
+          const userRole = (userData.user as IUser).role;
+          
+          if (userRole === "user" && cartParam) {
+            try {
+              const cartItems = JSON.parse(decodeURIComponent(cartParam));
+              if (cartItems.length > 0) {
+                await fetch("/api/users/cart", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(cartItems),
+                });
+              }
+            } catch (e) {
+              console.error("Failed to sync cart", e);
+            }
+          }
 
+          if (redirect) {
+            router.push(redirect);
+            router.refresh();
+          } else if (userRole === "admin") {
+            router.push("/admin/products");
+          } else if (userRole === "dispatcher") {
+            router.push("/admin/orders");
           } else {
             router.push("/");
           }
@@ -68,136 +91,111 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="grid h-dvh font-sans overflow-hidden relative bg-gradient-to-b from-secondary to-background lg:grid-cols-2">
-      {/* Left Section */}
-      <div className="flex flex-col overflow-y-scroll scrollbar-hide gap-4 p-6 md:p-10">
-        {/* Logo */}
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            <span className="text-primary">Rammys Closet</span>
-          </a>
-        </div>
-
-        {/* Form Section */}
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-              <FieldGroup>
-                <div className="flex flex-col items-center gap-1 text-center">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Welcome Back
-                  </h1>
-                  <p className="text-muted-foreground text-sm text-balance">
-                    Sign in to continue shopping with us
-                  </p>
-                </div>
-
-                {/* ROLE TOGGLER */}
-                
-
-                {/* Email */}
-                <Field>
-                  <FieldLabel htmlFor="email" className="text-foreground">
-                    Email
-                  </FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-secondary text-foreground border border-border placeholder-muted-foreground focus:ring-primary"
-                  />
-                </Field>
-
-                {/* Password */}
-                <Field>
-                  <FieldLabel htmlFor="password" className="text-foreground">
-                    Password
-                  </FieldLabel>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="********"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-secondary text-foreground border border-border placeholder-muted-foreground focus:ring-primary"
-                  />
-                  <div className="flex justify-end mt-1">
-                    <a
-                      href="/forgot-password"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
-                </Field>
-
-                {/* Error Message */}
-                {error && (
-                  <p className="text-red-500 text-sm text-center">{error}</p>
-                )}
-
-                {/* Submit */}
-                <Field>
-                  <Button
-                    type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
-                    disabled={loading}
-                  >
-                    {loading ? "Signing in..." : "Sign In"}
-                  </Button>
-                </Field>
-
-                <FieldSeparator className="text-muted-foreground">
-                  Or continue with
-                </FieldSeparator>
-
-                {/* GitHub Login */}
-                <Field>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="flex items-center justify-center gap-2 border-border hover:bg-secondary/50 w-full"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        d="M12 .297c-6.63 0-12 5.373-12 12..."
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Sign in with GitHub
-                  </Button>
-
-                  <FieldDescription className="px-6 text-center text-muted-foreground">
-                    Don&apos;t have an account?{" "}
-                    <Link href="/signup" className="text-primary hover:underline">
-                      Create one
-                    </Link>
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
-            </form>
+    <div className="grid min-h-dvh lg:h-dvh font-sans bg-surface lg:grid-cols-2 overflow-hidden">
+      {/* Left Section (Form) */}
+      <div className="flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto scrollbar-hide">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="flex justify-center mb-2 mt-24">
+            <Link href="/">
+              <Image 
+                src="/imgs/logo.jpeg" 
+                alt="Rammy's Radiance" 
+                width={180} 
+                height={54} 
+                className="object-contain"
+                priority
+              />
+            </Link>
           </div>
+
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-text-main mb-4">
+              Welcome Back
+            </h1>
+            <p className="text-[13px] text-text-muted tracking-wide">
+              Sign in to continue your journey to radiant skin.
+            </p>
+          </div>
+
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-[11px] font-bold tracking-widest uppercase text-text-main hover:text-[#5B7763] transition-colors">
+                  Forgot?
+                </Link>
+              </div>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </Button>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border/40" />
+              </div>
+              
+            </div>
+
+            
+          </form>
+
+          <p className="mt-4 text-center text-[12px] text-text-muted">
+            Don't have an account?{" "}
+            <Link href={queryString ? `/signup${queryString}` : "/signup"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+              Create One
+            </Link>
+          </p>
         </div>
       </div>
 
-      {/* Right Image Section */}
-      <div className="bg-muted relative hidden lg:block">
-        <img
+      {/* Right Section (Image) */}
+      <div className="relative hidden lg:block bg-surface h-full">
+        <Image
           src="/imgs/c-1.jpg"
-          alt="Fashion display"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          alt="Rammy's Radiance Model"
+          fill
+          className="object-cover"
+          sizes="50vw"
+          priority
         />
+        <div className="absolute inset-0 bg-black/5" />
       </div>
     </div>
   );

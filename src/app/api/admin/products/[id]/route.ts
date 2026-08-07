@@ -4,11 +4,18 @@ import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
 
-    const product = await Product.findById(params.id).populate("category").lean();
+    const { id } = await params;
+    let product;
+
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      product = await Product.findById(id).populate("category").lean();
+    } else {
+      product = await Product.findOne({ slug: id }).populate("category").lean();
+    }
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -26,11 +33,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
-    const { id } = params;
+    const { id } = await params;
 
     await Product.findByIdAndDelete(id);
 
@@ -46,12 +53,12 @@ export async function DELETE(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
 
-    const { id } = params;
+    const { id } = await params;
     const formData = await req.formData();
 
     // ---------- BASIC FIELDS ----------

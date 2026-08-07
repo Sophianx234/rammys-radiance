@@ -1,22 +1,4 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import React, { Suspense } from "react";
 import {
   Table,
   TableHeader,
@@ -25,80 +7,18 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import {
   DollarSign,
   ShoppingBag,
   Users,
   Package,
   ArrowUpRight,
-  Search,
-  Filter,
-  XCircle,
 } from "lucide-react";
-
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import { GridLoader } from "react-spinners";
-
-// ------------------ Types -------------------
-
-type OrderStatus =
-  | "processing"
-  | "awaiting_payment"
-  | "paid"
-  | "awaiting_pickup"
-  | "packed"
-  | "ready_for_dispatch"
-  | "dispatched"
-  | "in_transit"
-  | "arrived"
-  | "delivery_attempted"
-  | "delivered"
-  | "cancelled";
-
-interface DashboardStats {
-  totalRevenue: number;
-  totalOrders: number;
-  totalCustomers: number;
-  lowStockCount: number;
-  descriptions: {
-    revenue?: string;
-    orders?: string;
-    customers?: string;
-    stock?: string;
-  };
-}
-
-interface RecentOrder {
-  _id: string;
-  customerName: string;
-  customerEmail: string;
-  totalAmount: number;
-  status: OrderStatus;
-  date: string;
-  avatar?: string;
-}
-
-interface StockAlert {
-  _id: string;
-  name: string;
-  stock: number;
-  price: number;
-  images: string[];
-}
-
-// ------------------ Helpers -------------------
+import { getDashboardStats, getRecentOrders, getSalesData, getStockAlerts } from "@/lib/admin-data";
+import { RecentOrdersFilter, SalesChartClient } from "./client-components";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("en-GH", {
@@ -106,418 +26,228 @@ const formatCurrency = (amount: number) =>
     currency: "GHS",
   }).format(amount);
 
-const statusColor = (status: OrderStatus) => {
-  const map: Record<OrderStatus, string> = {
-    delivered: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    processing: "bg-blue-100 text-blue-800 border-blue-200",
-    cancelled: "bg-red-100 text-red-800 border-red-200",
-    in_transit: "bg-amber-100 text-amber-800 border-amber-200",
-    awaiting_payment: "bg-orange-100 text-orange-800 border-orange-200",
-    awaiting_pickup: "bg-purple-100 text-purple-800 border-purple-200",
-    packed: "bg-indigo-100 text-indigo-800 border-indigo-200",
-    ready_for_dispatch: "bg-cyan-100 text-cyan-800 border-cyan-200",
-    dispatched: "bg-sky-100 text-sky-800 border-sky-200",
-    arrived: "bg-teal-100 text-teal-800 border-teal-200",
-    delivery_attempted: "bg-rose-100 text-rose-800 border-rose-200",
-    paid: "bg-lime-100 text-lime-800 border-lime-200",
+const getStatusColor = (status: string) => {
+  const map: Record<string, string> = {
+    delivered: "border-[#5B7763] text-[#5B7763] bg-[#5B7763]/5",
+    processing: "border-[#222222] text-[#222222] bg-secondary/30",
+    cancelled: "border-red-600 text-red-600 bg-red-50",
+    in_transit: "border-[#222222] text-[#222222] bg-secondary/30",
+    awaiting_payment: "border-[#222222] text-[#222222] bg-secondary/30",
+    awaiting_pickup: "border-[#222222] text-[#222222] bg-secondary/30",
+    packed: "border-[#222222] text-[#222222] bg-secondary/30",
+    ready_for_dispatch: "border-[#222222] text-[#222222] bg-secondary/30",
+    dispatched: "border-[#222222] text-[#222222] bg-secondary/30",
+    arrived: "border-[#5B7763] text-[#5B7763] bg-[#5B7763]/5",
+    delivery_attempted: "border-orange-600 text-orange-600 bg-orange-50",
+    paid: "border-[#5B7763] text-[#5B7763] bg-[#5B7763]/5",
   };
-
-  return map[status] || "bg-gray-100 text-gray-600";
+  return map[status] || "border-border/40 text-text-muted bg-transparent";
 };
 
-// ------------------ Component -------------------
+export default async function DashboardPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const searchParams = await props.searchParams;
+  const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : "all";
+  const searchQuery = typeof searchParams.search === 'string' ? searchParams.search : "";
 
-export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  return (
+    <div className="flex-1 space-y-8 pb-10 max-w-7xl mx-auto">
+      {/* ---------- HEADER ---------- */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
+        <div>
+          <h2 className="text-[18px] uppercase tracking-widest font-bold text-[#222222]">Overview</h2>
+          <p className="text-[12px] text-text-muted mt-1 uppercase tracking-wider font-medium">
+            Insight into your store performance and operations
+          </p>
+        </div>
+        <button className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors w-fit">
+          Download Report
+        </button>
+      </header>
 
-  // Data State
-  const [stats, setStats] = useState<DashboardStats>({
-    totalRevenue: 0,
-    totalOrders: 0,
-    totalCustomers: 0,
-    lowStockCount: 0,
-    descriptions: {},
-  });
-  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
-  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
-  const [salesChartData, setSalesChartData] = useState([]);
+      <Suspense fallback={<div className="h-[200px] flex items-center justify-center"><GridLoader size={18} color="#5B7763" /></div>}>
+        <StatsSection />
+      </Suspense>
 
-  // Filter State
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+      {/* ---------- SALES + INVENTORY ---------- */}
+      <section className="grid gap-5 lg:grid-cols-3">
+        <Suspense fallback={<div className="lg:col-span-2 h-[450px] bg-white border border-border/40 flex justify-center items-center"><GridLoader size={18} color="#5B7763" /></div>}>
+          <SalesChartSection />
+        </Suspense>
 
-  // ------------------ Fetch Data -------------------
+        <Suspense fallback={<div className="bg-white border border-border/40 flex justify-center items-center"><GridLoader size={18} color="#5B7763" /></div>}>
+          <StockAlertsSection />
+        </Suspense>
+      </section>
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [statsRes, ordersRes, salesRes, stockRes] = await Promise.all([
-          fetch("/api/admin/dashboard/stats", { cache: "no-store" }),
-          fetch(
-            `/api/admin/dashboard/recent-orders?status=${statusFilter}&search=${searchQuery}`,
-            { cache: "no-store" }
-          ),
-          fetch("/api/admin/dashboard/sales", { cache: "no-store" }),
-          fetch("/api/admin/dashboard/stock-alerts", { cache: "no-store" }),
-        ]);
+      {/* ---------- RECENT ORDERS ---------- */}
+      <section className="bg-white border border-border/40 overflow-hidden">
+        <div className="p-6 border-b border-border/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-[13px] uppercase tracking-widest font-bold text-[#222222]">Recent Orders</h3>
+            <p className="text-[11px] text-text-muted mt-1 uppercase tracking-wider">Latest transactions from your store</p>
+          </div>
+          <RecentOrdersFilter />
+        </div>
 
-        if (!statsRes.ok || !ordersRes.ok || !salesRes.ok || !stockRes.ok) {
-          throw new Error("One of the APIs failed");
-        }
+        <div className="overflow-x-auto">
+          <Suspense fallback={<div className="h-[300px] flex items-center justify-center"><GridLoader size={18} color="#5B7763" /></div>}>
+            <RecentOrdersSection status={statusFilter} search={searchQuery} />
+          </Suspense>
+        </div>
+      </section>
+    </div>
+  );
+}
 
-        const statsData = await statsRes.json();
-        const ordersData = await ordersRes.json();
-        const salesData = await salesRes.json();
-        const stockData = await stockRes.json();
+async function StatsSection() {
+  const stats = await getDashboardStats();
 
-        setStats({
-          totalRevenue: statsData.totalRevenue,
-          totalOrders: statsData.totalOrders,
-          totalCustomers: statsData.totalCustomers,
-          lowStockCount: statsData.lowStockCount,
-          descriptions: statsData.descriptions,
-        });
+  return (
+    <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      {[
+        { title: "Total Revenue", icon: DollarSign, value: `₵${stats.totalRevenue}`, desc: stats.descriptions?.revenue },
+        { title: "Orders", icon: ShoppingBag, value: stats.totalOrders, desc: stats.descriptions?.orders },
+        { title: "Active Customers", icon: Users, value: stats.totalCustomers, desc: stats.descriptions?.customers },
+        { title: "Low Stock Items", icon: Package, value: stats.lowStockCount, desc: stats.descriptions?.stock }
+      ].map((stat, i) => (
+        <div key={i} className="bg-white border border-border/40 p-6 flex flex-col justify-between h-full transition-all duration-300 hover:border-[#5B7763]/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] group cursor-default relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#5B7763]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          <div className="flex items-start justify-between mb-6">
+            <h3 className="text-[11px] uppercase tracking-wider font-bold text-text-muted group-hover:text-[#222222] transition-colors mt-1.5">{stat.title}</h3>
+            <div className="w-9 h-9 rounded-full bg-[#5B7763]/5 flex items-center justify-center group-hover:bg-[#5B7763]/10 group-hover:scale-110 transition-all duration-300">
+              <stat.icon className="w-4 h-4 text-[#5B7763]" strokeWidth={2} />
+            </div>
+          </div>
+          <div>
+            <p className="text-3xl font-semibold text-[#222222] mb-1.5 tracking-tight">{stat.value}</p>
+            <p className="text-[10px] uppercase tracking-wider text-text-muted/70 group-hover:text-text-muted transition-colors">{stat.desc || "N/A"}</p>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
 
-        setRecentOrders(ordersData.orders || []);
-        setSalesChartData(salesData.salesData || []);
-        setStockAlerts(stockData.stockAlerts || []);
-      } catch (err) {
-        console.error("Dashboard fetch failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+async function SalesChartSection() {
+  const salesChartData = await getSalesData();
+  
+  return (
+    <div className="lg:col-span-2 bg-white border border-border/40 p-6 flex flex-col">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-[13px] uppercase tracking-widest font-bold text-[#222222]">Sales Overview</h3>
+      </div>
+      <p className="text-[11px] text-text-muted uppercase tracking-wider mb-6">Revenue across the last 7 days</p>
+      <SalesChartClient data={salesChartData} />
+    </div>
+  );
+}
 
-    fetchAll();
-  }, [searchQuery, statusFilter]);
+async function StockAlertsSection() {
+  const stockAlerts = await getStockAlerts();
 
-  // --- Filtering Logic ---
-  const filteredOrders = recentOrders.filter((order) => {
-    const matchesSearch =
-      order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order._id.toLowerCase().includes(searchQuery.toLowerCase());
+  return (
+    <div className="bg-white border border-border/40 p-6 flex flex-col">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-[13px] uppercase tracking-widest font-bold text-[#222222]">Stock Alerts</h3>
+        <Link href="/admin/products" className="text-[10px] uppercase tracking-widest font-bold text-[#5B7763] hover:text-black transition-colors flex items-center">
+          View All <ArrowUpRight className="w-3 h-3 ml-1" />
+        </Link>
+      </div>
+      <p className="text-[11px] text-text-muted uppercase tracking-wider mb-6">Items needing attention</p>
+      
+      <div className="space-y-4 overflow-y-auto pr-2 max-h-[350px] custom-scrollbar">
+        {stockAlerts.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-[11px] uppercase tracking-widest text-text-muted">No stock alerts</p>
+          </div>
+        ) : (
+          stockAlerts.map((item: any) => (
+            <div key={item._id} className="flex items-center justify-between p-3 border border-border/40 hover:bg-[#5B7763]/5 transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-secondary/30 relative overflow-hidden">
+                  <Image
+                    src={item.images?.[0] || "/placeholder.svg"}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold text-[#222222] line-clamp-1 group-hover:text-[#5B7763] transition-colors">{item.name}</p>
+                  <p className="text-[11px] text-text-muted mt-0.5">{formatCurrency(item.price)}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="inline-block px-2 py-1 bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold uppercase tracking-wider">
+                  {item.stock} left
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
 
-    const matchesStatus =
-      statusFilter === "all" || order.status === statusFilter;
+async function RecentOrdersSection({ status, search }: { status: string, search: string }) {
+  const filteredOrders = await getRecentOrders(status, search);
 
-    return matchesSearch && matchesStatus;
-  });
-
-  if (loading) {
+  if (filteredOrders.length === 0) {
     return (
-      <div className="absolute sm:relative flex inset-0  sm:h-dvh  items-center justify-center">
-        <GridLoader size={24} color="#ffaf9f" />
+      <div className="p-12 text-center border-t border-border/40">
+        <p className="text-[13px] font-medium text-text-muted">No orders found matching your criteria.</p>
       </div>
     );
   }
 
-  // ------------------ UI -------------------
-
   return (
-    <div className="flex-1 space-y-8 pb-10">
-      {/* ---------- HEADER ---------- */}
-      <header className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
-            Insight into your store performance and operations.
-          </p>
-        </div>
-        <Button size="sm">Download Report</Button>
-      </header>
-
-      {/* ---------- STATS CARDS ---------- */}
-      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="shadow-sm border">
-          <CardHeader className="flex flex-row justify-between pb-2">
-            <CardTitle className="text-sm">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">₵{stats.totalRevenue}</p>
-            <p className="text-xs text-muted-foreground">
-              {stats.descriptions?.revenue}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm border">
-          <CardHeader className="flex flex-row justify-between pb-2">
-            <CardTitle className="text-sm">Orders</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalOrders}</p>
-            <p className="text-xs text-muted-foreground">
-              {stats.descriptions?.orders}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm border">
-          <CardHeader className="flex flex-row justify-between pb-2">
-            <CardTitle className="text-sm">Active Customers</CardTitle>
-            <Users className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalCustomers}</p>
-            <p className="text-xs text-muted-foreground">
-              {stats.descriptions?.customers}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm border">
-          <CardHeader className="flex flex-row justify-between pb-2">
-            <CardTitle className="text-sm">Low Stock Items</CardTitle>
-            <Package className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.lowStockCount}</p>
-            <p className="text-xs text-muted-foreground">
-              {stats.descriptions?.stock}
-            </p>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ---------- SALES + INVENTORY ---------- */}
-      <section className="grid gap-6 lg:grid-cols-7">
-        {/* SALES CHART */}
-        <Card className="shadow-sm border col-span-4">
-          <CardHeader>
-            <CardTitle>Sales Overview</CardTitle>
-            <CardDescription>Daily revenue for this week</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={salesChartData}>
-                  <defs>
-                    <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#ffaf9f" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="#ffaf9f" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="4 4" vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v) => `₵${v}`}
-                  />
-                  <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="sales"
-                    stroke="#ffaf9f"
-                    fill="url(#salesGradient)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* INVENTORY ALERTS */}
-        <Card className="shadow-sm border col-span-3">
-          <CardHeader className="flex justify-between">
-            <div>
-              <CardTitle>Inventory Alerts</CardTitle>
-              <CardDescription>Products running low on stock</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {stockAlerts.map((item) => (
-                <div key={item._id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={item?.images?.[0] || "/placeholder.png"}
-                      alt={item.name}
-                      className="h-10 w-10 rounded-md object-cover border"
-                    />
-                    <div>
-                      <p className="text-sm font-semibold">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.stock === 0
-                          ? "Out of stock"
-                          : `Only ${item.stock} left`}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm font-medium">₵{item.price}</p>
+    <Table>
+      <TableHeader className="bg-secondary/20">
+        <TableRow className="hover:bg-transparent border-border/40">
+          <TableHead className="text-[10px] uppercase tracking-widest font-bold text-text-muted h-12">Order ID</TableHead>
+          <TableHead className="text-[10px] uppercase tracking-widest font-bold text-text-muted h-12">Customer</TableHead>
+          <TableHead className="text-[10px] uppercase tracking-widest font-bold text-text-muted h-12">Date</TableHead>
+          <TableHead className="text-[10px] uppercase tracking-widest font-bold text-text-muted h-12">Status</TableHead>
+          <TableHead className="text-[10px] uppercase tracking-widest font-bold text-text-muted h-12 text-right">Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {filteredOrders.map((order: any) => (
+          <TableRow key={order._id} className="border-border/40 hover:bg-secondary/10 transition-colors cursor-pointer group">
+            <TableCell className="font-medium text-[13px] text-[#222222] group-hover:text-[#5B7763] transition-colors">
+              <Link href={`/admin/orders/${order._id}`}>#{order._id.slice(-6).toUpperCase()}</Link>
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-secondary/50 border border-border/40 flex items-center justify-center overflow-hidden">
+                  {order.avatar ? (
+                    <img src={order.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-[10px] font-bold text-text-muted">{order.initials}</span>
+                  )}
                 </div>
-              ))}
-
-              {stockAlerts.length === 0 && (
-                <p className="text-muted-foreground text-sm text-center py-4">
-                  Inventory looks good!
-                </p>
-              )}
-            </div>
-
-            <Button
-              variant="outline"
-              className="w-full mt-5"
-              onClick={() => router.push("/admin/inventory")}
-            >
-              View All Inventory
-            </Button>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ---------- RECENT ORDERS ---------- */}
-      <Card className="shadow-sm border">
-        <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <CardTitle>Recent Orders</CardTitle>
-              <CardDescription>
-                {filteredOrders.length} orders match your filters
-              </CardDescription>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              {/* Status Filter */}
-              <div className="w-full sm:w-[150px]">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-muted-foreground" />
-                      <SelectValue placeholder="Status" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
-                    <SelectItem value="awaiting_payment">
-                      Awaiting Payment
-                    </SelectItem>
-                    <SelectItem value="awaiting_pickup">
-                      Awaiting Pickup
-                    </SelectItem>
-                    <SelectItem value="in_transit">In Transit</SelectItem>
-                    <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div>
+                  <p className="text-[13px] font-bold text-[#222222]">{order.customerName}</p>
+                  <p className="text-[11px] text-text-muted">{order.customerEmail}</p>
+                </div>
               </div>
-
-              {/* Search Input */}
-              <div className="relative w-full sm:w-[250px]">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search name, email, ID..."
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-
-              {/* View All */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/admin/orders")}
-              >
-                <ArrowUpRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Customer</TableHead>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {filteredOrders.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <XCircle className="h-8 w-8 text-gray-300" />
-                      <p>No orders found matching your filters.</p>
-                      <Button
-                        variant="link"
-                        onClick={() => {
-                          setSearchQuery("");
-                          setStatusFilter("all");
-                        }}
-                      >
-                        Clear Filters
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredOrders.map((order) => (
-                  <TableRow key={order._id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={order.avatar} />
-                          <AvatarFallback>
-                            {order.customerName.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{order.customerName}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {order.customerEmail}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="font-mono text-xs">
-                      {order._id}
-                    </TableCell>
-
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={`capitalize border ${statusColor(order.status)}`}
-                      >
-                        {order.status.replace("_", " ")}
-                      </Badge>
-                    </TableCell>
-
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(order.date).toLocaleDateString()}
-                    </TableCell>
-
-                    <TableCell className="text-right font-semibold">
-                      {formatCurrency(order.totalAmount)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+            </TableCell>
+            <TableCell className="text-[12px] text-text-muted">
+              {new Date(order.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </TableCell>
+            <TableCell>
+              <span className={`px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border ${getStatusColor(order.status)}`}>
+                {order.status.replace(/_/g, " ")}
+              </span>
+            </TableCell>
+            <TableCell className="text-right text-[13px] font-bold text-[#222222]">
+              {formatCurrency(order.totalAmount)}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

@@ -13,6 +13,8 @@ export interface IProduct extends Document {
   description: string;
   category: mongoose.Types.ObjectId;
   price: number;
+  discountPrice?: number;
+  discountBadge?: string;
   images: string[];
   features: string[];
   rating: number;
@@ -33,6 +35,8 @@ const productSchema = new Schema<IProduct>(
     description: { type: String, required: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     price: { type: Number, required: true },
+    discountPrice: { type: Number },
+    discountBadge: { type: String },
     images: [{ type: String, required: true }],
     features: [String],
     rating: { type: Number, default: 0 },

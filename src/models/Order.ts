@@ -2,13 +2,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export type OrderStatus =
   | "processing"
-  | "packed"
-  |'ready_for_pickup'
-  | "ready_for_dispatch"
-  | "dispatched"
   | "in_transit"
   | "arrived"
-  | "delivery_attempted"
   | "delivered"
   | "cancelled";
 
@@ -38,6 +33,8 @@ export interface IOrder extends Document {
     address: string;   // street
     city: string;
     region: string;    // Shadcn select
+    lat?: number;
+    lng?: number;
   };
 
   orderStatus: OrderStatus;
@@ -84,19 +81,16 @@ const orderSchema = new Schema<IOrder>(
       address: { type: String, required: true }, // street
       city: { type: String, required: true },
       region: { type: String, required: true },
+      lat: { type: Number },
+      lng: { type: Number },
     },
 
     orderStatus: {
       type: String,
       enum: [
         "processing",
-        "ready_for_pickup",
-        "packed",
-        "ready_for_dispatch",
-        "dispatched",
         "in_transit",
         "arrived",
-        "delivery_attempted",
         "delivered",
         "cancelled",
       ],
