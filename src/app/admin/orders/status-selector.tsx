@@ -1,10 +1,18 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { STATUS_CONFIG } from "./page";
+import { STATUS_CONFIG } from "./utils";
 
-export default function StatusSelector({ current, onChange }: { current: string; onChange: (v: string) => void }) {
-  const conf = STATUS_CONFIG[current] || { label: current, color: "bg-secondary/50 text-[#222222] border-border/40" };
+export default function StatusSelector({
+  currentStatus,
+  paymentReference,
+  onUpdate,
+}: {
+  currentStatus: string;
+  paymentReference: string;
+  onUpdate: (ref: string, newStatus: string) => void;
+}) {
+  const conf = STATUS_CONFIG[currentStatus] || { label: currentStatus, color: "bg-secondary/50 text-[#222222] border-border/40" };
   return (
-    <Select value={current} onValueChange={(v) => onChange(v)} >
+    <Select value={currentStatus} onValueChange={(v) => onUpdate(paymentReference, v)}>
       <SelectTrigger className={`h-8 text-[9px] uppercase tracking-wider w-[140px] border ${conf.color} font-bold rounded-none focus:ring-0 px-2 shadow-none`}>
         <SelectValue>{conf.label}</SelectValue>
       </SelectTrigger>

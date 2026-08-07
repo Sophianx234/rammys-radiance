@@ -155,19 +155,8 @@ export const getAllOrders = cache(async (params: { page: number, limit: number, 
     
   const totalOrders = await Order.countDocuments(query);
   
-  // Serialize dates and objects
-  const serializedOrders = orders.map((o: any) => ({
-    ...o,
-    _id: o._id.toString(),
-    user: o.user ? { ...o.user, _id: o.user._id.toString() } : null,
-    items: o.items.map((i: any) => ({
-      ...i,
-      _id: i._id?.toString(),
-      product: i.product ? { ...i.product, _id: i.product._id.toString() } : null
-    })),
-    createdAt: o.createdAt.toISOString(),
-    updatedAt: o.updatedAt.toISOString(),
-  }));
+  // Deeply serialize to remove any remaining ObjectIds or Date objects
+  const serializedOrders = JSON.parse(JSON.stringify(orders));
   
   return {
     orders: serializedOrders,
@@ -201,10 +190,10 @@ export const getAllCustomers = cache(async (search?: string, role?: string) => {
 
   const orderMap = new Map(orderCounts.map((o) => [String(o._id), o.count]));
 
-  return users.map((user: any) => ({
+  const serializedUsers = JSON.parse(JSON.stringify(users));
+
+  return serializedUsers.map((user: any) => ({
     ...user,
-    _id: user._id.toString(),
-    createdAt: user.createdAt?.toISOString() || null,
     orders: orderMap.get(String(user._id)) || 0
   }));
 });

@@ -123,11 +123,13 @@ export default function SignupPage() {
         }
 
         // Skip the image upload step and go straight to the home page or redirect.
-        // Using window.location.href forces a hard reload so the Navbar updates with user info!
+        // Using router.push and router.refresh to force a hard reload so the Navbar updates with user info!
         if (redirect) {
-          window.location.href = redirect;
+          router.push(redirect);
+          router.refresh();
         } else {
-          window.location.href = "/";
+          router.push("/");
+          router.refresh();
         }
       } else {
         setError(data.message || "Something went wrong");

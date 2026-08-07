@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Menu, X, Home, ShoppingBag, User, Heart, LogOut, Sun, Moon, BarChart3 } from "lucide-react"
 import { useDashStore } from "@/lib/store"
 import { useTheme } from "next-themes"
 
 export default function Sidebar() {
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const { user, setUser } = useDashStore()
   const isLoggedIn = !!user
@@ -17,7 +19,8 @@ export default function Sidebar() {
     try {
       await fetch("/api/auth/logout", { method: "POST" })
       setUser(null)
-      window.location.href = "/login"
+      router.push("/login")
+      router.refresh()
     } catch(e) {}
   }
 

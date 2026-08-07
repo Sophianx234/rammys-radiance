@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Heart, Share2, Check, Star, Plus, Minus } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { IProduct } from "@/models/Product";
+import type { IProduct } from "@/models/Product";
 import { useDashStore } from "@/lib/store";
 import ProductImageSlider from "./product-images-slider";
 import withReactContent from "sweetalert2-react-content";
@@ -17,6 +18,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [reviewMessage, setReviewMessage] = useState<{ type: 'success' | 'error' | 'warning', text: string } | null>(null);
+  const router = useRouter();
   const { setCart, user } = useDashStore();
 
   // Fetch true wishlist status on mount
@@ -78,7 +80,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
 
   const handleWishlist = async () => {
     if (!user) {
-      window.location.href = "/login";
+      router.push("/login");
       return;
     }
     

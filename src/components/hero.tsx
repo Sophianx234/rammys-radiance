@@ -63,29 +63,45 @@ export default function Hero() {
 
   const slideVariants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 100 : -100,
+      x: direction > 0 ? "15%" : "-15%",
+      scale: 1.05,
       opacity: 0,
     }),
     center: {
       zIndex: 1,
       x: 0,
+      scale: 1,
       opacity: 1,
-      transition: { duration: 0.8, ease: "easeOut" }
+      transition: { 
+        x: { type: "spring", stiffness: 70, damping: 20, mass: 1 },
+        opacity: { duration: 0.8, ease: "easeInOut" },
+        scale: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
+      }
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      x: direction < 0 ? 100 : -100,
+      x: direction < 0 ? "15%" : "-15%",
+      scale: 0.95,
       opacity: 0,
-      transition: { duration: 0.8, ease: "easeIn" }
+      transition: { 
+        x: { type: "spring", stiffness: 70, damping: 20, mass: 1 },
+        opacity: { duration: 0.8, ease: "easeInOut" },
+        scale: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+      }
     })
   };
 
   const textVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
     visible: (custom: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: custom * 0.15 + 0.3, duration: 0.8, ease: "easeOut" }
+      filter: "blur(0px)",
+      transition: { 
+        delay: custom * 0.15 + 0.3, 
+        duration: 0.9, 
+        ease: [0.16, 1, 0.3, 1] 
+      }
     })
   };
 

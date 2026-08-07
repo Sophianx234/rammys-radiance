@@ -159,11 +159,9 @@ export function InventoryClient({ products }: { products: any[] }) {
                             Copy ID
                           </DropdownMenuItem>
                           <DropdownMenuItem>Edit Product</DropdownMenuItem>
-                          {user?.role === "admin" && (
-                            <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                              Delete Product
-                            </DropdownMenuItem>
-                          )}
+                          <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                            Delete Product
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

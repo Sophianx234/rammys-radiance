@@ -66,18 +66,7 @@ export type OrderStatus =
   | "cancelled"
   | "failed";
 
-export type PaymentStatus = "pending" | "paid" | "failed";
-
-export const STATUS_CONFIG: Record<
-  string,
-  { label: string; color: string; icon: any }
-> = {
-  processing: { label: "Processing", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: Clock },
-  in_transit: { label: "In Transit", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
-  arrived: { label: "Arrived", color: "bg-secondary/50 text-[#222222] border-border/40", icon: Truck },
-  delivered: { label: "Delivered", color: "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20", icon: CheckCircle },
-  cancelled: { label: "Cancelled", color: "bg-red-50 text-red-700 border-red-200", icon: XCircle },
-};
+import { STATUS_CONFIG, formatCurrency, formatDate } from "./utils";
 
 const Toast = withReactContent(Swal).mixin({
   toast: true,
@@ -90,12 +79,6 @@ const Toast = withReactContent(Swal).mixin({
     title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
   },
 });
-
-export const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS" }).format(amount);
-
-export const formatDate = (d?: string) =>
-  d ? new Date(d).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
 
 export function OrdersClient({ initialOrders, pagination }: { initialOrders: any[], pagination: any }) {
   const router = useRouter();
@@ -321,7 +304,7 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
 
       {/* ORDERS TABLE */}
       <div className="bg-white border border-border/40">
-        {user?.role !== "dispatch" && user?.role !== "dispatcher" && selectedOrders.size > 0 && (
+        {selectedOrders.size > 0 && (
           <div className="bg-secondary/20 border-b border-border/40 px-4 py-3 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
             <div className="flex items-center gap-4">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#222222]">
@@ -435,18 +418,11 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                         <div className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">{order.items?.length || 0} ITEMS</div>
                       </td>
                       <td className="py-4 px-4" onClick={e => e.stopPropagation()}>
-                        {user?.role === "dispatch" || user?.role === "dispatcher" ? (
-                          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 border text-[10px] font-bold uppercase tracking-wider ${STATUS_CONFIG[order.orderStatus]?.color || "bg-secondary/50 text-text-muted"}`}>
-                            <StatusIcon className="w-3.5 h-3.5" strokeWidth={2.5} />
-                            {STATUS_CONFIG[order.orderStatus]?.label || order.orderStatus}
-                          </div>
-                        ) : (
                           <StatusSelector 
                             currentStatus={order.orderStatus} 
                             paymentReference={order.paymentReference} 
                             onUpdate={handleStatusUpdate} 
                           />
-                        )}
                       </td>
                       <td className="py-4 px-4">
                         <PaymentBadge status={order.paymentStatus} />
@@ -469,17 +445,13 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                               <ExternalLink className="mr-2 h-3.5 w-3.5" /> View Details
                             </DropdownMenuItem>
                             
-                            {user?.role !== "dispatch" && user?.role !== "dispatcher" && (
-                              <>
-                                <DropdownMenuSeparator className="bg-border/40 my-1" />
-                                <DropdownMenuItem 
-                                  className="text-[11px] uppercase tracking-wider font-bold text-red-600 rounded-none focus:bg-red-50 focus:text-red-700 cursor-pointer"
-                                  onClick={() => handleDelete(order._id)}
-                                >
-                                  <XCircle className="mr-2 h-3.5 w-3.5" /> Delete Order
-                                </DropdownMenuItem>
-                              </>
-                            )}
+                            <DropdownMenuSeparator className="bg-border/40 my-1" />
+                            <DropdownMenuItem 
+                              className="text-[11px] uppercase tracking-wider font-bold text-red-600 rounded-none focus:bg-red-50 focus:text-red-700 cursor-pointer"
+                              onClick={() => handleDelete(order._id)}
+                            >
+                              <XCircle className="mr-2 h-3.5 w-3.5" /> Delete Order
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
@@ -548,7 +520,7 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
 
       {/* ORDER DETAILS MODAL */}
       <Dialog open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <DialogContent className="max-w-4xl p-0 gap-0 bg-white border border-border/40 rounded-none shadow-2xl h-[90vh] md:h-auto md:max-h-[85vh] overflow-hidden flex flex-col my-4 mx-4 md:mx-auto">
+        <DialogContent showCloseButton={false} className="max-w-4xl p-0 gap-0 bg-white border border-border/40 rounded-none shadow-2xl h-[90vh] md:h-[85vh] overflow-hidden flex flex-col my-4 mx-4 md:mx-auto">
           {selectedOrder && (
             <OrderDetailsSheetContent 
               order={selectedOrder} 

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { IProduct } from "@/models/Product";
+import type { IProduct } from "@/models/Product";
 import { Badge } from "@/components/ui/badge";
 
 interface Product {

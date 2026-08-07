@@ -1,8 +1,14 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { formatCurrency, formatDate, OrderItem, ProductSummary, ServerOrder, STATUS_CONFIG } from "./page";
-import { ExternalLink, MapPin, Package, User, X } from "lucide-react";
+import { formatCurrency, formatDate, STATUS_CONFIG } from "./utils";
+type ServerOrder = any;
+type OrderItem = any;
+type ProductSummary = any;
+import { ExternalLink, MapPin, Package, User, X, ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useRef, useEffect } from "react";
+import OrderMap from "./order-map";
+import { Switch } from "@/components/ui/switch";
 
 
 export default function OrderDetailsSheetContent({
@@ -28,6 +34,23 @@ export default function OrderDetailsSheetContent({
       title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
     },
   });
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScroll, setCanScroll] = useState(false);
+  const [isMapInteractive, setIsMapInteractive] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      setCanScroll(scrollHeight > clientHeight && scrollTop < scrollHeight - clientHeight - 1);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, []);
 
   const normalizeItem = (it: OrderItem) => {
     const prod = typeof it.product === "string" ? { _id: it.product, name: "Product", image: null, price: it.price || 0 } : (it.product as ProductSummary);
@@ -63,13 +86,8 @@ export default function OrderDetailsSheetContent({
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-             <div className="text-[11px] uppercase tracking-wider font-bold text-text-muted">Status:</div>
-             {userRole === "dispatch" || userRole === "dispatcher" ? (
-               <div className="h-9 w-56 px-3 flex items-center border border-border/40 text-[11px] uppercase tracking-wider font-bold bg-secondary/10">
-                 {STATUS_CONFIG[order.orderStatus]?.label ?? order.orderStatus}
-               </div>
-             ) : (
+             <div className="flex items-center gap-4">
+               <div className="text-[11px] uppercase tracking-wider font-bold text-text-muted">Status:</div>
                <Select value={order.orderStatus} onValueChange={(v) => onStatusChange(order.paymentReference, v)} >
                   <SelectTrigger className="h-9 w-56 text-[11px] uppercase tracking-wider font-bold border-border/40 rounded-none focus:ring-0 bg-white shadow-none">
                     <SelectValue>{STATUS_CONFIG[order.orderStatus]?.label ?? order.orderStatus}</SelectValue>
@@ -82,12 +100,16 @@ export default function OrderDetailsSheetContent({
                     ))}
                   </SelectContent>
                </Select>
-             )}
-          </div>
+             </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-8">
+      <div className="flex-1 relative overflow-hidden bg-[#fdfbf7]">
+        <div 
+          ref={scrollRef}
+          onScroll={checkScroll}
+          className="absolute inset-0 overflow-y-auto p-6 space-y-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
         
         {/* ITEMS */}
         <section>
@@ -176,23 +198,34 @@ export default function OrderDetailsSheetContent({
                   <div className="text-[12px] text-[#222222] mt-1 font-medium">{order.deliveryAddress.region}</div>
                 </div>
               </div>
-
-              {order.deliveryAddress.lat && order.deliveryAddress.lng && (
-                <div className="pt-4 border-t border-border/40">
-                  <div className="text-[9px] uppercase tracking-widest font-bold text-text-muted mb-2">Location Map</div>
-                  <div className="w-full h-32 bg-secondary/20 border border-border/40 overflow-hidden relative">
-                    <img
-                      src={`https://api.maptiler.com/maps/streets-v2/static/${order.deliveryAddress.lng},${order.deliveryAddress.lat},15/600x300.png?markers=${order.deliveryAddress.lng},${order.deliveryAddress.lat}&key=${process.env.NEXT_PUBLIC_MAPTILER_PUBLIC_KEY}`}
-                      alt="Delivery Location"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           </section>
         </div>
 
+        {/* FULL WIDTH MAP */}
+        {order.deliveryAddress?.lat && order.deliveryAddress?.lng && (
+          <section className="pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+              <h3 className="text-[11px] uppercase tracking-widest font-bold text-[#222222] flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#5B7763]" strokeWidth={1.5} />
+                Location Map
+              </h3>
+              <div className="flex items-center gap-3 bg-secondary/10 px-3 py-1.5 border border-border/40">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-text-muted">Interactive</span>
+                <Switch checked={isMapInteractive} onCheckedChange={setIsMapInteractive} />
+              </div>
+            </div>
+            <OrderMap lat={order.deliveryAddress.lat} lng={order.deliveryAddress.lng} isInteractive={isMapInteractive} />
+          </section>
+        )}
+
+        </div>
+
+        {canScroll && (
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none pb-2 pt-8 bg-gradient-to-t from-[#fdfbf7] via-[#fdfbf7]/80 to-transparent z-10">
+            <ChevronDown className="w-5 h-5 text-text-muted" />
+          </div>
+        )}
       </div>
 
       {/* FOOTER ACTIONS */}
@@ -207,14 +240,12 @@ export default function OrderDetailsSheetContent({
           >
             <ExternalLink className="w-3.5 h-3.5" /> Download Invoice
           </button>
-          {userRole === "admin" && (
-            <button 
-              onClick={() => onDelete(order._id as string)}
-              className="border border-red-200 bg-red-50 text-red-600 px-4 py-2.5 text-[10px] uppercase tracking-wider font-bold hover:bg-red-100 transition-colors"
-            >
-              Delete Order
-            </button>
-          )}
+          <button 
+            onClick={() => onDelete(order._id as string)}
+            className="h-10 px-6 flex items-center gap-2 border border-red-200 text-red-600 font-bold text-[11px] uppercase tracking-widest hover:bg-red-50 transition-colors"
+          >
+            Delete Order
+          </button>
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useDashStore } from "@/lib/store";
-import { IUser } from "@/models/User";
+import type { IUser } from "@/models/User";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 

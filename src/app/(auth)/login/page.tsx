@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { IUser } from "@/models/User";
+import type { IUser } from "@/models/User";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
@@ -71,7 +71,8 @@ export default function LoginPage() {
           }
 
           if (redirect) {
-            window.location.href = redirect;
+            router.push(redirect);
+            router.refresh();
           } else if (userRole === "admin") {
             router.push("/admin/products");
           } else if (userRole === "dispatcher") {

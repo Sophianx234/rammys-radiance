@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { useDashStore } from "@/lib/store";
 import { useRouter, useSearchParams } from "next/navigation";
-import { IOrder } from "@/models/Order";
+import type { IOrder } from "@/models/Order";
 import Image from "next/image";
 import DeliveryMap from "@/components/delivery-map";
 import { usePaystackPayment } from "react-paystack";
