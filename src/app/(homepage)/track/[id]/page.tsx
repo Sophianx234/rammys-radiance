@@ -8,6 +8,7 @@ import Link from "next/link";
 
 
 import { Order } from "@/models/Order";
+import "@/models/Product";
 import { connectToDatabase } from "@/lib/connectDB";
 
 export default async function TrackOrderPage({
