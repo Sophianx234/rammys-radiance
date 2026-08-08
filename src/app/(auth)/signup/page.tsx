@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -21,13 +21,9 @@ export default function SignupPage() {
     }
   }, []);
 
-  let redirect = "";
-  let cartParam = "";
-  if (typeof window !== "undefined") {
-    const searchParams = new URLSearchParams(window.location.search);
-    redirect = searchParams.get("redirect") || "";
-    cartParam = searchParams.get("cart") || "";
-  }
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "";
+  const cartParam = searchParams.get("cart") || "";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -123,6 +119,7 @@ export default function SignupPage() {
           }
         }
 
+<<<<<<< HEAD
         try {
           const resMe = await fetch("/api/auth/me");
           if (resMe.ok) {
@@ -137,12 +134,13 @@ export default function SignupPage() {
         }
 
         // Skip the image upload step and go straight to the home page or redirect.
+=======
+>>>>>>> ed8afbe (Fix cart syncing during guest checkout and URL param fallback)
         if (redirect) {
-          router.push(redirect);
-          router.refresh();
+          const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
+          window.location.href = redirectUrl;
         } else {
-          router.push("/");
-          router.refresh();
+          window.location.href = "/";
         }
       } else {
         setError(data.message || "Something went wrong");

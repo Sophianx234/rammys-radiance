@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { IUser } from "@/models/User";
@@ -23,13 +23,9 @@ export default function LoginPage() {
     }
   }, []);
 
-  let redirect = "";
-  let cartParam = "";
-  if (typeof window !== "undefined") {
-    const searchParams = new URLSearchParams(window.location.search);
-    redirect = searchParams.get("redirect") || "";
-    cartParam = searchParams.get("cart") || "";
-  }
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "";
+  const cartParam = searchParams.get("cart") || "";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +52,7 @@ export default function LoginPage() {
         if (resMe.ok) {
           const userRole = (userData.user as IUser).role;
           
-          if (userRole === "user" && cartParam) {
+          if (["user", "customer"].includes(userRole) && cartParam) {
             try {
               const cartItems = JSON.parse(decodeURIComponent(cartParam));
               if (cartItems.length > 0) {
@@ -82,8 +78,9 @@ export default function LoginPage() {
           }
 
           if (redirect) {
-            router.push(redirect);
-            router.refresh();
+            const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
+            // Force a full reload to ensure global state fetches fresh from DB
+            window.location.href = redirectUrl;
           } else if (userRole === "admin") {
             router.push("/admin/products");
           } else if (userRole === "dispatcher") {

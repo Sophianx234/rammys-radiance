@@ -14,7 +14,28 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const data = await req.json();
 
-    // Validate stock first BEFORE creating the order
+    if (!data.reference) {
+      return NextResponse.json({ success: false, error: "Payment reference is required." }, { status: 400 });
+    }
+
+    // 1. Verify Payment with Paystack
+    const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY || process.env.NEXT_PUBLIC_PAYSTACK_LIVE_KEY;
+    const verifyResponse = await fetch(`https://api.paystack.co/transaction/verify/${data.reference}`, {
+      headers: { Authorization: `Bearer ${paystackSecretKey}` },
+    });
+    const verifyData = await verifyResponse.json();
+
+    if (!verifyResponse.ok || !verifyData.status || verifyData.data.status !== "success") {
+      return NextResponse.json({ success: false, error: "Payment verification failed." }, { status: 400 });
+    }
+
+    const amountPaid = verifyData.data.amount / 100;
+
+    // 2. Calculate true total from database
+    let calculatedTotal = 0;
+    const orderItems = [];
+
+    // Validate stock and calculate total BEFORE creating the order
     for (const item of data.cart) {
       const product = await Product.findById(item._id);
 
@@ -34,9 +55,28 @@ export async function POST(req: Request) {
           { status: 400 }
         );
       }
+      
+      calculatedTotal += product.price * item.quantity;
+      
+      orderItems.push({
+        product: product._id,
+        quantity: item.quantity,
+        price: product.price, // Trust the database price!
+      });
     }
 
-    // Deduct stock
+    const deliveryFee = orderItems.length > 0 ? 50 : 0;
+    calculatedTotal += deliveryFee;
+
+    // 3. Verify that the paid amount matches the calculated total
+    if (Math.abs(amountPaid - calculatedTotal) > 0.01) {
+       return NextResponse.json(
+         { success: false, error: `Payment amount (GHS ${amountPaid}) does not match order total (GHS ${calculatedTotal}).` }, 
+         { status: 400 }
+       );
+    }
+
+    // 4. Deduct stock
     for (const item of data.cart) {
       await Product.findByIdAndUpdate(item._id, {
         $inc: { stock: -item.quantity },
@@ -44,7 +84,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Create the order after successful stock deduction
+    // 5. Create the order after successful stock deduction
     const newOrder = await Order.create({
       user: data.userId,
       customer: {
@@ -59,13 +99,9 @@ export async function POST(req: Request) {
         lng: data.formData.lng,
       },
 
-      items: data.cart.map((item: any) => ({
-        product: item._id,
-        quantity: item.quantity,
-        price: item.price,
-      })),
+      items: orderItems,
 
-      totalAmount: data.total,
+      totalAmount: calculatedTotal,
       paymentStatus: "paid",
       paymentReference: data.reference,
       orderStatus: "processing",

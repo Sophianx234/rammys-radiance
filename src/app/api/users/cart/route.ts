@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
     if (!user)
       return NextResponse.json({ message: "User not found" }, { status: 404 });
 
+    if (!user.cart) {
+      user.cart = [];
+    }
+
     if (Array.isArray(body)) {
       for (const item of body) {
         const cartItem = user.cart.find(

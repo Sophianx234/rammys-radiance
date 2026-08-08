@@ -32,6 +32,54 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Explicitly fetch user and cart from DB to ensure checkout page is 100% accurate
+    const syncWithDB = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            useDashStore.getState().setUser(data.user);
+            if (data.user.cart && data.user.cart.length > 0) {
+              useDashStore.getState().loadCart(data.user.cart);
+              return; // DB sync successful
+            }
+          }
+        }
+        
+        // Fallback: If DB cart was empty, but we have URL params, fetch products directly
+        const cartParam = searchParams.get("cart");
+        if (cartParam) {
+          const items = JSON.parse(decodeURIComponent(cartParam));
+          if (items.length > 0) {
+            // Fetch product details for these items
+            const productsRes = await fetch("/api/products?limit=100");
+            if (productsRes.ok) {
+              const prodData = await productsRes.json();
+              const allProducts = prodData.data?.products || [];
+              
+              const reconstructedCart = items.map((item: any) => {
+                const product = allProducts.find((p: any) => p._id.toString() === item.productId);
+                if (product) {
+                  return { product, quantity: item.quantity };
+                }
+                return null;
+              }).filter(Boolean);
+              
+              if (reconstructedCart.length > 0) {
+                useDashStore.getState().loadCart(reconstructedCart);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to sync cart from DB in checkout", e);
+      }
+    };
+    syncWithDB();
+  }, []);
+
+  useEffect(() => {
     if (user) {
       setFormData((prev) => ({
         ...prev,
