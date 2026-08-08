@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Order } from "@/models/Order";
+import { Product } from "@/models/Product";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { DecodedToken } from "@/lib/jwtConfig";
 
-
 export async function GET(req:NextRequest) {
   try {
     await connectToDatabase();
-const token = req.cookies.get("token")?.value;
+    Product.init(); // Prevent tree shaking
+    const token = req.cookies.get("token")?.value;
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
