@@ -39,7 +39,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   
   const toggleFavorite = async (id: string) => {
     if (!user) {
-      router.push("/login");
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     

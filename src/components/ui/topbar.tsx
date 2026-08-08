@@ -35,6 +35,14 @@ export default function Topbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleProfileClick = () => {
+    if (user) {
+      router.push("/profile");
+    } else {
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       setLoading(true);

@@ -65,14 +65,16 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
   const handleAddToCart = async () => {
     try {
       setCart(product, quantity);
-      const res = await fetch("/api/users/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product._id, quantity }),
-      });
-      if (!res.ok) return;
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
+      
+      if (user) {
+        await fetch("/api/users/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: product._id, quantity }),
+        });
+      }
     } catch (err) {
       console.error("Cart request failed:", err);
     }
@@ -80,7 +82,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
 
   const handleWishlist = async () => {
     if (!user) {
-      router.push("/login");
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     

@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
     e.stopPropagation();
 
     if (!user) {
-      router.push("/login");
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 

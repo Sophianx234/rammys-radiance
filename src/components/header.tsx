@@ -212,11 +212,19 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
-      if (!res.ok) return console.error("Logout failed");
+      if (!res.ok) return;
       setUser(null);
       router.push("/login");
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleProfileClick = () => {
+    if (user) {
+      router.push("/profile");
+    } else {
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
     }
   };
 
