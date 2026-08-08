@@ -1,5 +1,6 @@
 // models/Product.ts
 import mongoose, { Schema, Document, Model } from "mongoose";
+import "./Category"; // Ensure Category schema is registered before Product populates it
 
 export interface IVariant {
   name: string;        // e.g. "shade" or "size"
