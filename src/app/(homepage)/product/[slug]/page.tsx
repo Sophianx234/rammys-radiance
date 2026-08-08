@@ -7,6 +7,8 @@ import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
 import mongoose from "mongoose";
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   
@@ -17,10 +19,12 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
     await connectToDatabase();
     
     let product;
-    if (/^[0-9a-fA-F]{24}$/.test(slug)) {
-      product = await Product.findById(slug).populate("category").lean();
+    const decodedSlug = decodeURIComponent(slug);
+    
+    if (/^[0-9a-fA-F]{24}$/.test(decodedSlug)) {
+      product = await Product.findById(decodedSlug).populate("category").lean();
     } else {
-      product = await Product.findOne({ slug }).populate("category").lean();
+      product = await Product.findOne({ slug: { $regex: new RegExp(`^${decodedSlug}$`, "i") } }).populate("category").lean();
     }
     
     if (product) {
@@ -32,9 +36,11 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
       }).limit(4).lean();
       
       similarProducts = JSON.parse(JSON.stringify(related));
+    } else {
+      console.error(`Product not found for slug: ${decodedSlug}`);
     }
   } catch (err) {
-    console.error("Failed to fetch product from DB", err);
+    console.error("Failed to fetch product from DB:", err);
   }
 
   if (!data) {
