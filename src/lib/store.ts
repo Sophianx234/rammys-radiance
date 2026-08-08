@@ -1,6 +1,7 @@
 import { IProduct } from "@/models/Product";
 import { IUser } from "@/models/User";
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export type storeState = {
   user: IUser | null;
@@ -16,9 +17,11 @@ export type storeState = {
   loadCart: (cartItems: { product: IProduct; quantity: number }[]) => void;
 };
 
-export const useDashStore = create<storeState>((set,get) => ({
-  user: null,
-  cart: [],
+export const useDashStore = create<storeState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      cart: [],
   setUser: (user: IUser|null) => set(() => ({ user })),
   setCart: (product: IProduct, qty: number) =>
   set((state) => {
@@ -61,9 +64,14 @@ loadCart: (cartItems) =>
   clearCart: () => set({ cart: [] }),
 
   // Computed: total cost
- cartTotal: () => {
+  cartTotal: () => {
     return get().cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }, 
 
-
-}));
+}),
+{
+  name: "rammys-radiance-store",
+  storage: createJSONStorage(() => localStorage),
+  partialize: (state) => ({ cart: state.cart }),
+}
+));
