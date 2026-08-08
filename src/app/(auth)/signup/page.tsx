@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { useDashStore } from "@/lib/store";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -122,8 +123,20 @@ export default function SignupPage() {
           }
         }
 
+        try {
+          const resMe = await fetch("/api/auth/me");
+          if (resMe.ok) {
+            const userData = await resMe.json();
+            useDashStore.getState().setUser(userData.user);
+            if (userData.user.cart) {
+              useDashStore.getState().loadCart(userData.user.cart);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to hydrate state", e);
+        }
+
         // Skip the image upload step and go straight to the home page or redirect.
-        // Using router.push and router.refresh to force a hard reload so the Navbar updates with user info!
         if (redirect) {
           router.push(redirect);
           router.refresh();

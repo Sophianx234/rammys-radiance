@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { IUser } from "@/models/User";
 import { Button } from "@/components/ui/button";
+import { useDashStore } from "@/lib/store";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,8 +51,8 @@ export default function LoginPage() {
       }
 
       if (res.ok) {
-        const resMe = await fetch("/api/auth/me");
-        const userData = await resMe.json();
+        let resMe = await fetch("/api/auth/me");
+        let userData = await resMe.json();
         if (resMe.ok) {
           const userRole = (userData.user as IUser).role;
           
@@ -64,10 +65,20 @@ export default function LoginPage() {
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(cartItems),
                 });
+                
+                // Fetch fresh user data with updated cart from DB
+                resMe = await fetch("/api/auth/me");
+                userData = await resMe.json();
               }
             } catch (e) {
               console.error("Failed to sync cart", e);
             }
+          }
+
+          // Hydrate the Zustand store so client components immediately see the user and their cart without a hard reload
+          useDashStore.getState().setUser(userData.user);
+          if (userData.user.cart) {
+            useDashStore.getState().loadCart(userData.user.cart);
           }
 
           if (redirect) {
