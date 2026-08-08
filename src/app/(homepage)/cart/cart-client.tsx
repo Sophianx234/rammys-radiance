@@ -212,7 +212,7 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
                 </div>
 
                 <Link
-                  href="/checkout"
+                  href={user ? "/checkout" : `/login?redirect=/checkout&cart=${encodeURIComponent(JSON.stringify(cart.map(item => ({ productId: item._id, quantity: item.quantity }))))}`}
                   className="w-full flex items-center justify-center gap-3 bg-[#222222] text-white py-4 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[#5B7763] transition-colors"
                 >
                   Checkout <ArrowRight size={16} />
