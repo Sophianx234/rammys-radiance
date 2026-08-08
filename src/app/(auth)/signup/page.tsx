@@ -119,23 +119,7 @@ export default function SignupPage() {
           }
         }
 
-<<<<<<< HEAD
-        try {
-          const resMe = await fetch("/api/auth/me");
-          if (resMe.ok) {
-            const userData = await resMe.json();
-            useDashStore.getState().setUser(userData.user);
-            if (userData.user.cart) {
-              useDashStore.getState().loadCart(userData.user.cart);
-            }
-          }
-        } catch (e) {
-          console.error("Failed to hydrate state", e);
-        }
 
-        // Skip the image upload step and go straight to the home page or redirect.
-=======
->>>>>>> ed8afbe (Fix cart syncing during guest checkout and URL param fallback)
         if (redirect) {
           const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
           window.location.href = redirectUrl;
