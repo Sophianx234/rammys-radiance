@@ -379,7 +379,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
 
       {/* Similar Products */}
       {similarProducts && similarProducts.length > 0 && (
-        <section className="max-w-[1400px] mx-auto px-6 lg:px-12 mt-32 border-t border-border/40 pt-20">
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-12 mt-16 border-t border-border/40 pt-20">
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-2xl font-medium tracking-tight">You May Also Like</h2>
             <Link href="/shop" className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] hover:text-black transition-colors flex items-center gap-2">

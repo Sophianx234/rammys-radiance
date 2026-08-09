@@ -234,7 +234,7 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
 
       {/* Suggested Products */}
       {suggestedProducts && suggestedProducts.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 mt-32 border-t border-border/40 pt-20">
+        <section className="max-w-6xl mx-auto px-6 mt-16 border-t border-border/40 pt-20">
           <div className="flex justify-between items-end mb-10">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-[#222222] mb-2 tracking-tight">
