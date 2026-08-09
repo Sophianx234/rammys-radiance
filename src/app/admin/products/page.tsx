@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/table";
 import { GridLoader } from "react-spinners";
 import { ProductTableRow } from "./product-table-row";
+import { CategoryTableRow } from "./category-table-row";
 import { AdminProductsFilter } from "./client-filters";
 import { getCategories, getProducts } from "@/lib/data";
 
 export default async function ProductsTab(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
+  const currentTab = typeof searchParams.tab === 'string' ? searchParams.tab : 'products';
 
   return (
     <div className="flex-1 space-y-8 pb-10 max-w-7xl mx-auto">
@@ -27,28 +29,67 @@ export default async function ProductsTab(props: { searchParams: Promise<{ [key:
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin/products/add-category" className="bg-secondary/50 text-[#222222] border border-border/40 px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-secondary transition-colors flex items-center gap-2">
-            <Plus className="w-3.5 h-3.5" /> New Category
-          </Link>
-          <Link href="/admin/products/add" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
-            <Plus className="w-3.5 h-3.5" /> Add New Product
-          </Link>
+          {currentTab === "categories" ? (
+            <Link href="/admin/products/add-category" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
+              <Plus className="w-3.5 h-3.5" /> Add New Category
+            </Link>
+          ) : (
+            <Link href="/admin/products/add" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
+              <Plus className="w-3.5 h-3.5" /> Add New Product
+            </Link>
+          )}
         </div>
       </header>
 
-      {/* Search & Filter Bar */}
-      <Suspense fallback={<div className="bg-white border border-border/40 p-5 h-20 animate-pulse" />}>
-        <FiltersSection />
-      </Suspense>
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-border/40">
+        <Link 
+          href="/admin/products?tab=products" 
+          className={`pb-3 text-[12px] uppercase tracking-wider font-bold transition-all border-b-2 ${
+            currentTab === 'products' 
+              ? 'border-black text-black' 
+              : 'border-transparent text-text-muted hover:text-black'
+          }`}
+        >
+          Products
+        </Link>
+        <Link 
+          href="/admin/products?tab=categories" 
+          className={`pb-3 text-[12px] uppercase tracking-wider font-bold transition-all border-b-2 ${
+            currentTab === 'categories' 
+              ? 'border-black text-black' 
+              : 'border-transparent text-text-muted hover:text-black'
+          }`}
+        >
+          Categories
+        </Link>
+      </div>
 
-      {/* Product Table */}
-      <Suspense fallback={
-        <div className="h-[40vh] flex justify-center items-center">
-          <GridLoader size={18} color="#5B7763" />
-        </div>
-      }>
-        <ProductsTableSection searchParams={searchParams} />
-      </Suspense>
+      {currentTab === 'products' ? (
+        <>
+          {/* Search & Filter Bar */}
+          <Suspense fallback={<div className="bg-white border border-border/40 p-5 h-20 animate-pulse" />}>
+            <FiltersSection />
+          </Suspense>
+
+          {/* Product Table */}
+          <Suspense fallback={
+            <div className="h-[40vh] flex justify-center items-center">
+              <GridLoader size={18} color="#5B7763" />
+            </div>
+          }>
+            <ProductsTableSection searchParams={searchParams} />
+          </Suspense>
+        </>
+      ) : (
+        <Suspense fallback={
+          <div className="h-[40vh] flex justify-center items-center">
+            <GridLoader size={18} color="#5B7763" />
+          </div>
+        }>
+          <CategoriesTableSection />
+        </Suspense>
+      )}
     </div>
   );
 }
@@ -109,3 +150,41 @@ async function ProductsTableSection({ searchParams }: { searchParams: { [key: st
     </div>
   );
 }
+
+async function CategoriesTableSection() {
+  const categories = await getCategories();
+
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="text-center p-16 bg-white border border-border/40 mt-8 flex flex-col items-center justify-center gap-4">
+        <p className="text-text-muted text-[12px]">No categories found.</p>
+        <Link 
+          href='/admin/products/add-category' 
+          className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors"
+        >
+          Add First Category
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-border/40 overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent border-border/40">
+            <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Category</TableHead>
+            <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12">Description</TableHead>
+            <TableHead className="text-[10px] uppercase tracking-wider font-bold text-text-muted h-12 text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {categories.map((category: any) => (
+            <CategoryTableRow key={category._id} category={category} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
