@@ -11,12 +11,40 @@ import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Swal from "sweetalert2";
+import OrderCard from "@/components/order-card";
+import { ProductCard } from "@/components/product-card";
+import { GridLoader } from "react-spinners";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, setUser } = useDashStore();
   
   const [activeTab, setActiveTab] = useState<"overview" | "orders" | "wishlist" | "settings">("overview");
+  
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  
+  const [wishlist, setWishlist] = useState<any[]>([]);
+  const [loadingWishlist, setLoadingWishlist] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "orders" && orders.length === 0) {
+      setLoadingOrders(true);
+      fetch("/api/orders/user")
+        .then(res => res.ok ? res.json() : { orders: [] })
+        .then(data => setOrders(data.orders || []))
+        .catch(err => console.error("Failed to fetch orders", err))
+        .finally(() => setLoadingOrders(false));
+    }
+    if (activeTab === "wishlist" && wishlist.length === 0) {
+      setLoadingWishlist(true);
+      fetch("/api/users/wishlist")
+        .then(res => res.ok ? res.json() : { wishlistProducts: [] })
+        .then(data => setWishlist(data.wishlistProducts || []))
+        .catch(err => console.error("Failed to fetch wishlist", err))
+        .finally(() => setLoadingWishlist(false));
+    }
+  }, [activeTab]);
   
   const [isUpdating, setIsUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -217,8 +245,12 @@ export default function ProfilePage() {
               </button>
 
               <button
-                onClick={() => router.push("/orders")}
-                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold text-[#222222] hover:bg-secondary/50 hover:border-border/40`}
+                onClick={() => setActiveTab("orders")}
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
+                  activeTab === "orders"
+                    ? "bg-[#5B7763] text-white border-[#5B7763]"
+                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <MapPin size={16} strokeWidth={1.5} />
@@ -227,8 +259,12 @@ export default function ProfilePage() {
               </button>
 
               <button
-                onClick={() => router.push("/wishlist")}
-                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold text-[#222222] hover:bg-secondary/50 hover:border-border/40`}
+                onClick={() => setActiveTab("wishlist")}
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
+                  activeTab === "wishlist"
+                    ? "bg-[#5B7763] text-white border-[#5B7763]"
+                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <Heart size={16} strokeWidth={1.5} />
@@ -344,6 +380,59 @@ export default function ProfilePage() {
                     </Button>
                   </form>
                 </Card>
+              </div>
+            )}
+
+            {activeTab === "orders" && (
+              <div className="bg-white border border-border/40 p-6 shadow-sm rounded-none">
+                <h2 className="text-[14px] uppercase tracking-widest font-bold mb-6 text-[#222222]">
+                  My Orders
+                </h2>
+                {loadingOrders ? (
+                  <div className="flex justify-center items-center py-16">
+                    <GridLoader size={16} color="#5B7763" />
+                  </div>
+                ) : orders.length > 0 ? (
+                  <div className="flex flex-col">
+                    {orders.map((order) => (
+                      <OrderCard key={order._id} order={order} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <p className="text-text-muted text-[13px] uppercase tracking-wider font-bold mb-6">You have placed no orders yet.</p>
+                    <Link href="/shop">
+                       <Button className="bg-[#5B7763] text-white rounded-none uppercase tracking-wider text-[11px] font-bold">Shop Now</Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "wishlist" && (
+              <div className="bg-white border border-border/40 p-6 shadow-sm rounded-none">
+                <h2 className="text-[14px] uppercase tracking-widest font-bold mb-6 text-[#222222]">
+                  My Wishlist
+                </h2>
+                {loadingWishlist ? (
+                  <div className="flex justify-center items-center py-16">
+                    <GridLoader size={16} color="#5B7763" />
+                  </div>
+                ) : wishlist.length > 0 ? (
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    {wishlist.map((item) => (
+                      <ProductCard key={item._id} product={item} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <Heart className="w-12 h-12 text-border/40 mx-auto mb-3" />
+                    <p className="text-text-muted text-[13px]">Your wishlist is empty.</p>
+                    <Link href="/shop">
+                       <Button className="mt-4 bg-[#5B7763] text-white rounded-none uppercase tracking-wider text-[11px] font-bold">Explore Products</Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 
