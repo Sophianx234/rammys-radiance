@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                Email Address or Phone Number
+                Email / Phone
               </label>
               <input
                 id="email"
@@ -91,17 +91,17 @@ export default function ForgotPasswordPage() {
             </div>
 
             {isPhoneInput && (
-              <div className="bg-orange-50 border border-orange-200 p-4 text-center">
-                <p className="text-[12px] text-orange-800 mb-2 font-medium">
-                  Password resets for phone numbers are currently handled manually by our team.
+              <div className="bg-transparent border border-border/80 p-6 text-center mt-2">
+                <p className="text-[12px] text-text-muted mb-4 tracking-wide leading-relaxed">
+                  Account recovery for phone numbers is securely handled by our dedicated support team.
                 </p>
                 <a 
-                  href="https://wa.me/233000000000" 
+                  href={`https://wa.me/233554802687?text=${encodeURIComponent(`Hello, I need help recovering my Rammy's Radiance account registered with the phone number: ${email}`)}`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="text-[11px] font-bold uppercase tracking-[0.1em] text-orange-900 underline hover:text-black transition-colors"
+                  className="block w-full bg-[#5B7763] hover:bg-[#4a6251] text-white py-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors"
                 >
-                  Contact Support on WhatsApp
+                  Message on WhatsApp
                 </a>
               </div>
             )}
