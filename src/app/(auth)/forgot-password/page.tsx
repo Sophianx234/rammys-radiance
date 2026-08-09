@@ -11,8 +11,13 @@ export default function ForgotPasswordPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Simple regex to detect if the input looks like a phone number instead of an email
+  const isPhoneInput = email.length > 0 && !email.includes("@") && /^\+?[0-9\s\-]+$/.test(email);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isPhoneInput) return; // Prevent submission if it's a phone number
+
     setError(null);
     setSuccess(null);
     setLoading(true);
@@ -65,19 +70,19 @@ export default function ForgotPasswordPage() {
               Reset Password
             </h1>
             <p className="text-[13px] text-text-muted tracking-wide">
-              Enter your email and we'll send a password reset link.
+              Enter your email or phone number to reset your password.
             </p>
           </div>
 
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                Email Address
+                Email Address or Phone Number
               </label>
               <input
                 id="email"
-                type="email"
-                placeholder="Enter your email"
+                type="text"
+                placeholder="Enter your email or phone number"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -85,20 +90,38 @@ export default function ForgotPasswordPage() {
               />
             </div>
 
-            {error && (
+            {isPhoneInput && (
+              <div className="bg-orange-50 border border-orange-200 p-4 text-center">
+                <p className="text-[12px] text-orange-800 mb-2 font-medium">
+                  Password resets for phone numbers are currently handled manually by our team.
+                </p>
+                <a 
+                  href="https://wa.me/233000000000" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-[11px] font-bold uppercase tracking-[0.1em] text-orange-900 underline hover:text-black transition-colors"
+                >
+                  Contact Support on WhatsApp
+                </a>
+              </div>
+            )}
+
+            {error && !isPhoneInput && (
               <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
             )}
-            {success && (
+            {success && !isPhoneInput && (
               <p className="text-[#5B7763] text-[12px] font-medium text-center">{success}</p>
             )}
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
-            >
-              {loading ? "Sending..." : "Send Reset Link"}
-            </Button>
+            {!isPhoneInput && (
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
+              >
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
+            )}
           </form>
 
           <p className="mt-12 text-center text-[12px] text-text-muted">
