@@ -17,59 +17,76 @@ export async function POST(req: NextRequest) {
 
     const name = formData.get("name")?.toString();
     const email = formData.get("email")?.toString();
+    const phone = formData.get("phone")?.toString();
     const password = formData.get("password")?.toString();
     const otp = formData.get("otp")?.toString();
 
-    if (!name || !email || !password || !otp) {
+    if (!name || (!email && !phone) || !password) {
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const { Otp } = await import("@/models/Otp");
-    const existingOtp = await Otp.findOne({ email, otp });
-    if (!existingOtp) {
-      return NextResponse.json(
-        { message: "Invalid or expired verification code" },
-        { status: 400 }
-      );
+    if (email) {
+      if (!otp) {
+        return NextResponse.json(
+          { message: "Verification code is required for email signup" },
+          { status: 400 }
+        );
+      }
+      const { Otp } = await import("@/models/Otp");
+      const existingOtp = await Otp.findOne({ email, otp });
+      if (!existingOtp) {
+        return NextResponse.json(
+          { message: "Invalid or expired verification code" },
+          { status: 400 }
+        );
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return NextResponse.json(
+          { message: "Email already in use" },
+          { status: 400 }
+        );
+      }
+      // Clean up OTP
+      await Otp.deleteOne({ _id: existingOtp._id });
     }
 
-    
-
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json(
-        { message: "Email already in use" },
-        { status: 400 }
-      );
+    if (phone) {
+      const existingUser = await User.findOne({ phone });
+      if (existingUser) {
+        return NextResponse.json(
+          { message: "Phone number already in use" },
+          { status: 400 }
+        );
+      }
     }
 
     // Hash password
     const hashedPassword = await encryptPassword(password);
 
-  
     // Create user
     const user = await User.create({
       name,
-      email,
+      email: email || undefined,
+      phone: phone || undefined,
       password: hashedPassword,
     });
 
-    // Clean up OTP
-    await Otp.deleteOne({ _id: existingOtp._id });
+    if (email) {
+      const { render } = await import("@react-email/render");
+      const WelcomeEmail = (await import("@/components/mail/welcome-email")).default;
+      const emailHtml = await render(React.createElement(WelcomeEmail, { name: name as string }));
 
-    const { render } = await import("@react-email/render");
-    const WelcomeEmail = (await import("@/components/mail/welcome-email")).default;
-    const emailHtml = await render(React.createElement(WelcomeEmail, { name: name as string }));
-
-     await sendMail({
-      to: email,
-      subject: "Welcome to Rammy's Radiance!",
-      html: emailHtml,
-    });
+      await sendMail({
+        to: email,
+        subject: "Welcome to Rammy's Radiance!",
+        html: emailHtml,
+      });
+    }
 
     const token = await signToken(user);
     return setAuthCookie(token);

@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [queryString, setQueryString] = useState("");
+  const [useEmail, setUseEmail] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -27,6 +28,7 @@ export default function SignupPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -35,6 +37,17 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!useEmail) {
+      if (!phone) {
+        setError("Phone number is required");
+        setLoading(false);
+        return;
+      }
+      setStep(3); // Skip OTP for phone
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/auth/signup/send-otp", {
@@ -92,9 +105,14 @@ export default function SignupPage() {
 
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("email", email);
-    formData.append("otp", otp);
     formData.append("password", password);
+    
+    if (useEmail) {
+      formData.append("email", email);
+      formData.append("otp", otp);
+    } else {
+      formData.append("phone", phone);
+    }
 
     try {
       const res = await fetch("/api/auth/signup", {
@@ -168,9 +186,30 @@ export default function SignupPage() {
             </p>
           </div>
 
-          {/* STEP 1: Name and Email */}
+          {/* STEP 1: Name and Email/Phone */}
           {step === 1 && (
             <form className="flex flex-col gap-6" onSubmit={handleSendOtp}>
+              <div className="flex gap-4 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setUseEmail(true)}
+                  className={`flex-1 pb-2 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors ${
+                    useEmail ? "border-black text-black" : "border-transparent text-text-muted hover:text-black"
+                  }`}
+                >
+                  Use Email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseEmail(false)}
+                  className={`flex-1 pb-2 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors ${
+                    !useEmail ? "border-black text-black" : "border-transparent text-text-muted hover:text-black"
+                  }`}
+                >
+                  Use Phone Number
+                </button>
+              </div>
+
               <div className="flex flex-col gap-2">
                 <label htmlFor="name" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
                   Full Name
@@ -186,20 +225,37 @@ export default function SignupPage() {
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
-                />
-              </div>
+              {useEmail ? (
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="phone" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+                  />
+                </div>
+              )}
 
               {error && <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>}
 

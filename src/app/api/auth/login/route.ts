@@ -13,16 +13,19 @@ export async function POST(req: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { message: "Email and password are required" },
+        { message: "Email/Phone and password are required" },
         { status: 400 }
       );
     }
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Find user by either email or phone
+    const user = await User.findOne({ 
+      $or: [{ email: email }, { phone: email }] 
+    });
+    
     if (!user) {
       return NextResponse.json(
-        { message: "Invalid email or password" },
+        { message: "Invalid credentials" },
         { status: 401 }
       );
     }
@@ -38,7 +41,7 @@ export async function POST(req: NextRequest) {
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
       return NextResponse.json(
-        { message: "Invalid email or password" },
+        { message: "Invalid credentials" },
         { status: 401 }
       );
     }

@@ -129,12 +129,12 @@ export default function LoginPage() {
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                Email Address
+                Email Address or Phone Number
               </label>
               <input
                 id="email"
-                type="email"
-                placeholder="Enter your email"
+                type="text"
+                placeholder="Enter your email or phone number"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
