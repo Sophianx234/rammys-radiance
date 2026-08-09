@@ -19,6 +19,7 @@ import Link from "next/link";
 import { GridLoader } from "react-spinners";
 import { getDashboardStats, getRecentOrders, getSalesData, getStockAlerts } from "@/lib/admin-data";
 import { RecentOrdersFilter, SalesChartClient } from "./client-components";
+import { SystemAlertBanner } from "./system-alert-banner";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("en-GH", {
@@ -51,6 +52,10 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
 
   return (
     <div className="flex-1 space-y-8 pb-10 max-w-7xl mx-auto">
+      <Suspense fallback={<div className="h-20 bg-[#F3Fdf5] border border-[#5B7763]/20 flex items-center justify-center"><GridLoader size={10} color="#5B7763" /></div>}>
+        <SystemAlertBanner />
+      </Suspense>
+
       {/* ---------- HEADER ---------- */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
         <div>

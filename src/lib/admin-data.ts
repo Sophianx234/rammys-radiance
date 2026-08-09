@@ -103,6 +103,18 @@ export const getSalesData = cache(async () => {
   return result;
 });
 
+export const getSystemAlertState = cache(async () => {
+  await connectToDatabase();
+  const LOW_STOCK_THRESHOLD = 5;
+
+  const [pendingOrdersCount, lowStockCount] = await Promise.all([
+    Order.countDocuments({ orderStatus: "processing" }),
+    Product.countDocuments({ stock: { $lte: LOW_STOCK_THRESHOLD } }),
+  ]);
+
+  return { pendingOrdersCount, lowStockCount };
+});
+
 export const getStockAlerts = cache(async () => {
   await connectToDatabase();
   const lowStock = await Product.find({ stock: { $lte: 10 } }).select("name price images stock").sort({ stock: 1 }).limit(10);
