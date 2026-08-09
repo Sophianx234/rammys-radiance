@@ -52,7 +52,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
 
   return (
     <div className="flex-1 space-y-8 pb-10 max-w-7xl mx-auto">
-      <Suspense fallback={<div className="h-20 bg-[#F3Fdf5] border border-[#5B7763]/20 flex items-center justify-center"><GridLoader size={10} color="#5B7763" /></div>}>
+      <Suspense fallback={<div className="h-[74px] bg-white border border-border/40 flex items-center justify-center"><GridLoader size={10} color="#5B7763" /></div>}>
         <SystemAlertBanner />
       </Suspense>
 
