@@ -129,7 +129,7 @@ export default function LoginPage() {
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                Email Address or Phone Number
+                Email / Phone 
               </label>
               <input
                 id="email"

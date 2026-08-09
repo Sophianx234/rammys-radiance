@@ -8,7 +8,7 @@ export interface ICartItem {
 
 export interface IUser extends Document {
   name: string;
-  email: string;
+  email?: string;
   password: string;
   profile?: string;
   role: "admin" | "manager" | "dispatch" | "user" | "customer" | "dispatcher";
