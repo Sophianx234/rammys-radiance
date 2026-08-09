@@ -9,23 +9,11 @@ import { motion } from "framer-motion";
 import { Trash2, Search, Filter, Eye, ShoppingBag, User as UserIcon, X, MoreVertical, Copy } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { useDashStore } from "@/lib/store";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateCustomerRoleAction, toggleSuspendCustomerAction, fetchCustomerOrdersAction } from "@/app/actions/customers";
 import { useConfirm } from "@/components/ui/confirm-provider";
-
-const Toast = withReactContent(Swal).mixin({
-  toast: true,
-  position: "bottom-right",
-  showConfirmButton: false,
-  timer: 2000,
-  timerProgressBar: true,
-  customClass: {
-    popup: "rounded-none border border-border/40 bg-white",
-    title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-  },
-});
+import { toast } from "sonner";
 
 const getRoleBadgeStyle = (role: string) => {
   switch (role) {
@@ -92,9 +80,9 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
     if (res.success) {
       setUsers(users.map(u => u._id === selectedUser._id ? { ...u, role: newRole } : u));
       setSelectedUser({ ...selectedUser, role: newRole });
-      Toast.fire({ icon: "success", title: `ROLE UPDATED TO ${newRole.toUpperCase()}` });
+      toast.success(`ROLE UPDATED TO ${newRole.toUpperCase()}`);
     } else {
-      Toast.fire({ icon: "error", title: "FAILED TO UPDATE ROLE" });
+      toast.error("FAILED TO UPDATE ROLE");
     }
   };
 
@@ -113,9 +101,9 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
       if (res.success) {
         setUsers(users.map(user => user._id === u._id ? { ...user, isSuspended: !isSuspended } : user));
         if (selectedUser?._id === u._id) setSelectedUser({ ...selectedUser, isSuspended: !isSuspended });
-        Toast.fire({ icon: "success", title: `USER ${isSuspended ? 'UNSUSPENDED' : 'SUSPENDED'} SUCCESSFULLY` });
+        toast.success(`USER ${isSuspended ? 'UNSUSPENDED' : 'SUSPENDED'} SUCCESSFULLY`);
       } else {
-        Toast.fire({ icon: "error", title: `FAILED TO ${actionText} USER` });
+        toast.error(`FAILED TO ${actionText} USER`);
       }
     }
   };
@@ -267,7 +255,7 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
                         <DropdownMenuItem 
                           onClick={() => {
                             navigator.clipboard.writeText(u.email);
-                            Toast.fire({ icon: "success", title: "EMAIL COPIED TO CLIPBOARD" });
+                            toast.success("EMAIL COPIED TO CLIPBOARD");
                           }}
                           className="text-[11px] uppercase tracking-wider font-bold text-[#222222] cursor-pointer rounded-none focus:bg-secondary/50 py-2.5 px-3"
                         >

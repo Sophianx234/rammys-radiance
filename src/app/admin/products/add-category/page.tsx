@@ -3,12 +3,12 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { z } from "zod";
-import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, UploadCloud, X, Save } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const categorySchema = z.object({
   name: z.string().min(2, "Category name must be at least 2 characters"),
@@ -78,51 +78,15 @@ export default function AddCategoryPage() {
         throw new Error(errorData?.error || "Failed to save category");
       }
 
-      Swal.fire({
-        title: "SUCCESS",
-        text: "Category added successfully.",
-        icon: "success",
-        toast: true,
-        position: "bottom-right",
-        showConfirmButton: false,
-        timer: 2500,
-        customClass: {
-          popup: "rounded-none border border-border/40 bg-white",
-          title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-        }
-      });
+      toast.success("Category added successfully.");
 
       setCategory({ name: "", slug: "", description: "", image: "", imageFile: null });
       setIsSlugManuallyEdited(false);
     } catch (err: any) {
       if (err instanceof z.ZodError) {
-        Swal.fire({
-           title: "ERROR",
-           text: err.errors[0]?.message || "Invalid input",
-           icon: "error",
-           toast: true,
-           position: "bottom-right",
-           showConfirmButton: false,
-           timer: 3000,
-           customClass: {
-              popup: "rounded-none border border-border/40 bg-white",
-              title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-           }
-        });
+        toast.error(err.errors[0]?.message || "Invalid input");
       } else {
-        Swal.fire({
-           title: "ERROR",
-           text: err.message || "Something went wrong",
-           icon: "error",
-           toast: true,
-           position: "bottom-right",
-           showConfirmButton: false,
-           timer: 3000,
-           customClass: {
-              popup: "rounded-none border border-border/40 bg-white",
-              title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-           }
-        });
+        toast.error(err.message || "Something went wrong");
       }
     } finally {
       setLoading(false);

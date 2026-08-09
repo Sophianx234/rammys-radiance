@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { toast } from "sonner";
 import { formatCurrency, formatDate, STATUS_CONFIG } from "./utils";
 type ServerOrder = any;
 type OrderItem = any;
@@ -23,18 +24,6 @@ export default function OrderDetailsSheetContent({
   onClose: () => void;
   userRole?: string;
 }) {
-  const Toast = withReactContent(Swal).mixin({
-    toast: true,
-    position: "bottom-right",
-    showConfirmButton: false,
-    timer: 2000,
-    timerProgressBar: false,
-    customClass: {
-      popup: "rounded-none border border-border/40 bg-white",
-      title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-    },
-  });
-
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScroll, setCanScroll] = useState(false);
   const [isMapInteractive, setIsMapInteractive] = useState(false);
@@ -235,7 +224,7 @@ export default function OrderDetailsSheetContent({
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => Toast.fire({ icon: "success", title: "INVOICE DOWNLOADED (PLACEHOLDER)" })}
+            onClick={() => toast.success("INVOICE DOWNLOADED (PLACEHOLDER)")}
             className="border border-border/40 bg-white text-[#222222] px-4 py-2.5 text-[10px] uppercase tracking-wider font-bold hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2"
           >
             <ExternalLink className="w-3.5 h-3.5" /> Download Invoice

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
 import { useConfirm } from "@/components/ui/confirm-provider";
@@ -70,17 +70,11 @@ export function ProductTableRow({ product }: { product: any }) {
 
       if (!res.ok) throw new Error("Failed to delete");
 
-      Swal.fire({
-        title: "Deleted!",
-        text: "The product has been removed.",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      toast.success("The product has been removed.");
 
       router.refresh(); 
     } catch (err) {
-      Swal.fire("Error", "Could not delete product", "error");
+      toast.error("Could not delete product");
     }
   };
 

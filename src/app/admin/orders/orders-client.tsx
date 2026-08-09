@@ -69,18 +69,6 @@ export type OrderStatus =
 
 import { STATUS_CONFIG, formatCurrency, formatDate } from "./utils";
 
-const Toast = withReactContent(Swal).mixin({
-  toast: true,
-  position: "bottom-right",
-  showConfirmButton: false,
-  timer: 2000,
-  timerProgressBar: false,
-  customClass: {
-    popup: "rounded-none border border-border/40 bg-white",
-    title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-  },
-});
-
 export function OrdersClient({ initialOrders, pagination }: { initialOrders: any[], pagination: any }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -107,15 +95,15 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const handleStatusUpdate = async (paymentReference: string, newStatus: string) => {
-    const res = await updateOrderStatusAction(paymentReference, newStatus);
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    const res = await updateOrderStatusAction(orderId, newStatus);
     if (res.success) {
-      Toast.fire({ icon: "success", title: "ORDER STATUS UPDATED" });
-      if (selectedOrder && selectedOrder.paymentReference === paymentReference) {
+      toast.success("ORDER STATUS UPDATED");
+      if (selectedOrder && selectedOrder._id === orderId) {
         setSelectedOrder({ ...selectedOrder, orderStatus: newStatus });
       }
     } else {
-      Toast.fire({ icon: "error", title: "UPDATE FAILED" });
+      toast.error("UPDATE FAILED");
     }
   };
 
@@ -131,9 +119,13 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
     if (isConfirmed) {
       const res = await deleteOrderAction(orderId);
       if (res.success) {
-        Toast.fire({ icon: "success", title: "ORDER DELETED" });
+        toast.success("ORDER DELETED");
+        if (selectedOrder?._id === orderId) {
+          setIsSheetOpen(false);
+          setSelectedOrder(null);
+        }
       } else {
-        Toast.fire({ icon: "error", title: "DELETE FAILED" });
+        toast.error("DELETE FAILED");
       }
     }
   };
@@ -160,10 +152,10 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
     setBatchActionLoading(true);
     const res = await batchUpdateOrderStatusAction(Array.from(selectedOrders), newStatus);
     if (res.success) {
-      Toast.fire({ icon: "success", title: "BATCH STATUS UPDATED" });
+      toast.success("BATCH STATUS UPDATED");
       setSelectedOrders(new Set());
     } else {
-      Toast.fire({ icon: "error", title: "BATCH UPDATE FAILED" });
+      toast.error("BATCH UPDATE FAILED");
     }
     setBatchActionLoading(false);
   };
@@ -386,7 +378,7 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigator.clipboard.writeText(order._id);
-                                Toast.fire({ icon: 'success', title: 'ID COPIED' });
+                                toast.success('ID COPIED');
                               }}
                               className="text-text-muted hover:text-[#222222] transition-colors opacity-0 group-hover:opacity-100"
                               title="Copy full ID"

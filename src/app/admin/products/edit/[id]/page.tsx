@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, use } from "react";
 import { z } from "zod";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -113,7 +113,7 @@ export default function EditProductPage({
         setExistingImages(data.images || []);
       } catch (e) {
         console.error(e);
-        Swal.fire("Error", "Failed loading product.", "error");
+        toast.error("Failed loading product.");
       } finally {
         setLoadingData(false);
       }
@@ -125,19 +125,7 @@ export default function EditProductPage({
     (acceptedFiles: File[]) => {
       const total = existingImages.length + newImages.length;
       if (total >= MAX_IMAGES) {
-        Swal.fire({
-          title: "LIMIT REACHED",
-          text: "Maximum of 5 images allowed.",
-          icon: "warning",
-          toast: true,
-          position: "bottom-right",
-          showConfirmButton: false,
-          timer: 3000,
-          customClass: {
-            popup: "rounded-none border border-border/40 bg-white",
-            title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-          }
-        });
+        toast.error("Maximum of 5 images allowed.");
         return;
       }
       const allowedSlots = MAX_IMAGES - total;
@@ -243,19 +231,7 @@ export default function EditProductPage({
 
       if (!res.ok) throw new Error("Failed to update product");
 
-      Swal.fire({
-        title: "SUCCESS",
-        text: "Product updated successfully.",
-        icon: "success",
-        toast: true,
-        position: "bottom-right",
-        showConfirmButton: false,
-        timer: 2500,
-        customClass: {
-          popup: "rounded-none border border-border/40 bg-white",
-          title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-        }
-      });
+      toast.success("Product updated successfully.");
 
       router.push("/admin/products");
       router.refresh();
@@ -267,19 +243,7 @@ export default function EditProductPage({
         });
         setErrors(fieldErrors);
       } else {
-        Swal.fire({
-          title: "ERROR",
-          text: err.message,
-          icon: "error",
-          toast: true,
-          position: "bottom-right",
-          showConfirmButton: false,
-          timer: 3000,
-          customClass: {
-            popup: "rounded-none border border-border/40 bg-white",
-            title: "text-[12px] uppercase tracking-wider font-bold text-[#222222]",
-          }
-        });
+        toast.error(err.message);
       }
     } finally {
       setLoading(false);

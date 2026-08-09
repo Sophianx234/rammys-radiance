@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { z } from "zod";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -74,7 +74,7 @@ export default function AddProductPage() {
         if (!res.ok) throw new Error("Failed to fetch categories");
         setCategories(await res.json());
       } catch {
-        Swal.fire("Error", "Unable to load categories.", "error");
+        toast.error("Unable to load categories.");
       }
     })();
   }, []);
@@ -173,15 +173,7 @@ export default function AddProductPage() {
 
       if (!res.ok) throw new Error("Failed to save product");
 
-      Swal.fire({
-        title: "Success!",
-        text: "Product added successfully.",
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 2500,
-      });
+      toast.success("Product added successfully.");
 
       router.push("/admin/products");
     } catch (err: any) {
@@ -192,7 +184,7 @@ export default function AddProductPage() {
         });
         setErrors(fieldErrors);
       } else {
-        Swal.fire("Error", err.message, "error");
+        toast.error(err.message);
       }
     } finally {
       setLoading(false);
