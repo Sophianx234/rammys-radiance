@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 
 export function ShopFilters({ categories }: { categories: any[] }) {
   const searchParams = useSearchParams();
@@ -8,6 +9,7 @@ export function ShopFilters({ categories }: { categories: any[] }) {
 
   const selectedCategory = searchParams.get("category");
   const priceRange = searchParams.get("priceRange");
+  const searchQuery = searchParams.get("search");
 
   const updateURL = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -26,12 +28,43 @@ export function ShopFilters({ categories }: { categories: any[] }) {
   };
 
   const clearFilters = () => {
-    updateURL({ category: null, priceRange: null, sortBy: null, page: "1" });
+    updateURL({ category: null, priceRange: null, search: null, sortBy: null, page: "1" });
   };
 
   return (
     <aside className="lg:w-[240px] shrink-0">
       <div className="sticky top-28 space-y-12">
+        {/* Search */}
+        <div>
+          <h3 className="text-[11px] font-bold text-[#222222] uppercase tracking-[0.2em] mb-4 pb-4 border-b border-border/40">
+            Search
+          </h3>
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const search = formData.get("search") as string;
+              if (search.trim()) {
+                updateURL({ search: search.trim(), page: "1" });
+              } else {
+                updateURL({ search: null, page: "1" });
+              }
+            }}
+            className="flex items-center border border-border/60 focus-within:border-black transition-colors rounded-none bg-white"
+          >
+            <input
+              type="text"
+              name="search"
+              defaultValue={searchQuery || ""}
+              placeholder="Search products..."
+              className="w-full bg-transparent px-3 py-2.5 text-[13px] outline-none"
+            />
+            <button type="submit" className="px-3 text-text-muted hover:text-black transition-colors">
+              <Search size={16} strokeWidth={1.5} />
+            </button>
+          </form>
+        </div>
+
         {/* Categories */}
         <div>
           <h3 className="text-[11px] font-bold text-[#222222] uppercase tracking-[0.2em] mb-6 pb-4 border-b border-border/40">
