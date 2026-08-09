@@ -217,12 +217,8 @@ export default function ProfilePage() {
               </button>
 
               <button
-                onClick={() => setActiveTab("orders")}
-                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
-                  activeTab === "orders"
-                    ? "bg-[#5B7763] text-white border-[#5B7763]"
-                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
-                }`}
+                onClick={() => router.push("/orders")}
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold text-[#222222] hover:bg-secondary/50 hover:border-border/40`}
               >
                 <span className="flex items-center gap-3">
                   <MapPin size={16} strokeWidth={1.5} />
@@ -231,12 +227,8 @@ export default function ProfilePage() {
               </button>
 
               <button
-                onClick={() => setActiveTab("wishlist")}
-                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold ${
-                  activeTab === "wishlist"
-                    ? "bg-[#5B7763] text-white border-[#5B7763]"
-                    : "text-[#222222] hover:bg-secondary/50 hover:border-border/40"
-                }`}
+                onClick={() => router.push("/wishlist")}
+                className={`w-full text-left px-4 py-3 rounded-none transition-colors border border-transparent text-[11px] uppercase tracking-wider font-bold text-[#222222] hover:bg-secondary/50 hover:border-border/40`}
               >
                 <span className="flex items-center gap-3">
                   <Heart size={16} strokeWidth={1.5} />
@@ -355,24 +347,6 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {activeTab === "orders" && (
-              <div className="text-center py-16 bg-white border border-border/40">
-                <p className="text-text-muted text-[13px]">You have no orders yet.</p>
-                <Link href="/shop">
-                   <Button className="mt-4 bg-[#5B7763] text-white rounded-none uppercase tracking-wider text-[11px] font-bold">Shop Now</Button>
-                </Link>
-              </div>
-            )}
-
-            {activeTab === "wishlist" && (
-               <div className="text-center py-16 bg-white border border-border/40">
-                 <Heart className="w-12 h-12 text-border/40 mx-auto mb-3" />
-                 <p className="text-text-muted text-[13px]">Your wishlist is empty.</p>
-                 <Link href="/shop">
-                    <Button className="mt-4 bg-[#5B7763] text-white rounded-none uppercase tracking-wider text-[11px] font-bold">Explore Products</Button>
-                 </Link>
-               </div>
-            )}
           </div>
         </div>
       </div>

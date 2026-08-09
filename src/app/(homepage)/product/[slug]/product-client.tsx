@@ -9,8 +9,6 @@ import Link from "next/link";
 import type { IProduct } from "@/models/Product";
 import { useDashStore } from "@/lib/store";
 import ProductImageSlider from "./product-images-slider";
-import withReactContent from "sweetalert2-react-content";
-import Swal from "sweetalert2";
 import { ProductCard } from "@/components/product-card";
 
 export default function ProductClient({ product, similarProducts = [] }: { product: IProduct, similarProducts?: IProduct[] }) {
@@ -98,11 +96,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
         const errorText = await res.text();
         console.error("Wishlist API failed:", res.status, errorText);
         setIsFavorite(isFavorite => !isFavorite);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: `Failed to save to wishlist: ${errorText}`,
-        });
+       
         return;
       }
       const data = await res.json();
@@ -114,11 +108,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
       console.error("Wishlist failed:", err);
       // revert on failure
       setIsFavorite(isFavorite => !isFavorite);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err?.message || "An unexpected error occurred.",
-      });
+     
     }
   };
 
@@ -139,8 +129,6 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
         const newReview = await res.json();
         setReviews([newReview, ...reviews]);
         setReviewComment("");
-        const MySwal = withReactContent(Swal);
-        MySwal.fire({ toast: true, position: "top-end", icon: "success", title: "Review submitted successfully!", showConfirmButton: false, timer: 2000, timerProgressBar: true });
       } else {
         const errorText = await res.text();
         setReviewMessage({ type: 'error', text: `Failed to submit review: ${errorText}` });
