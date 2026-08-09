@@ -95,13 +95,13 @@ export default function Topbar() {
         </div>
 
         {/* Right: Notifications + Profile */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center ">
           {/* Notifications */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.push("/admin/overview")}
-            className="relative hover:bg-secondary/50 border-none transition-all text-text-muted hover:text-[#222222] rounded-none h-10 w-10 flex-shrink-0"
+            className="relative hover:bg-secondary/30 border-none transition-all text-text-muted hover:text-[#222222] rounded-none h-10 w-10 flex-shrink-0"
           >
             <Bell size={18} strokeWidth={1.5} />
             {notifications > 0 && (
