@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
@@ -40,6 +41,10 @@ export async function DELETE(
     const { id } = await params;
 
     await Product.findByIdAndDelete(id);
+
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -157,6 +162,10 @@ export async function PUT(
         { status: 404 }
       );
     }
+
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
 
     return NextResponse.json(updated, { status: 200 });
   } catch (err: any) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
@@ -47,6 +48,9 @@ export async function POST(req: NextRequest) {
     // ✅ Save category
     const newCategory = new Category({ name, slug, description, image });
     await newCategory.save();
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
 
     return NextResponse.json(newCategory, { status: 201 });
   } catch (err: any) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/connectDB";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import slugify from "slugify";
@@ -151,6 +152,9 @@ export async function POST(req: NextRequest) {
       text: `${newProduct.name} - ${newProduct.description}`,
     });
 
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (err: any) {

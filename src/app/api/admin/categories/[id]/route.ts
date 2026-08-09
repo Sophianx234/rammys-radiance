@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
@@ -15,6 +16,10 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
     // Optional: we can delete from cloudinary here if we store public_id, but it's safe to skip for now to fix build.
 
     await Category.findByIdAndDelete(id);
+
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
 
     return NextResponse.json({ message: "Category deleted successfully" });
   } catch (error: any) {
@@ -49,6 +54,10 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
     }
 
     await category.save();
+
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
 
     return NextResponse.json({ message: "Category updated successfully", category });
   } catch (error: any) {
