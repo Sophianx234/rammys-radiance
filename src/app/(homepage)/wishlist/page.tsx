@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useDashStore } from "@/lib/store";
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
+import { GridLoader } from "react-spinners";
 
 export default function WishlistPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -44,9 +45,8 @@ export default function WishlistPage() {
         <h1 className="text-3xl font-bold mb-8">My Wishlist</h1>
 
         {loading ? (
-          <div className="text-center py-16">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your wishlist...</p>
+          <div className="flex justify-center items-center py-32">
+            <GridLoader size={24} color="#5B7763" />
           </div>
         ) : items?.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
