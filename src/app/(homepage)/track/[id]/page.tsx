@@ -4,6 +4,7 @@ import Footer from "@/components/footer";
 import TrackOrderCard from "@/components/track-order-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 
 
@@ -155,9 +156,21 @@ export default async function TrackOrderPage({
               <div className="space-y-4 mb-6 pb-6 border-b border-border/50">
                 {order.items.map((item: any, index: number) => (
                   <div key={index} className="flex items-start justify-between">
-                    <div>
-                      <p className="text-[13px] font-bold text-[#222222] leading-snug">{item.name}</p>
-                      <p className="text-[12px] text-text-muted mt-1 uppercase tracking-wider">Qty: {item.quantity}</p>
+                    <div className="flex gap-4">
+                      {item.image && (
+                        <div className="relative w-16 h-20 bg-secondary/30 shrink-0">
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-[13px] font-bold text-[#222222] leading-snug">{item.name}</p>
+                        <p className="text-[12px] text-text-muted mt-1 uppercase tracking-wider">Qty: {item.quantity}</p>
+                      </div>
                     </div>
                     <p className="text-[13px] font-bold text-[#5B7763]">
                       ₵{(item.price).toLocaleString()}
