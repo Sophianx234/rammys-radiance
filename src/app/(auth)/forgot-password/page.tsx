@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
                   href={`https://wa.me/233554802687?text=${encodeURIComponent(`Hello, I need help recovering my Rammy's Radiance account registered with the phone number: ${email}`)}`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="block w-full bg-[#5B7763] hover:bg-[#4a6251] text-white py-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors"
+                  className="block w-full bg-black  text-white py-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors"
                 >
                   Message on WhatsApp
                 </a>
