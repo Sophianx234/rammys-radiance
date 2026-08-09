@@ -1,5 +1,7 @@
 import { connectToDatabase } from "@/lib/connectDB";
 import { IReview, Review } from "@/models/Review";
+import "@/models/User";
+import "@/models/Product";
 import { NextRequest, NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
