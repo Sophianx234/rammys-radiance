@@ -15,10 +15,10 @@ export async function updateCustomerRoleAction(userId: string, newRole: string) 
   }
 }
 
-export async function deleteCustomerAction(userId: string) {
+export async function toggleSuspendCustomerAction(userId: string, currentSuspendedStatus: boolean) {
   try {
     await connectToDatabase();
-    await User.findByIdAndDelete(userId);
+    await User.findByIdAndUpdate(userId, { isSuspended: !currentSuspendedStatus });
     revalidatePath("/admin/customers");
     return { success: true };
   } catch (error: any) {

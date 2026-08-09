@@ -12,7 +12,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { useDashStore } from "@/lib/store";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateCustomerRoleAction, deleteCustomerAction, fetchCustomerOrdersAction } from "@/app/actions/customers";
+import { updateCustomerRoleAction, toggleSuspendCustomerAction, fetchCustomerOrdersAction } from "@/app/actions/customers";
 
 const Toast = withReactContent(Swal).mixin({
   toast: true,
@@ -96,16 +96,18 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
+  const handleSuspendUser = async (u: any) => {
+    const isSuspended = u.isSuspended;
+    const actionText = isSuspended ? "UNSUSPEND" : "SUSPEND";
     const result = await Swal.fire({
-      title: "DELETE USER?",
-      text: "This action cannot be undone.",
+      title: `${actionText} USER?`,
+      text: isSuspended ? "They will be able to log in and place orders again." : "They will not be able to log in or place orders until unsuspended.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "YES, DELETE",
+      confirmButtonText: `YES, ${actionText}`,
       cancelButtonText: "CANCEL",
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#5B7763",
+      confirmButtonColor: isSuspended ? "#5B7763" : "#ef4444",
+      cancelButtonColor: isSuspended ? "#ef4444" : "#5B7763",
       reverseButtons: true,
       customClass: { 
         popup: "rounded-none border border-border/40 bg-white",
@@ -116,13 +118,13 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
     });
 
     if (result.isConfirmed) {
-      const res = await deleteCustomerAction(id);
+      const res = await toggleSuspendCustomerAction(u._id, isSuspended);
       if (res.success) {
-        setUsers(users.filter(u => u._id !== id));
-        if (selectedUser?._id === id) setIsDetailOpen(false);
-        Toast.fire({ icon: "success", title: "USER DELETED SUCCESSFULLY" });
+        setUsers(users.map(user => user._id === u._id ? { ...user, isSuspended: !isSuspended } : user));
+        if (selectedUser?._id === u._id) setSelectedUser({ ...selectedUser, isSuspended: !isSuspended });
+        Toast.fire({ icon: "success", title: `USER ${isSuspended ? 'UNSUSPENDED' : 'SUSPENDED'} SUCCESSFULLY` });
       } else {
-        Toast.fire({ icon: "error", title: "FAILED TO DELETE USER" });
+        Toast.fire({ icon: "error", title: `FAILED TO ${actionText} USER` });
       }
     }
   };
@@ -239,9 +241,16 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <span className={`inline-flex items-center justify-center px-2.5 py-1 text-[9px] uppercase tracking-widest font-bold border ${getRoleBadgeStyle(u.role)}`}>
-                      {u.role}
-                    </span>
+                    <div className="flex flex-col items-start gap-1">
+                      <span className={`inline-flex items-center justify-center px-2.5 py-1 text-[9px] uppercase tracking-widest font-bold border ${getRoleBadgeStyle(u.role)}`}>
+                        {u.role}
+                      </span>
+                      {u.isSuspended && (
+                        <span className="inline-flex items-center justify-center px-2.5 py-1 text-[9px] uppercase tracking-widest font-bold border bg-red-50 text-red-700 border-red-200 mt-1">
+                          Suspended
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="py-4 px-6 text-[11px] text-text-muted tracking-wider">
                     {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "-"}
@@ -275,10 +284,10 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-border/40" />
                           <DropdownMenuItem 
-                            onClick={() => handleDeleteUser(u._id)} 
-                            className="text-[11px] uppercase tracking-wider font-bold text-red-600 cursor-pointer rounded-none focus:bg-red-50 focus:text-red-700 py-2.5 px-3"
+                            onClick={() => handleSuspendUser(u)} 
+                            className={`text-[11px] uppercase tracking-wider font-bold cursor-pointer rounded-none py-2.5 px-3 ${u.isSuspended ? 'text-[#5B7763] focus:bg-[#5B7763]/10 focus:text-[#5B7763]' : 'text-red-600 focus:bg-red-50 focus:text-red-700'}`}
                           >
-                            <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete User
+                            <Trash2 className="mr-2 h-3.5 w-3.5" /> {u.isSuspended ? "Unsuspend User" : "Suspend User"}
                           </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -311,13 +320,18 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
                   <div className="space-y-2">
                     <DialogTitle className="text-[20px] uppercase tracking-widest font-bold text-[#222222]">{selectedUser.name}</DialogTitle>
                     <DialogDescription className="text-[12px] text-text-muted tracking-wider">{selectedUser.email}</DialogDescription>
-                    <div className="flex items-center gap-4 mt-2">
+                    <div className="flex flex-wrap items-center gap-4 mt-2">
                       <span className={`inline-flex items-center justify-center px-2.5 py-1 text-[9px] uppercase tracking-widest font-bold border ${getRoleBadgeStyle(selectedUser.role)}`}>
                         {selectedUser.role}
                       </span>
+                      {selectedUser.isSuspended && (
+                        <span className="inline-flex items-center justify-center px-2.5 py-1 text-[9px] uppercase tracking-widest font-bold border bg-red-50 text-red-700 border-red-200">
+                          Suspended
+                        </span>
+                      )}
                       {selectedUser.createdAt && (
                         <>
-                          <span className="w-px h-4 bg-border/40 mx-1" />
+                          <span className="w-px h-4 bg-border/40 mx-1 hidden sm:block" />
                           <span className="text-[10px] uppercase tracking-widest font-bold text-text-muted">
                             Joined {new Date(selectedUser.createdAt).getFullYear()}
                           </span>

@@ -22,6 +22,7 @@ export interface IUser extends Document {
   phone?: string;
   wishlist: mongoose.Types.ObjectId[];
   cart: ICartItem[];
+  isSuspended?: boolean;
   resetPasswordToken: string,
     resetPasswordExpires: number,
   createdAt: Date;
@@ -54,6 +55,7 @@ const userSchema = new Schema<IUser>(
         quantity: { type: Number, default: 1 },
       },
     ],
+    isSuspended: { type: Boolean, default: false },
     resetPasswordToken: String,
     resetPasswordExpires: Number,
   },

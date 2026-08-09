@@ -27,6 +27,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (user.isSuspended) {
+      return NextResponse.json(
+        { message: "Your account has been suspended. Please contact support." },
+        { status: 403 }
+      );
+    }
+
     // Verify password
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
