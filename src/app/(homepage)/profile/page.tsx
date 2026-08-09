@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import OrderCard from "@/components/order-card";
 import { ProductCard } from "@/components/product-card";
 import { GridLoader } from "react-spinners";
@@ -108,9 +108,9 @@ export default function ProfilePage() {
       if (!res.ok) throw new Error("Failed to update profile");
       const data = await res.json();
       setUser(data.user);
-      Swal.fire("Success", "Profile updated successfully", "success");
+      toast.success("PROFILE UPDATED SUCCESSFULLY");
     } catch (error) {
-      Swal.fire("Error", "Could not update profile", "error");
+      toast.error("COULD NOT UPDATE PROFILE");
     } finally {
       setIsUpdating(false);
     }
@@ -121,12 +121,12 @@ export default function ProfilePage() {
     if (!user?._id) return;
     
     if (passwordData.password !== passwordData.confirmPassword) {
-      Swal.fire("Error", "Passwords do not match", "error");
+      toast.error("PASSWORDS DO NOT MATCH");
       return;
     }
 
     if (passwordData.password.length < 6) {
-      Swal.fire("Error", "Password must be at least 6 characters", "error");
+      toast.error("PASSWORD MUST BE AT LEAST 6 CHARACTERS");
       return;
     }
 
@@ -142,10 +142,10 @@ export default function ProfilePage() {
       });
 
       if (!res.ok) throw new Error("Failed to update password");
-      Swal.fire("Success", "Password updated successfully", "success");
+      toast.success("PASSWORD UPDATED SUCCESSFULLY");
       setPasswordData({ password: "", confirmPassword: "" });
     } catch (error) {
-      Swal.fire("Error", "Could not update password", "error");
+      toast.error("COULD NOT UPDATE PASSWORD");
     } finally {
       setIsUpdating(false);
     }
@@ -169,9 +169,9 @@ export default function ProfilePage() {
       if (!res.ok) throw new Error("Failed to upload image");
       const data = await res.json();
       setUser(data.user);
-      Swal.fire("Success", "Profile picture updated", "success");
+      toast.success("PROFILE PICTURE UPDATED");
     } catch (error) {
-      Swal.fire("Error", "Could not upload image", "error");
+      toast.error("COULD NOT UPLOAD IMAGE");
     } finally {
       setIsUpdating(false);
     }
