@@ -13,6 +13,7 @@ import withReactContent from "sweetalert2-react-content";
 import { useDashStore } from "@/lib/store";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateCustomerRoleAction, toggleSuspendCustomerAction, fetchCustomerOrdersAction } from "@/app/actions/customers";
+import { useConfirm } from "@/components/ui/confirm-provider";
 
 const Toast = withReactContent(Swal).mixin({
   toast: true,
@@ -55,6 +56,7 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
   
   const search = searchParams.get("search") || "";
   const roleFilter = searchParams.get("role") || "all";
+  const confirm = useConfirm();
 
   const [users, setUsers] = useState(initialUsers);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
@@ -98,26 +100,15 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
 
   const handleSuspendUser = async (u: any) => {
     const isSuspended = u.isSuspended;
-    const actionText = isSuspended ? "UNSUSPEND" : "SUSPEND";
-    const result = await Swal.fire({
-      title: `${actionText} USER?`,
-      text: isSuspended ? "They will be able to log in and place orders again." : "They will not be able to log in or place orders until unsuspended.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: `YES, ${actionText}`,
-      cancelButtonText: "CANCEL",
-      confirmButtonColor: isSuspended ? "#5B7763" : "#ef4444",
-      cancelButtonColor: isSuspended ? "#ef4444" : "#5B7763",
-      reverseButtons: true,
-      customClass: { 
-        popup: "rounded-none border border-border/40 bg-white",
-        title: "text-[14px] uppercase tracking-widest font-bold text-[#222222]",
-        confirmButton: "rounded-none text-[11px] uppercase tracking-wider font-bold",
-        cancelButton: "rounded-none text-[11px] uppercase tracking-wider font-bold"
-      },
+    const actionText = isSuspended ? "Unsuspend" : "Suspend";
+    const isConfirmed = await confirm({
+      title: `${actionText} User?`,
+      description: isSuspended ? "They will be able to log in and place orders again." : "They will not be able to log in or place orders until unsuspended.",
+      confirmText: `Yes, ${actionText}`,
+      variant: isSuspended ? "primary" : "destructive"
     });
 
-    if (result.isConfirmed) {
+    if (isConfirmed) {
       const res = await toggleSuspendCustomerAction(u._id, isSuspended);
       if (res.success) {
         setUsers(users.map(user => user._id === u._id ? { ...user, isSuspended: !isSuspended } : user));

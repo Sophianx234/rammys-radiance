@@ -50,6 +50,7 @@ import OrderDetailsSheetContent from "./order-details";
 import { useDashStore } from "@/lib/store";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateOrderStatusAction, deleteOrderAction, batchUpdateOrderStatusAction } from "@/app/actions/orders";
+import { useConfirm } from "@/components/ui/confirm-provider";
 
 export type OrderStatus =
   | "processing"
@@ -83,6 +84,7 @@ const Toast = withReactContent(Swal).mixin({
 export function OrdersClient({ initialOrders, pagination }: { initialOrders: any[], pagination: any }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const confirm = useConfirm();
   
   const searchTerm = searchParams.get("search") || "";
   const statusFilter = searchParams.get("status") ? searchParams.get("status")!.split(',') : [];
@@ -119,23 +121,14 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
 
   const handleDelete = async (orderId: string) => {
     setIsSheetOpen(false);
-    const result = await Swal.fire({
-      title: "ARE YOU SURE?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      confirmButtonText: "YES, DELETE IT",
-      cancelButtonText: "CANCEL",
-      customClass: { 
-        popup: "rounded-none border border-border/40 bg-white",
-        title: "text-[14px] uppercase tracking-widest font-bold text-[#222222]",
-        confirmButton: "rounded-none text-[11px] uppercase tracking-wider font-bold",
-        cancelButton: "rounded-none text-[11px] uppercase tracking-wider font-bold"
-      },
+    const isConfirmed = await confirm({
+      title: "Delete Order?",
+      description: "This action cannot be undone.",
+      confirmText: "Yes, Delete It",
+      variant: "destructive"
     });
 
-    if (result.isConfirmed) {
+    if (isConfirmed) {
       const res = await deleteOrderAction(orderId);
       if (res.success) {
         Toast.fire({ icon: "success", title: "ORDER DELETED" });

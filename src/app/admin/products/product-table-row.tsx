@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useState, useRef, useEffect } from "react";
 import { useDashStore } from "@/lib/store";
+import { useConfirm } from "@/components/ui/confirm-provider";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,7 @@ export function ProductTableRow({ product }: { product: any }) {
   const [open, setOpen] = useState(false);
   const [showCaret, setShowCaret] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const confirmModal = useConfirm();
 
   const checkScroll = () => {
     if (scrollRef.current) {
@@ -52,17 +54,14 @@ export function ProductTableRow({ product }: { product: any }) {
       : "";
 
   const handleDelete = async () => {
-    const confirm = await Swal.fire({
+    const isConfirmed = await confirmModal({
       title: "Delete Product?",
-      text: `Are you sure you want to delete "${product.name}"?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#222222",
-      cancelButtonColor: "#737373",
-      confirmButtonText: "Yes, delete it",
+      description: `Are you sure you want to delete "${product.name}"?`,
+      confirmText: "Yes, delete it",
+      variant: "destructive"
     });
 
-    if (!confirm.isConfirmed) return;
+    if (!isConfirmed) return;
 
     try {
       const res = await fetch(`/api/admin/products/${product._id}`, {
