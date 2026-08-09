@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useDashStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
+import { fetchNotificationCountAction } from "@/app/actions/notifications";
+
 
 export default function Topbar() {
-  const [notifications] = useState(2);
+  const [notifications, setNotifications] = useState(0);
   const { user, setUser } = useDashStore();
   const [loading, setLoading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,6 +36,12 @@ export default function Topbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Fetch real notifications count
+  useEffect(() => {
+    fetchNotificationCountAction().then(setNotifications);
+  }, []);
+
 
   const handleProfileClick = () => {
     if (user) {
@@ -92,13 +100,13 @@ export default function Topbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative hover:bg-secondary/50 border-none transition-all text-text-muted hover:text-[#5B7763] rounded-none h-10 w-10"
+            onClick={() => router.push("/admin/overview")}
+            className="relative hover:bg-secondary/50 border-none transition-all text-text-muted hover:text-[#222222] rounded-none h-10 w-10 flex-shrink-0"
           >
             <Bell size={18} strokeWidth={1.5} />
             {notifications > 0 && (
-              <span className="absolute top-2 right-2 flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-[#5B7763] opacity-75 animate-ping" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5B7763]" />
+              <span className="absolute top-1.5 right-1.5 flex items-center justify-center min-w-[14px] h-[14px] rounded-full bg-[#5B7763] text-white text-[9px] font-bold tracking-tighter shadow-sm border border-white px-0.5">
+                {notifications > 99 ? '99+' : notifications}
               </span>
             )}
           </Button>
