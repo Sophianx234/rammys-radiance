@@ -40,7 +40,7 @@ export function middleware(req: NextRequest) {
 
     // Dispatch role can only access orders and settings
     if (normalizedRole === "dispatch") {
-      if (!pathname.startsWith("/admin/orders") && !pathname.startsWith("/admin/settings")) {
+      if (pathname === "/admin" || (!pathname.startsWith("/admin/orders") && !pathname.startsWith("/admin/settings"))) {
         return NextResponse.redirect(new URL("/admin/orders", req.url));
       }
     }

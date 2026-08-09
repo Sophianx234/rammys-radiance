@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bell, Search, LogOut, Settings, Menu, LayoutDashboard, Package2, ShoppingCart, UsersRound, User, Package } from "lucide-react";
+import { Bell, Search, LogOut, Settings, Menu, LayoutDashboard, Package2, ShoppingCart, UsersRound, User, Package, ClipboardList } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,7 +140,7 @@ export default function Topbar() {
                       {user.name || "Unknown"}
                     </span>
                     <span className="text-[10px] uppercase tracking-wider font-bold text-[#5B7763] leading-none">
-                      Admin
+                      {user.role}
                     </span>
                   </div>
                 </>
@@ -194,7 +194,7 @@ export default function Topbar() {
             className="md:hidden sticky top-20 left-0 w-full z-40 bg-white border-b border-border/40 shadow-lg"
           >
             <div className="flex flex-col p-4 space-y-1">
-              {user?.role === "admin" && (
+              {(user?.role === "admin" || user?.role === "manager") && (
                 <>
                   <Link
                     href="/admin/overview"
@@ -220,6 +220,15 @@ export default function Topbar() {
                     <UsersRound size={16} strokeWidth={1.5} /> Customers
                   </Link>
                 </>
+              )}
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin/activity"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-[12px] uppercase tracking-wider font-bold text-text-muted hover:text-[#222222] hover:bg-secondary/50 transition-colors"
+                >
+                  <ClipboardList size={16} strokeWidth={1.5} /> Activity Logs
+                </Link>
               )}
 
               <Link

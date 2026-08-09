@@ -296,16 +296,18 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                 {selectedOrders.size} Order{selectedOrders.size > 1 ? 's' : ''} Selected
               </span>
               <span className="w-px h-4 bg-border/40" />
-              <Select onValueChange={handleBatchStatusUpdate} disabled={batchActionLoading}>
-                <SelectTrigger className="h-8 border-border/40 bg-white text-[11px] uppercase tracking-wider font-bold w-48 focus:ring-0">
-                  <SelectValue placeholder="UPDATE STATUS" />
-                </SelectTrigger>
-                <SelectContent className="rounded-none border-border/40">
-                  {Object.keys(STATUS_CONFIG).map((key) => (
-                    <SelectItem key={key} value={key} className="text-[11px] uppercase tracking-wider font-bold">{STATUS_CONFIG[key].label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {(user?.role === "admin" || user?.role === "manager") && (
+                <Select onValueChange={handleBatchStatusUpdate} disabled={batchActionLoading}>
+                  <SelectTrigger className="h-8 border-border/40 bg-white text-[11px] uppercase tracking-wider font-bold w-48 focus:ring-0">
+                    <SelectValue placeholder="UPDATE STATUS" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-none border-border/40">
+                    {Object.keys(STATUS_CONFIG).map((key) => (
+                      <SelectItem key={key} value={key} className="text-[11px] uppercase tracking-wider font-bold">{STATUS_CONFIG[key].label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             <button onClick={() => setSelectedOrders(new Set())} className="text-[11px] uppercase tracking-wider font-bold text-text-muted hover:text-[#222222]">
               CANCEL
@@ -403,11 +405,17 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                         <div className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">{order.items?.length || 0} ITEMS</div>
                       </td>
                       <td className="py-4 px-4" onClick={e => e.stopPropagation()}>
+                        {(user?.role === "admin" || user?.role === "manager") ? (
                           <StatusSelector 
                             currentStatus={order.orderStatus} 
                             paymentReference={order.paymentReference} 
                             onUpdate={handleStatusUpdate} 
                           />
+                        ) : (
+                          <span className={`inline-flex items-center justify-center px-2 py-1 text-[9px] uppercase tracking-widest font-bold border ${STATUS_CONFIG[order.orderStatus]?.color || ''}`}>
+                            {STATUS_CONFIG[order.orderStatus]?.label || order.orderStatus}
+                          </span>
+                        )}
                       </td>
                       <td className="py-4 px-4">
                         <PaymentBadge status={order.paymentStatus} />
@@ -431,12 +439,14 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                             </DropdownMenuItem>
                             
                             <DropdownMenuSeparator className="bg-border/40 my-1" />
-                            <DropdownMenuItem 
-                              className="text-[11px] uppercase tracking-wider font-bold text-red-600 rounded-none focus:bg-red-50 focus:text-red-700 cursor-pointer"
-                              onClick={() => handleDelete(order._id)}
-                            >
-                              <XCircle className="mr-2 h-3.5 w-3.5" /> Delete Order
-                            </DropdownMenuItem>
+                            {user?.role === 'admin' && (
+                              <DropdownMenuItem 
+                                className="text-[11px] uppercase tracking-wider font-bold text-red-600 rounded-none focus:bg-red-50 focus:text-red-700 cursor-pointer"
+                                onClick={() => handleDelete(order._id)}
+                              >
+                                <XCircle className="mr-2 h-3.5 w-3.5" /> Delete Order
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>

@@ -4,19 +4,23 @@ import { User } from "@/models/User";
 import { signToken } from "@/lib/jwtConfig";
 import { setAuthCookie } from "@/lib/setAuthCookie";
 import { verifyPassword } from "@/lib/bcrypt";
+import { loginSchema } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   await connectToDatabase();
 
   try {
-    const { email, password } = await req.json();
-
-    if (!email || !password) {
+    const body = await req.json();
+    const validatedData = loginSchema.safeParse(body);
+    
+    if (!validatedData.success) {
       return NextResponse.json(
-        { message: "Email/Phone and password are required" },
+        { message: validatedData.error.errors[0].message },
         { status: 400 }
       );
     }
+    
+    const { email, password } = validatedData.data;
 
     // Find user by either email or phone
     const user = await User.findOne({ 

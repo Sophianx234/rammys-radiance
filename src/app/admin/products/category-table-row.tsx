@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useDashStore } from "@/lib/store";
 import { useConfirm } from "@/components/ui/confirm-provider";
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import Image from "next/image";
 
 export function CategoryTableRow({ category }: { category: any }) {
   const router = useRouter();
+  const { user } = useDashStore();
   const confirmModal = useConfirm();
 
   const handleDelete = async () => {
@@ -85,13 +87,17 @@ export function CategoryTableRow({ category }: { category: any }) {
             >
               <Pencil className="w-3.5 h-3.5" strokeWidth={1.5} /> Edit Category
             </DropdownMenuItem>
-            <div className="border-t border-border/40 my-1" />
-            <DropdownMenuItem 
-              onClick={handleDelete}
-              className="flex items-center gap-3 px-3 py-2 text-[12px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 focus:bg-red-50 focus:text-red-700 rounded-none cursor-pointer"
-            >
-              <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} /> Delete
-            </DropdownMenuItem>
+            {user?.role === 'admin' && (
+              <>
+                <div className="border-t border-border/40 my-1" />
+                <DropdownMenuItem 
+                  onClick={handleDelete}
+                  className="flex items-center gap-3 px-3 py-2 text-[12px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 focus:bg-red-50 focus:text-red-700 rounded-none cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} /> Delete
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>

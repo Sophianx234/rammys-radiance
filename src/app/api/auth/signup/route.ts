@@ -7,6 +7,7 @@ import { setAuthCookie } from "@/lib/setAuthCookie";
 import { User } from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 import * as React from "react";
+import { signupSchema } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   await connectToDatabase();
@@ -15,18 +16,23 @@ export async function POST(req: NextRequest) {
     // Parse FormData from the request
     const formData = await req.formData();
 
-    const name = formData.get("name")?.toString();
-    const email = formData.get("email")?.toString();
-    const phone = formData.get("phone")?.toString();
-    const password = formData.get("password")?.toString();
-    const otp = formData.get("otp")?.toString();
-
-    if (!name || (!email && !phone) || !password) {
+    const rawData = {
+      name: formData.get("name")?.toString(),
+      email: formData.get("email")?.toString(),
+      phone: formData.get("phone")?.toString(),
+      password: formData.get("password")?.toString(),
+    };
+    
+    const validatedData = signupSchema.safeParse(rawData);
+    if (!validatedData.success) {
       return NextResponse.json(
-        { message: "Missing required fields" },
+        { message: validatedData.error.errors[0].message },
         { status: 400 }
       );
     }
+
+    const { name, email, phone, password } = validatedData.data;
+    const otp = formData.get("otp")?.toString();
 
     if (email) {
       if (!otp) {

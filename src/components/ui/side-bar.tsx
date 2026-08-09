@@ -8,6 +8,7 @@ import {
   Settings,
   LogOut,
   LucidePanelLeft,
+  ClipboardList,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -22,6 +23,7 @@ const navItems = [
   { name: "Products", key: "products", icon: Package2, path: "/admin/products" },
   { name: "Orders", key: "orders", icon: ShoppingCart, path: "/admin/orders" },
   { name: "Customers", key: "customers", icon: UsersRound, path: "/admin/customers" },
+  { name: "Activity Logs", key: "activity", icon: ClipboardList, path: "/admin/activity" },
 ];
 
 export default function Sidebar() {
@@ -108,6 +110,7 @@ export default function Sidebar() {
         {navItems.map(({ name, key, icon: Icon }) => {
           const role = user?.role === "dispatcher" ? "dispatch" : (user?.role === "customer" ? "user" : user?.role);
           if (role === "dispatch" && key !== "orders") return null;
+          if (key === "activity" && role !== "admin") return null;
 
           const isActive = activeTab === key;
 
@@ -152,6 +155,7 @@ export default function Sidebar() {
       {/* FOOTER ACTIONS */}
       <div className="border-t border-border/40 p-4 mt-auto space-y-1">
         <button
+          onClick={() => router.push("/admin/settings")}
           className={`flex items-center gap-4 w-full px-4 py-3.5 text-text-muted hover:text-[#222222] hover:bg-secondary/40 transition-colors outline-none focus:outline-none group ${collapsed ? "justify-center px-0" : ""}`}
         >
           <Settings size={18} strokeWidth={1.5} className="flex-shrink-0 text-text-muted group-hover:text-[#222222] transition-colors" />
