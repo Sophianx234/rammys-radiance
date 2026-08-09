@@ -42,3 +42,17 @@ export async function fetchCustomerOrdersAction(userId: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function adminChangePasswordAction(userId: string, newPassword: string) {
+  try {
+    await connectToDatabase();
+    const { encryptPassword } = await import("@/lib/bcrypt");
+    const hashedPassword = await encryptPassword(newPassword);
+    
+    await User.findByIdAndUpdate(userId, { password: hashedPassword });
+    revalidatePath("/admin/customers");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

@@ -6,12 +6,12 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { Trash2, Search, Filter, Eye, ShoppingBag, User as UserIcon, X, MoreVertical, Copy } from "lucide-react";
+import { Trash2, Search, Filter, Eye, ShoppingBag, User as UserIcon, X, MoreVertical, Copy, Lock } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Swal from "sweetalert2";
 import { useDashStore } from "@/lib/store";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateCustomerRoleAction, toggleSuspendCustomerAction, fetchCustomerOrdersAction } from "@/app/actions/customers";
+import { updateCustomerRoleAction, toggleSuspendCustomerAction, fetchCustomerOrdersAction, adminChangePasswordAction } from "@/app/actions/customers";
 import { useConfirm } from "@/components/ui/confirm-provider";
 import { toast } from "sonner";
 
@@ -51,6 +51,10 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [userOrders, setUserOrders] = useState<any[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  
+  const [passwordChangeUser, setPasswordChangeUser] = useState<any | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [isPasswordChangeLoading, setIsPasswordChangeLoading] = useState(false);
 
   const updateURL = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -103,9 +107,23 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
         if (selectedUser?._id === u._id) setSelectedUser({ ...selectedUser, isSuspended: !isSuspended });
         toast.success(`USER ${isSuspended ? 'UNSUSPENDED' : 'SUSPENDED'} SUCCESSFULLY`);
       } else {
-        toast.error(`FAILED TO ${actionText} USER`);
+        toast.error("FAILED TO UPDATE SUSPENSION STATUS");
       }
     }
+  };
+
+  const handleChangePasswordSubmit = async () => {
+    if (!passwordChangeUser || !newPassword) return;
+    setIsPasswordChangeLoading(true);
+    const res = await adminChangePasswordAction(passwordChangeUser._id, newPassword);
+    if (res.success) {
+      toast.success("PASSWORD UPDATED SUCCESSFULLY");
+      setPasswordChangeUser(null);
+      setNewPassword("");
+    } else {
+      toast.error(res.error || "FAILED TO UPDATE PASSWORD");
+    }
+    setIsPasswordChangeLoading(false);
   };
 
   return (
@@ -254,12 +272,19 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => {
-                            navigator.clipboard.writeText(u.email);
-                            toast.success("EMAIL COPIED TO CLIPBOARD");
+                            navigator.clipboard.writeText(u.email || u.phone || "");
+                            toast.success("COPIED TO CLIPBOARD");
                           }}
                           className="text-[11px] uppercase tracking-wider font-bold text-[#222222] cursor-pointer rounded-none focus:bg-secondary/50 py-2.5 px-3"
                         >
-                          <Copy className="mr-2 h-3.5 w-3.5" /> Copy Email
+                          <Copy className="mr-2 h-3.5 w-3.5" /> Copy Contact
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-border/40" />
+                        <DropdownMenuItem 
+                          onClick={() => setPasswordChangeUser(u)}
+                          className="text-[11px] uppercase tracking-wider font-bold text-[#222222] cursor-pointer rounded-none focus:bg-secondary/50 py-2.5 px-3"
+                        >
+                          <Lock className="mr-2 h-3.5 w-3.5" /> Change Password
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-border/40" />
                           <DropdownMenuItem 
@@ -454,6 +479,45 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* CHANGE PASSWORD DIALOG */}
+      <Dialog open={!!passwordChangeUser} onOpenChange={(open) => !open && setPasswordChangeUser(null)}>
+        <DialogContent className="rounded-none border border-border/40 bg-white sm:max-w-md">
+          <DialogTitle className="text-[14px] uppercase tracking-widest font-bold text-[#222222] border-b border-border/40 pb-4">
+            Change User Password
+          </DialogTitle>
+          <div className="py-4 space-y-4">
+            <p className="text-[11px] text-text-muted tracking-wide">
+              Enter a new password for <span className="font-bold text-black">{passwordChangeUser?.name}</span>.
+            </p>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-widest font-bold text-text-muted">New Password</label>
+              <Input
+                type="password"
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="h-12 rounded-none border-border/40 focus-visible:ring-0 focus-visible:border-black"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setPasswordChangeUser(null)}
+              className="px-6 py-3 border border-border/40 text-[10px] uppercase tracking-widest font-bold text-text-muted hover:text-black hover:bg-secondary/50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleChangePasswordSubmit}
+              disabled={isPasswordChangeLoading || !newPassword}
+              className="px-6 py-3 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-black/90 transition-colors disabled:opacity-50"
+            >
+              {isPasswordChangeLoading ? "Saving..." : "Save Password"}
+            </button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </motion.div>
