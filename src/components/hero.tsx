@@ -6,6 +6,23 @@ import Link from "next/link";
 import Image from "next/image";
 
 const slides = [
+  ,
+  
+  {
+   id: 4,
+   subtitle: "BEST SELLERS",
+   title: "Your Daily\nSkincare Ritual",
+   description: "Elevate your routine with our award-winning\nhydration collection.",
+   image: "/imgs/products/prod-5.jpeg",
+ },
+ 
+  {
+    id: 5,
+    subtitle: "BEST SELLERS",
+    title: "Your Daily\nSkincare Ritual",
+    description: "Elevate your routine with our award-winning\nhydration collection.",
+    image: "/imgs/products/prod-4.jpeg",
+  }, 
    {
     id: 1,
     subtitle: "ESSENTIAL ITEMS",
@@ -26,23 +43,7 @@ const slides = [
     title: "Your Daily\nSkincare Ritual",
     description: "Elevate your routine with our award-winning\nhydration collection.",
     image: "/imgs/products/prod-2.jpeg",
-  },
-  
-  {
-   id: 4,
-   subtitle: "BEST SELLERS",
-   title: "Your Daily\nSkincare Ritual",
-   description: "Elevate your routine with our award-winning\nhydration collection.",
-   image: "/imgs/products/prod-5.jpeg",
- },
- 
-  {
-    id: 5,
-    subtitle: "BEST SELLERS",
-    title: "Your Daily\nSkincare Ritual",
-    description: "Elevate your routine with our award-winning\nhydration collection.",
-    image: "/imgs/products/prod-4.jpeg",
-  }, 
+  }
 ];
 
 export default function Hero() {

@@ -17,36 +17,34 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
   }, []);
 
   const handleRemoveCartItem = async (productId: string) => {
-    try {
-      const res = await fetch(`/api/cart/${productId}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        console.error("Failed to remove item");
-        return;
+    // Always remove from local state immediately
+    removeItem(productId);
+    
+    // Only sync with DB if user is logged in
+    if (user) {
+      try {
+        await fetch(`/api/cart/${productId}`, {
+          method: "DELETE",
+        });
+      } catch (error) {
+        console.error("Remove cart error:", error);
       }
-
-      removeItem(productId);
-    } catch (error) {
-      console.error("Remove cart error:", error);
     }
   };
 
   const handleClearCart = async () => {
-    try {
-      const res = await fetch("/api/cart/clear", {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        console.error("Failed to clear cart");
-        return;
+    // Always clear local state immediately
+    clearCart();
+    
+    // Only sync with DB if user is logged in
+    if (user) {
+      try {
+        await fetch("/api/cart/clear", {
+          method: "DELETE",
+        });
+      } catch (error) {
+        console.error("Clear cart error:", error);
       }
-
-      clearCart();
-    } catch (error) {
-      console.error("Clear cart error:", error);
     }
   };
 
