@@ -6,8 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 const slides = [
-  ,
-  
   {
    id: 4,
    subtitle: "BEST SELLERS",
