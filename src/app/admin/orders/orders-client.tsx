@@ -396,8 +396,8 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex flex-col">
-                          <span className="font-bold text-[13px] text-[#222222]">{order.user?.name || "Guest User"}</span>
-                          <span className="text-[11px] text-text-muted mt-0.5">{order.user?.email || order.customer?.phone || "No contact info"}</span>
+                          <span className="font-bold text-[13px] text-[#222222]">{order.user?.name || order.customer?.name || "Guest User"}</span>
+                          <span className="text-[11px] text-text-muted mt-0.5">{order.user?.email || order.customer?.email || order.customer?.phone || "No contact info"}</span>
                         </div>
                       </td>
                       <td className="py-4 px-4">

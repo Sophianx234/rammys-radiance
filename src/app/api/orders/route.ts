@@ -86,8 +86,10 @@ export async function POST(req: Request) {
 
     // 5. Create the order after successful stock deduction
     const newOrder = await Order.create({
-      user: data.userId,
+      user: data.userId || undefined,
       customer: {
+        name: data.formData.fullName,
+        email: data.formData.email,
         phone: data.formData.phone,
       },
 
@@ -116,14 +118,16 @@ export async function POST(req: Request) {
       });
     }
 
-     const user = await User.findById(data.userId);
-    if (user?.email) {
+    const recipientEmail = data.formData.email;
+    const recipientName = data.formData.fullName || "Customer";
+
+    if (recipientEmail) {
       await sendMail({
-        to: user.email,
+        to: recipientEmail,
         subject: "Your Order Has Been Confirmed – Rammy’s Closet",
         html: await render(
           React.createElement(OrderConfirmationEmail, {
-            name: user.name || "Customer",
+            name: recipientName,
             orderId: newOrder._id.toString(),
             items: await Promise.all(
               newOrder.items.map(async (item: any) => {
@@ -171,6 +175,8 @@ export async function GET(req: Request) {
       query.$or = [
         { paymentReference: { $regex: search, $options: "i" } },
         { "customer.phone": { $regex: search, $options: "i" } },
+        { "customer.name": { $regex: search, $options: "i" } },
+        { "customer.email": { $regex: search, $options: "i" } },
       ];
     }
 

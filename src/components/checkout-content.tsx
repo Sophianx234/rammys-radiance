@@ -17,6 +17,7 @@ export default function CheckoutPage() {
   const [formData, setFormData] = useState({
     userId: user?._id || "",
     fullName: user?.name || "",
+    email: user?.email || "",
     phone: user?.phone || "",
     address: "",
     city: "",
@@ -85,6 +86,7 @@ export default function CheckoutPage() {
         ...prev,
         userId: user._id,
         fullName: user.name || prev.fullName,
+        email: user.email || prev.email,
         phone: user.phone || prev.phone,
       }));
     }
@@ -128,7 +130,7 @@ export default function CheckoutPage() {
 
   const handledeliverySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.fullName && formData.phone && formData.address && formData.city && formData.region) {
+    if (formData.fullName && formData.email && formData.phone && formData.address && formData.city && formData.region) {
       setCurrentStep("payment");
       setError("");
     } else {
@@ -143,7 +145,7 @@ export default function CheckoutPage() {
   // Paystack Configuration using react-paystack
   const paystackConfig = {
     reference: `ORD-${Date.now()}`,
-    email: user?.email || "customer@example.com", // Fallback if user email is missing
+    email: formData.email, 
     amount: finalTotal * 100, // Paystack amount is in pesewas (1/100 of GHS)
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY as string,
     currency: "GHS",
@@ -208,6 +210,17 @@ export default function CheckoutPage() {
           <div className="lg:col-span-8">
             {currentStep === "delivery" && (
               <div className="bg-white border border-border/40 p-8 lg:p-12 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.02)]">
+                {!user && (
+                  <div className="mb-8 pb-6 border-b border-border/50 text-center">
+                    <p className="text-[13px] text-text-muted">
+                      Already have an account?{" "}
+                      <Link href="/login?redirect=/checkout" className="text-black font-bold underline underline-offset-4 hover:text-[#5B7763] transition-colors">
+                        Log in
+                      </Link>{" "}
+                      for faster checkout.
+                    </p>
+                  </div>
+                )}
                 <h2 className="text-[13px] font-bold text-[#222222] uppercase tracking-[0.15em] mb-8 pb-4 border-b border-border/50">
                   Delivery Information
                 </h2>
@@ -234,6 +247,18 @@ export default function CheckoutPage() {
                     </div>
                     
                     <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Email Address</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full bg-transparent border-b border-border/60 px-0 py-3 text-[14px] text-[#222222] focus:outline-none focus:border-[#5B7763] transition-colors"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1 md:col-span-2">
                       <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Phone Number</label>
                       <input
                         type="tel"

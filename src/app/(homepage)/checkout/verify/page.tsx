@@ -11,6 +11,10 @@ export default function VerifyPage() {
   const [orderNumber, setOrderNumber] = useState<string>("");
   const [placedOrder, setPlacedOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const [accountCreated, setAccountCreated] = useState(false);
+  const [accountError, setAccountError] = useState("");
   const hasVerified = useRef(false);
 
   useEffect(() => {
@@ -85,6 +89,36 @@ export default function VerifyPage() {
 
     verifyPayment();
   }, []);
+
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password) return;
+    setIsCreatingAccount(true);
+    setAccountError("");
+    try {
+      const res = await fetch("/api/auth/convert-guest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: placedOrder?.customer?.email,
+          name: placedOrder?.customer?.name,
+          phone: placedOrder?.customer?.phone,
+          password,
+          orderId: placedOrder?._id,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAccountCreated(true);
+      } else {
+        setAccountError(data.error || "Failed to create account");
+      }
+    } catch (err) {
+      setAccountError("An unexpected error occurred");
+    } finally {
+      setIsCreatingAccount(false);
+    }
+  };
 
   const getNextFriday = () => {
     const date = new Date();
@@ -183,8 +217,8 @@ export default function VerifyPage() {
                 <MapPin className="w-4 h-4 text-[#5B7763] mt-0.5" />
                 <div>
                   <p className="text-[11px] font-bold text-[#222222] uppercase tracking-wider mb-1">Customer</p>
-                  <p className="text-[13px] text-text-muted">{user?.email}</p>
-                  <p className="text-[13px] text-text-muted">{user?.phone}</p>
+                  <p className="text-[13px] text-text-muted">{placedOrder?.customer?.email || user?.email}</p>
+                  <p className="text-[13px] text-text-muted">{placedOrder?.customer?.phone || user?.phone}</p>
                 </div>
               </div>
             </div>
@@ -210,12 +244,60 @@ export default function VerifyPage() {
               A detailed confirmation email has been sent to your inbox.
             </p>
             <Link 
-              href="/orders" 
+              href={user ? "/orders" : `/track?reference=${orderNumber}&email=${encodeURIComponent(placedOrder?.customer?.email || "")}`}
               className="inline-flex items-center justify-center bg-black text-white px-8 py-4 text-[11px] font-bold uppercase tracking-[0.2em]  transition-colors w-full sm:w-auto"
             >
               Track Your Order
             </Link>
           </div>
+
+          {/* Post-Purchase Account Creation for Guests */}
+          {!user && (
+            <div className="mt-12 bg-zinc-50 border border-border/40 p-8 text-center">
+              {accountCreated ? (
+                <div className="space-y-3">
+                  <div className="flex justify-center mb-4">
+                    <CheckCircle2 className="w-10 h-10 text-[#5B7763]" />
+                  </div>
+                  <h3 className="text-[14px] font-bold text-[#222222] uppercase tracking-widest">
+                    Account Created Successfully!
+                  </h3>
+                  <p className="text-[13px] text-text-muted">
+                    You can now log in to track your order and check out faster next time.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleCreateAccount} className="max-w-sm mx-auto space-y-6">
+                  <div>
+                    <h3 className="text-[14px] font-bold text-[#222222] uppercase tracking-widest mb-2">
+                      Save Your Details
+                    </h3>
+                    <p className="text-[12px] text-text-muted">
+                      Want to track this order easily and check out faster next time? Just enter a password to create an account.
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Create a password"
+                      className="w-full bg-transparent border-b border-border/60 px-0 py-3 text-[14px] text-[#222222] focus:outline-none focus:border-[#5B7763] transition-colors"
+                      required
+                    />
+                    {accountError && <p className="text-[11px] text-red-500 font-bold">{accountError}</p>}
+                    <button
+                      type="submit"
+                      disabled={isCreatingAccount || !password}
+                      className="w-full bg-transparent border border-black text-[#222222] px-8 py-4 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      {isCreatingAccount ? "CREATING..." : "CREATE ACCOUNT"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </main>

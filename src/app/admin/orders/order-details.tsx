@@ -157,19 +157,19 @@ export default function OrderDetailsSheetContent({
             <div className="border border-border/40 bg-white p-5 space-y-4">
                <div className="flex items-center gap-3">
                   <img
-                    src={order.user?.profile || `https://ui-avatars.com/api/?name=${encodeURIComponent(order.user?.name || "Guest")}`}
-                    alt={order.user?.name || "Guest"}
+                    src={order.user?.profile || `https://ui-avatars.com/api/?name=${encodeURIComponent(order.user?.name || order.customer?.name || "Guest")}`}
+                    alt={order.user?.name || order.customer?.name || "Guest"}
                     className="w-10 h-10 object-cover border border-border/40"
                   />
                   <div>
-                    <div className="text-[13px] font-bold text-[#222222]">{order.user?.name ?? "Guest"}</div>
-                    <div className="text-[11px] text-text-muted tracking-wider">{order.customer.phone}</div>
+                    <div className="text-[13px] font-bold text-[#222222]">{order.user?.name || order.customer?.name || "Guest"}</div>
+                    <div className="text-[11px] text-text-muted tracking-wider">{order.customer?.phone}</div>
                   </div>
                </div>
-               {order.user?.email && (
+               {(order.user?.email || order.customer?.email) && (
                  <div className="pt-4 border-t border-border/40">
                    <div className="text-[9px] uppercase tracking-widest font-bold text-text-muted">Email Address</div>
-                   <div className="text-[12px] text-[#222222] mt-1">{order.user.email}</div>
+                   <div className="text-[12px] text-[#222222] mt-1">{order.user?.email || order.customer?.email}</div>
                  </div>
                )}
             </div>
