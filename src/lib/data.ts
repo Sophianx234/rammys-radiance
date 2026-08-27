@@ -126,8 +126,9 @@ export const getCategories = cache(async () => {
   
   const categories = await Category.find().lean();
   
-  // Aggregate product counts per category
+  // Aggregate product counts per category (only in-stock products)
   const productCounts = await Product.aggregate([
+    { $match: { inStock: true } },
     { $group: { _id: "$category", count: { $sum: 1 } } }
   ]);
   

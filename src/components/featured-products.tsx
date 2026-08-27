@@ -37,7 +37,7 @@ export default async function FeaturedProducts() {
           >
             <CarouselContent className="-ml-4 md:-ml-6">
               {products.map((product: any) => (
-                <CarouselItem key={product._id} className="pl-4 md:pl-6 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                <CarouselItem key={product._id} className="pl-4 md:pl-6 basis-1/2 md:basis-1/3 lg:basis-1/4">
                   <ProductCard product={product} />
                 </CarouselItem>
               ))}

@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, ChevronDown, ChevronUp } from "lucide-react";
 
 export function ShopFilters({ categories }: { categories: any[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
+  const [isPriceOpen, setIsPriceOpen] = useState(true);
 
   const selectedCategory = searchParams.get("category");
   const priceRange = searchParams.get("priceRange");
@@ -67,65 +70,79 @@ export function ShopFilters({ categories }: { categories: any[] }) {
 
         {/* Categories */}
         <div>
-          <h3 className="text-[11px] font-bold text-[#222222] uppercase tracking-[0.2em] mb-6 pb-4 border-b border-border/40">
-            Categories
-          </h3>
-          <div className="space-y-4">
-            <button
-              onClick={() => updateURL({ category: null, page: "1" })}
-              className={`block w-full text-left text-[13px] transition-colors ${
-                selectedCategory === null
-                  ? "text-[#5B7763] font-bold"
-                  : "text-text-muted hover:text-black font-medium"
-              }`}
-            >
-              All Products
-            </button>
-            {categories.map((cat) => (
+          <button 
+            onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+            className="w-full flex items-center justify-between text-[11px] font-bold text-[#222222] uppercase tracking-[0.2em] mb-6 pb-4 border-b border-border/40"
+          >
+            <span>Categories</span>
+            {isCategoriesOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          
+          {isCategoriesOpen && (
+            <div className="space-y-4">
               <button
-                key={cat._id}
-                onClick={() => updateURL({ category: cat.slug, page: "1" })}
-                className={`w-full text-left flex justify-between items-center transition-colors ${
-                  selectedCategory === cat.slug
-                    ? "text-[#5B7763]"
-                    : "text-text-muted hover:text-black"
-                }`}
-              >
-                <span className={`text-[13px] ${selectedCategory === cat.slug ? "font-bold" : "font-medium"}`}>
-                  {cat.name}
-                </span>
-                <span className="text-[11px] opacity-60">
-                  {cat.productCount}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Price Range */}
-        <div>
-          <h3 className="text-[11px] font-bold text-[#222222] uppercase tracking-[0.2em] mb-6 pb-4 border-b border-border/40">
-            Price Filter
-          </h3>
-          <div className="space-y-4">
-            {[
-              { label: "Under ₵50", value: "0-50" },
-              { label: "₵100 - ₵200", value: "100-200" },
-              { label: "₵350+", value: "350-999999" },
-            ].map((range) => (
-              <button
-                key={range.value}
-                onClick={() => handlePriceFilter(range.value)}
+                onClick={() => updateURL({ category: null, page: "1" })}
                 className={`block w-full text-left text-[13px] transition-colors ${
-                  priceRange === range.value
+                  selectedCategory === null
                     ? "text-[#5B7763] font-bold"
                     : "text-text-muted hover:text-black font-medium"
                 }`}
               >
-                {range.label}
+                All Products
               </button>
-            ))}
-          </div>
+              {categories.filter(cat => cat.productCount > 0).map((cat) => (
+                <button
+                  key={cat._id}
+                  onClick={() => updateURL({ category: cat.slug, page: "1" })}
+                  className={`w-full text-left flex justify-between items-center transition-colors ${
+                    selectedCategory === cat.slug
+                      ? "text-[#5B7763]"
+                      : "text-text-muted hover:text-black"
+                  }`}
+                >
+                  <span className={`text-[13px] ${selectedCategory === cat.slug ? "font-bold" : "font-medium"}`}>
+                    {cat.name}
+                  </span>
+                  <span className="text-[11px] opacity-60">
+                    {cat.productCount}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Price Range */}
+        <div>
+          <button 
+            onClick={() => setIsPriceOpen(!isPriceOpen)}
+            className="w-full flex items-center justify-between text-[11px] font-bold text-[#222222] uppercase tracking-[0.2em] mb-6 pb-4 border-b border-border/40"
+          >
+            <span>Price Filter</span>
+            {isPriceOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          
+          {isPriceOpen && (
+            <div className="space-y-4">
+              {[
+                { label: "Under ₵50", value: "0-50" },
+                { label: "₵100 - ₵200", value: "100-200" },
+                { label: "₵350+", value: "350-999999" },
+              ].map((range) => (
+                <button
+                  key={range.value}
+                  onClick={() => handlePriceFilter(range.value)}
+                  className={`block w-full text-left text-[13px] transition-colors ${
+                    priceRange === range.value
+                      ? "text-[#5B7763] font-bold"
+                      : "text-text-muted hover:text-black font-medium"
+                  }`}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Clear Filters */}
