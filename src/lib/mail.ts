@@ -1,15 +1,10 @@
 import { User } from "@/models/User";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-export const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: Number(process.env.EMAIL_PORT) === 465, // auto-secure if using port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Use a verified domain email in production, otherwise onboarding@resend.dev for testing.
+const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.EMAIL_USER || "onboarding@resend.dev";
 
 export async function sendMail({
   to,
@@ -23,23 +18,26 @@ export async function sendMail({
   text?: string;
 }) {
   try {
-    const info = await transporter.sendMail({
-      from: `"Rammy's Closet" <${process.env.EMAIL_USER}>`,
-      to,
+    const { data, error } = await resend.emails.send({
+      from: `"Rammy's Closet" <${fromEmail}>`,
+      to: [to],
       subject,
       html,
-      text,
+      text: text || "", // Resend expects text to be a string if provided
     });
 
-    console.log("✅ Email sent:", info.messageId);
-    return { success: true, messageId: info.messageId };
+    if (error) {
+      console.error("❌ Email send error:", error);
+      return { success: false, error };
+    }
+
+    console.log("✅ Email sent:", data?.id);
+    return { success: true, messageId: data?.id };
   } catch (error) {
-    console.error("❌ Email send error:", error);
+    console.error("❌ Email send exception:", error);
     return { success: false, error };
   }
 }
-
-
 
 export async function sendMailToAllUsers({
   subject,
@@ -58,23 +56,31 @@ export async function sendMailToAllUsers({
     return;
   }
 
-  const BATCH_SIZE = 30; // safe for SMTP servers
+  const BATCH_SIZE = 50; // Resend allows up to 100 per batch send
   const allEmails = users.map((u) => u.email);
 
   for (let i = 0; i < allEmails.length; i += BATCH_SIZE) {
     const batch = allEmails.slice(i, i + BATCH_SIZE);
 
-    await Promise.all(
-      batch.map((email) =>
-        sendMail({
-          to: email,
-          subject,
-          html,
-          text,
-        })
-      )
-    );
+    try {
+      // Create batch array for Resend
+      const emailsToSend = batch.map((email) => ({
+        from: `"Rammy's Closet" <${fromEmail}>`,
+        to: [email],
+        subject,
+        html,
+        text: text || "",
+      }));
 
-    console.log(`📩 Sent batch (${batch.length}) successfully`);
+      const { data, error } = await resend.batch.send(emailsToSend);
+
+      if (error) {
+         console.error(`❌ Batch send error:`, error);
+      } else {
+         console.log(`📩 Sent batch of ${batch.length} successfully. Batch ID:`, data?.data?.[0]?.id || "unknown");
+      }
+    } catch (error) {
+      console.error(`❌ Batch send exception:`, error);
+    }
   }
 }
