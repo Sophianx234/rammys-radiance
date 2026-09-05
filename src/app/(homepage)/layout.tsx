@@ -106,7 +106,7 @@ export default function RootLayout({
         <script src="https://js.paystack.co/v1/inline.js"></script>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       </head>
       <body className={` ${inter.className} antialiased`}>

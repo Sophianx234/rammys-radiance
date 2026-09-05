@@ -6,19 +6,17 @@ import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import slugify from "slugify";
 import  "@/models/Category";
 import { Product } from "@/models/Product";
-import { sendMail, sendMailToAllUsers } from "@/lib/mail";
-import { User } from "@/models/User";
+import { sendMailToAllUsers } from "@/lib/mail";
 import { newProductAnnouncementEmail } from "@/lib/email-templates";
 import { Category } from "@/models/Category";
+import DOMPurify from "isomorphic-dompurify";
+import { logActivity } from "@/lib/logger";
+import jwt from "jsonwebtoken";
 
 export async function GET() {
   try {
     await connectToDatabase();
-
-    // Fetch all products, optionally sort by creation date descending
-    const products = await Product.find().populate('category').sort({ createdAt: -1 })
-      .lean(); // lean() converts to plain JS objects
-
+    const products = await Product.find().populate('category').sort({ createdAt: -1 }).lean();
     return NextResponse.json(products, { status: 200 });
   } catch (err: any) {
     console.error("Error fetching products:", err);
@@ -26,7 +24,6 @@ export async function GET() {
       { error: err.message || "Failed to fetch products" },
       { status: 500 }
     );
-
   }
 }
 
@@ -36,18 +33,19 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
 
-    // ----- BASIC FIELDS -----
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
+    // Sanitize basic text fields
+    const name = DOMPurify.sanitize(formData.get("name") as string || "");
+    const description = DOMPurify.sanitize(formData.get("description") as string || "");
+    const category = DOMPurify.sanitize(formData.get("category") as string || "");
+    let slug = DOMPurify.sanitize(formData.get("slug") as string || "");
+
     const price = Number(formData.get("price"));
     const stock = Number(formData.get("stock"));
-    const category = formData.get("category") as string;
     const isFeatured = formData.get("isFeatured") === "true";
     const rating = Number(formData.get("rating") || 0);
     const reviewsCount = Number(formData.get("reviewsCount") || 0);
     const discountPrice = formData.has("discountPrice") ? Number(formData.get("discountPrice")) : undefined;
-    const discountBadge = formData.get("discountBadge") as string | undefined;
-    let slug = formData.get("slug") as string;
+    const discountBadge = formData.get("discountBadge") ? DOMPurify.sanitize(formData.get("discountBadge") as string) : undefined;
 
     if (!name || !description || !price || !category) {
       return NextResponse.json(
@@ -63,23 +61,23 @@ export async function POST(req: NextRequest) {
       slug = slugify(slug, { lower: true });
     }
 
-    // ----- FEATURES -----
-    const features = formData.getAll("features[]") as string[];
+    // ----- FEATURES (Sanitize array elements) -----
+    const rawFeatures = formData.getAll("features[]") as string[];
+    const features = rawFeatures.map(f => DOMPurify.sanitize(f));
 
     // ----- VARIANTS -----
     const variants: { name: string; options: string[] }[] = [];
     const variantIndexes = new Set<number>();
 
-    // Detect variant indexes from keys like variants[0][name]
     for (const key of formData.keys()) {
       const match = key.match(/variants\[(\d+)\]\[name\]/);
       if (match) variantIndexes.add(Number(match[1]));
     }
 
-    // Build variant objects
     variantIndexes.forEach((i) => {
-      const variantName = formData.get(`variants[${i}][name]`) as string;
-      const options = formData.getAll(`variants[${i}][options][]`) as string[];
+      const variantName = DOMPurify.sanitize(formData.get(`variants[${i}][name]`) as string || "");
+      const rawOptions = formData.getAll(`variants[${i}][options][]`) as string[];
+      const options = rawOptions.map(opt => DOMPurify.sanitize(opt));
 
       if (variantName && options.length > 0) {
         variants.push({
@@ -99,7 +97,6 @@ export async function POST(req: NextRequest) {
     }
 
     const uploadedImages: string[] = [];
-
     for (const file of imageFiles) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const result = await uploadBufferToCloudinary(
@@ -129,29 +126,35 @@ export async function POST(req: NextRequest) {
       isFeatured,
     });
 
-    const productCategory = await Category.findById(newProduct.category)
-    if(!productCategory){
-      return NextResponse.json(
-        { error: "cannot find product category" },
-        { status: 500 }
-      );
+    // Logging the creation action securely
+    const token = req.cookies.get("token")?.value;
+    if (token) {
+       try {
+         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+         await logActivity("Created Product", `Created product: ${newProduct.name}`, newProduct._id.toString());
+       } catch (e) {
+          console.error("Failed to decode token for logging");
+       }
     }
 
-   const html = newProductAnnouncementEmail({
-      name: newProduct.name,
-      description: newProduct.description,
-      price: newProduct.price,
-      image: uploadedImages[0], // first image as main product image
-      url: `${process.env.NEXT_PUBLIC_APP_URL}/products/${newProduct.slug}`,
-      category: productCategory.name,
-      features: newProduct.features || [],
-    });
+    const productCategory = await Category.findById(newProduct.category);
+    if(productCategory){
+       const html = newProductAnnouncementEmail({
+          name: newProduct.name,
+          description: newProduct.description,
+          price: newProduct.price,
+          image: uploadedImages[0], 
+          url: `${process.env.NEXT_PUBLIC_APP_URL}/products/${newProduct.slug}`,
+          category: productCategory.name,
+          features: newProduct.features || [],
+        });
 
-    await sendMailToAllUsers({
-      subject: `New Product Added: ${newProduct.name}`,
-      html,
-      text: `${newProduct.name} - ${newProduct.description}`,
-    });
+        await sendMailToAllUsers({
+          subject: `New Product Added: ${newProduct.name}`,
+          html,
+          text: `${newProduct.name} - ${newProduct.description}`,
+        });
+    }
 
     revalidatePath("/");
     revalidatePath("/products");
@@ -166,5 +169,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-

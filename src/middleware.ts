@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const method = req.method;
 
@@ -17,11 +18,11 @@ export function middleware(req: NextRequest) {
 
   if (token) {
     try {
-      payload = JSON.parse(
-        Buffer.from(token.split(".")[1], "base64").toString()
-      );
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const { payload: verifiedPayload } = await jwtVerify(token, secret);
+      payload = verifiedPayload;
     } catch (err) {
-      // Invalid token
+      // Invalid token signature or expired
     }
   }
 

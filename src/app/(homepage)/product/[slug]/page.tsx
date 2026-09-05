@@ -120,7 +120,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <ProductClient key={data._id} product={data as any} similarProducts={similarProducts as any} />
     </>

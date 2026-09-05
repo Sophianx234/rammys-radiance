@@ -5,13 +5,38 @@ import { signToken } from "@/lib/jwtConfig";
 import { setAuthCookie } from "@/lib/setAuthCookie";
 import { verifyPassword } from "@/lib/bcrypt";
 import { loginSchema } from "@/lib/validations";
+import { loginRateLimit } from "@/lib/rateLimit";
+import { logActivity } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
+  // Rate Limiting
+  const ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
+  try {
+    const { success, limit, reset, remaining } = await loginRateLimit.limit(ip);
+    
+    if (!success) {
+      return NextResponse.json(
+        { message: "Too many login attempts. Please try again later." },
+        { 
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+          }
+        }
+      );
+    }
+  } catch (err) {
+    console.error("Rate limiter failed, continuing without limits:", err);
+  }
+
   await connectToDatabase();
 
   try {
     const body = await req.json();
     const validatedData = loginSchema.safeParse(body);
+
     
     if (!validatedData.success) {
       return NextResponse.json(
@@ -52,11 +77,21 @@ export async function POST(req: NextRequest) {
 
     // Sign JWT token
     const token = await signToken(user);
+    
+    // Log Activity
+    try {
+      const { ActivityLog } = await import("@/models/ActivityLog");
+      await ActivityLog.create({
+        user: user._id,
+        action: "Login",
+        details: `User logged in from IP ${ip}`,
+      });
+    } catch (e) {
+      console.error("Failed to log login activity", e);
+    }
 
     // Optionally, set HttpOnly cookie
     return setAuthCookie(token);
-
-  
 
   } catch (err) {
     console.error("Login error:", err);
