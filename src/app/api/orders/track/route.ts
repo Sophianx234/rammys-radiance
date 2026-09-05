@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Order } from "@/models/Order";
@@ -41,3 +42,4 @@ export async function GET(req: Request) {
     );
   }
 }
+

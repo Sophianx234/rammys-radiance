@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/connectDB";
@@ -58,3 +59,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message || "Something went wrong" }, { status: 500 });
   }
 }
+

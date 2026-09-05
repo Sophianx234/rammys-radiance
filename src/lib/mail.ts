@@ -1,7 +1,8 @@
 import { User } from "@/models/User";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Use a fallback to prevent Next.js build crashes if the env var is missing during build time
+const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
 // Use a verified domain email in production, otherwise onboarding@resend.dev for testing.
 const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.EMAIL_USER || "onboarding@resend.dev";

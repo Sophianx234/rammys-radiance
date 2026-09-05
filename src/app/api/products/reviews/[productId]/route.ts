@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { connectToDatabase } from "@/lib/connectDB";
 import { IReview, Review } from "@/models/Review";
 import "@/models/User";
@@ -118,4 +119,5 @@ const populatedReview = await Review.findById(review._id)
 }
 
   
+
 

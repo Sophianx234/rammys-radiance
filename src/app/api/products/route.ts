@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Category } from "@/models/Category";
@@ -111,3 +112,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

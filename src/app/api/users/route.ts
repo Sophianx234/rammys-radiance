@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 // app/api/admin/orders/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { Order } from "@/models/Order";
@@ -17,3 +18,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
   }
 }
+

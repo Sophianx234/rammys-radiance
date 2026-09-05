@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { connectToDatabase } from '@/lib/connectDB';
 import { DecodedToken } from '@/lib/jwtConfig';
 import { User } from '@/models/User';
@@ -29,3 +30,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ user: null });
   }
 }
+

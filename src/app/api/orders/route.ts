@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { Order } from "@/models/Order";
 import { User } from "@/models/User";
@@ -207,4 +208,5 @@ export async function GET(req: Request) {
     );
   }
 }
+
 

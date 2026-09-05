@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 // app/api/admin/customers/route.ts
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectDB";
@@ -43,4 +44,5 @@ export async function GET() {
     );
   }
 }
+
 
