@@ -9,6 +9,49 @@ import mongoose from "mongoose";
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params;
+  try {
+    await connectToDatabase();
+    const decodedSlug = decodeURIComponent(slug);
+    let product;
+    if (/^[0-9a-fA-F]{24}$/.test(decodedSlug)) {
+      product = await Product.findById(decodedSlug).lean();
+    } else {
+      product = await Product.findOne({ slug: { $regex: new RegExp(`^${decodedSlug}$`, "i") } }).lean();
+    }
+
+    if (!product) return { title: "Product Not Found" };
+
+    const title = product.name;
+    const description = product.description?.slice(0, 150) || "Buy premium cosmetics and skincare at Rammy's Radiance.";
+    const ogImage = product.images?.[0]?.url || product.image || "/og-image.jpg";
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: `https://rammysradiance.com/product/${product.slug || decodedSlug}`,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `https://rammysradiance.com/product/${product.slug || decodedSlug}`,
+        images: [{ url: ogImage }],
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [ogImage],
+      }
+    };
+  } catch (err) {
+    return { title: "Product" };
+  }
+}
+
 export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   
@@ -52,5 +95,34 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
     );
   }
 
-  return <ProductClient key={data._id} product={data as any} similarProducts={similarProducts as any} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: data.name,
+    image: data.images?.map((img: any) => img.url) || [data.image],
+    description: data.description,
+    sku: data.sku || data._id,
+    brand: {
+      "@type": "Brand",
+      name: "Rammy's Radiance"
+    },
+    offers: {
+      "@type": "Offer",
+      url: `https://rammysradiance.com/product/${data.slug || slug}`,
+      priceCurrency: "NGN",
+      price: data.price,
+      itemCondition: "https://schema.org/NewCondition",
+      availability: data.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    }
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductClient key={data._id} product={data as any} similarProducts={similarProducts as any} />
+    </>
+  );
 }

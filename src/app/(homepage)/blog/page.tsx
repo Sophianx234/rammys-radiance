@@ -66,6 +66,21 @@ const topics = [
   { name: "Brand News", slug: "brand-news" },
 ];
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog | Skincare Tips & Beauty News",
+  description: "Read the latest skincare tips, makeup tutorials, and brand news from Rammy's Radiance.",
+  alternates: {
+    canonical: "https://rammysradiance.com/blog",
+  },
+  openGraph: {
+    title: "Blog | Rammy's Radiance",
+    description: "Read the latest skincare tips, makeup tutorials, and brand news from Rammy's Radiance.",
+    url: "https://rammysradiance.com/blog",
+  }
+};
+
 export default async function BlogPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
   const currentTopic = typeof searchParams.topic === 'string' ? searchParams.topic : "all";

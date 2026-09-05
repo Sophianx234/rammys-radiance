@@ -17,9 +17,51 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Rammys Radiance - Premium Cosmetics",
-  description: "Discover luxury beauty products curated for you",
-  generator: "v0.app",
+  metadataBase: new URL("https://rammysradiance.com"),
+  title: {
+    default: "Rammy's Radiance | Premium Cosmetics & Beauty",
+    template: "%s | Rammy's Radiance",
+  },
+  description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look at Rammy's Radiance.",
+  keywords: ["cosmetics", "beauty", "skincare", "premium makeup", "Rammy's Radiance"],
+  authors: [{ name: "Rammy's Radiance" }],
+  creator: "Rammy's Radiance",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://rammysradiance.com",
+    title: "Rammy's Radiance | Premium Cosmetics & Beauty",
+    description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look at Rammy's Radiance.",
+    siteName: "Rammy's Radiance",
+    images: [
+      {
+        url: "/og-image.jpg", // Add an actual image to the public folder later if possible
+        width: 1200,
+        height: 630,
+        alt: "Rammy's Radiance - Premium Cosmetics",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rammy's Radiance | Premium Cosmetics & Beauty",
+    description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look.",
+    images: ["/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: "https://rammysradiance.com",
+  }
 };
 
 export const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -44,10 +86,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Rammy's Radiance",
+    url: "https://rammysradiance.com",
+    logo: "https://rammysradiance.com/icon.png",
+    description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look.",
+    sameAs: [
+      "https://instagram.com/rammysradiance",
+      "https://facebook.com/rammysradiance",
+      "https://twitter.com/rammysradiance",
+    ],
+  };
+
   return (
     <html lang="en">
-      <script src="https://js.paystack.co/v1/inline.js"></script>
-
+      <head>
+        <script src="https://js.paystack.co/v1/inline.js"></script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={` ${inter.className} antialiased`}>
         <Header />
         {children}

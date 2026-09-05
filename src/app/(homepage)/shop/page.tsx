@@ -7,6 +7,21 @@ import { ShopFilters } from "./shop-filters";
 import { ShopSort } from "./shop-sort";
 import { ShopPagination } from "./shop-pagination";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shop All Products",
+  description: "Browse our complete collection of luxury cosmetics, premium skincare, and radiant beauty essentials.",
+  alternates: {
+    canonical: "https://rammysradiance.com/shop",
+  },
+  openGraph: {
+    title: "Shop All Products | Rammy's Radiance",
+    description: "Browse our complete collection of luxury cosmetics, premium skincare, and radiant beauty essentials.",
+    url: "https://rammysradiance.com/shop",
+  }
+};
+
 export default async function ShopPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
 
