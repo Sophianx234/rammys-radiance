@@ -2,12 +2,12 @@
 import { connectToDatabase } from "@/lib/connectDB";
 import { Order } from "@/models/Order";
 import { revalidatePath } from "next/cache";
-import { requireAdmin, requireManagerOrAdmin } from "./auth";
+import { requireAdmin, requireDispatchOrHigher } from "./auth";
 import { logActivity } from "@/lib/logger";
 
 export async function updateOrderStatusAction(paymentReference: string, newStatus: string) {
   try {
-    await requireManagerOrAdmin();
+    await requireDispatchOrHigher();
     await connectToDatabase();
     await Order.findOneAndUpdate({ paymentReference }, { orderStatus: newStatus });
     await logActivity("UPDATE_ORDER_STATUS", `Updated order ${paymentReference} status to ${newStatus}`, paymentReference);
@@ -33,7 +33,7 @@ export async function deleteOrderAction(orderId: string) {
 
 export async function batchUpdateOrderStatusAction(paymentReferences: string[], newStatus: string) {
   try {
-    await requireManagerOrAdmin();
+    await requireDispatchOrHigher();
     await connectToDatabase();
     await Order.updateMany(
       { paymentReference: { $in: paymentReferences } },
