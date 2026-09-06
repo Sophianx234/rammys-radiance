@@ -18,7 +18,7 @@ import type { IUser } from "@/models/User";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-const navItems = [
+const allNavItems = [
   { name: "Overview", key: "overview", icon: LayoutDashboard, path: "/admin/overview" },
   { name: "Products", key: "products", icon: Package2, path: "/admin/products" },
   { name: "Orders", key: "orders", icon: ShoppingCart, path: "/admin/orders" },
@@ -29,6 +29,15 @@ const navItems = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { setUser, user } = useDashStore();
+  
+  // Filter items based on RBAC
+  const navItems = allNavItems.filter(item => {
+    if (user?.role === "dispatch" || user?.role === "dispatcher") {
+      return item.key === "orders";
+    }
+    return true;
+  });
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname(); // <-- monitor current path

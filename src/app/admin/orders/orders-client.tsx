@@ -296,7 +296,7 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                 {selectedOrders.size} Order{selectedOrders.size > 1 ? 's' : ''} Selected
               </span>
               <span className="w-px h-4 bg-border/40" />
-              {(user?.role === "admin" || user?.role === "manager") && (
+              {(user?.role === "admin" || user?.role === "manager" || user?.role === "dispatch" || user?.role === "dispatcher") && (
                 <Select onValueChange={handleBatchStatusUpdate} disabled={batchActionLoading}>
                   <SelectTrigger className="h-8 border-border/40 bg-white text-[11px] uppercase tracking-wider font-bold w-48 focus:ring-0">
                     <SelectValue placeholder="UPDATE STATUS" />
@@ -405,7 +405,7 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
                         <div className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">{order.items?.length || 0} ITEMS</div>
                       </td>
                       <td className="py-4 px-4" onClick={e => e.stopPropagation()}>
-                        {(user?.role === "admin" || user?.role === "manager") ? (
+                        {(user?.role === "admin" || user?.role === "manager" || user?.role === "dispatch" || user?.role === "dispatcher") ? (
                           <StatusSelector 
                             currentStatus={order.orderStatus} 
                             paymentReference={order.paymentReference} 
