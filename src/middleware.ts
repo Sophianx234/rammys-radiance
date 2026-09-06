@@ -53,14 +53,14 @@ export async function middleware(req: NextRequest) {
   // Basic Content Security Policy (CSP)
   const csp = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co;
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://res.cloudinary.com https://api.maptiler.com https://*.maptiler.com;
-    font-src 'self' https://api.maptiler.com https://*.maptiler.com;
-    connect-src 'self' https://api.paystack.co https://api.maptiler.com https://*.maptiler.com;
-    frame-src 'self' https://js.paystack.co;
-    worker-src 'self' blob:;
-    child-src 'self' blob:;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://*.maptiler.com https://unpkg.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' data: https: blob: https://*.maptiler.com;
+    font-src 'self' data: https://fonts.gstatic.com https://*.maptiler.com;
+    connect-src 'self' https: https://*.maptiler.com;
+    frame-src 'self' https://checkout.paystack.com https://js.paystack.co;
+    worker-src 'self' blob: https://*.maptiler.com https://unpkg.com;
+    child-src 'self' blob: https://*.maptiler.com;
   `.replace(/\s{2,}/g, ' ').trim();
   response.headers.set("Content-Security-Policy", csp);
 
