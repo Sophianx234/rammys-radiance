@@ -1,4 +1,4 @@
-import { withSentryConfig } from '@sentry/nextjs';
+import { withAxiom } from 'next-axiom';
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -75,12 +75,4 @@ const nextConfig: NextConfig = {
 };
 
 
-export default withSentryConfig(nextConfig, {
-  silent: true,
-  org: "placeholder-org",
-  project: "placeholder-project",
-  widenClientFileUpload: true,
-  hideSourceMaps: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
-});
+export default withAxiom(nextConfig);

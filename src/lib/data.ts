@@ -106,6 +106,12 @@ export const getProducts = cache(async (options: GetProductsOptions = {}) => {
           _id: product.category._id.toString(),
         }
       : null,
+    variants: product.variants
+      ? product.variants.map((v: any) => ({
+          ...v,
+          ...(v._id && { _id: v._id.toString() }),
+        }))
+      : [],
     createdAt: product.createdAt?.toISOString(),
     updatedAt: product.updatedAt?.toISOString(),
   }));
