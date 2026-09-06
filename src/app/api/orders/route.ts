@@ -90,7 +90,7 @@ export async function POST(req: Request) {
       user: data.userId || undefined,
       customer: {
         name: data.formData.fullName,
-        email: data.formData.email,
+        email: data.formData.email.toLowerCase(),
         phone: data.formData.phone,
       },
 
