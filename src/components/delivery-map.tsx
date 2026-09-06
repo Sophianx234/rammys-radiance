@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import * as maptilersdk from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
+import "@maptiler/geocoding-control/style.css";
 import { MapPin } from "lucide-react";
 
 interface DeliveryMapProps {
@@ -14,14 +15,16 @@ export default function DeliveryMap({ onAddressSelect }: DeliveryMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maptilersdk.Map | null>(null);
   const marker = useRef<maptilersdk.Marker | null>(null);
-
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const apiKey = process.env.NEXT_PUBLIC_MAPTILER_PUBLIC_KEY || "";
+  const [isLoading, setIsLoading] = useState(!!apiKey);
+  const [keyError, setKeyError] = useState(!apiKey);
 
   // Initialize Map and handle location
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !apiKey) return;
 
-    maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_PUBLIC_KEY || "";
+    maptilersdk.config.apiKey = apiKey;
 
     // Default center (e.g. Accra, Ghana)
     const initialCenter: [number, number] = [-0.1870, 5.6037];
@@ -152,7 +155,14 @@ export default function DeliveryMap({ onAddressSelect }: DeliveryMapProps) {
       </p>
       
       <div className="relative w-full h-[300px] border border-border/60 bg-secondary/50 rounded-none overflow-hidden group">
-        {isLoading && (
+        {keyError && (
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-4">
+            <MapPin className="w-8 h-8 text-red-500 mb-2 opacity-50" />
+            <p className="text-[12px] font-bold uppercase tracking-wider text-red-700">Map Configuration Error</p>
+            <p className="text-[10px] text-red-600/80 mt-1 max-w-[250px]">The MapTiler API Key is missing. Please add NEXT_PUBLIC_MAPTILER_PUBLIC_KEY to your environment variables.</p>
+          </div>
+        )}
+        {isLoading && !keyError && (
           <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center">
             <div className="animate-pulse flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-[#5B7763]">
               Locating you...
