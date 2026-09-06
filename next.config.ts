@@ -2,6 +2,7 @@ import { withAxiom } from 'next-axiom';
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   experimental: {
     scrollRestoration: true,
   },
