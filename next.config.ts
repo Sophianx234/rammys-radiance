@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob: https://api.maptiler.com; font-src 'self' data: https://fonts.gstatic.com https://api.maptiler.com; connect-src 'self' https: https://api.maptiler.com; frame-src 'self' https://checkout.paystack.com https://js.paystack.co; worker-src 'self' blob:; child-src 'self' blob:;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://*.maptiler.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob: https://*.maptiler.com; font-src 'self' data: https://fonts.gstatic.com https://*.maptiler.com; connect-src 'self' https: https://*.maptiler.com; frame-src 'self' https://checkout.paystack.com https://js.paystack.co; worker-src 'self' blob: https://*.maptiler.com https://unpkg.com; child-src 'self' blob: https://*.maptiler.com;",
           },
         ],
       },
