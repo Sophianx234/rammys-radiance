@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { Search, Package, MapPin, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Search, Package, MapPin, ArrowRight, Clock, CheckCircle2, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { GridLoader } from "react-spinners";
 
 export default function TrackOrderPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [reference, setReference] = useState(searchParams.get("reference") || "");
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [loading, setLoading] = useState(false);
@@ -62,7 +63,14 @@ export default function TrackOrderPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
-      <section className="pt-24 pb-12 bg-white border-b border-border/40 text-center">
+      <section className="pt-24 pb-12 bg-white border-b border-border/40 text-center relative px-6">
+        <button
+          onClick={() => router.back()}
+          className="absolute left-6 top-24 flex items-center gap-2 text-[13px] font-medium text-text-muted hover:text-black transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
         <h1 className="text-3xl font-bold text-[#222222] tracking-tight mb-3">
           Track Your Order
         </h1>
