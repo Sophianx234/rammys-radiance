@@ -9,8 +9,11 @@ export async function updateProfileAction(form: FormData) {
   try {
     await connectToDatabase();
 
-    const userId = form.get("userId") as string | null;
-    const name = form.get("name") as string | null;
+    const rawData = Object.fromEntries(form.entries());
+    const { updateProfileSchema } = await import("@/lib/validations");
+    const validatedData = updateProfileSchema.safeParse(rawData);
+    if (!validatedData.success) { return { success: false, message: validatedData.error.errors[0].message }; }
+    const { userId, name } = validatedData.data;
     const file = form.get("profile") as File | null;
 
     if (!userId) {
@@ -27,7 +30,7 @@ export async function updateProfileAction(form: FormData) {
 
     if (file && file.size > 0) {
       const buffer = Buffer.from(await file.arrayBuffer());
-      const result = await uploadBufferToCloudinary(buffer, undefined, "users");
+      const result = await uploadBufferToCloudinary(buffer, userId, "profiles");
       user.profile = result.secure_url;
     }
 

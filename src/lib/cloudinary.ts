@@ -16,19 +16,24 @@ function bufferToStream(buffer: Buffer) {
 
 export function uploadBufferToCloudinary(
   buffer: Buffer,
-  userId: string | undefined,
+  publicId: string | undefined,
   imagePath: string
-) {
+): Promise<UploadApiResponse> {
   return new Promise((resolve, reject) => {
-    const publicId = userId || uuidv4(); // Unique ID if not overwriting
-    const shouldOverwrite = Boolean(userId); // Only overwrite if userId given
+    const finalPublicId = publicId || uuidv4();
+    const shouldOverwrite = Boolean(publicId);
 
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder: `rammys-closet/${imagePath}`,
-        public_id: publicId,
+        folder: `rammysradiance/${imagePath}`,
+        public_id: finalPublicId,
         overwrite: shouldOverwrite,
-        invalidate: shouldOverwrite, // Only invalidate cache if overwriting
+        invalidate: shouldOverwrite,
+        format: "webp",
+        transformation: [
+          { width: 1200, height: 1200, crop: "limit" },
+          { quality: "auto", fetch_format: "auto" }
+        ]
       },
       (error, result) => {
         if (error) reject(error);
@@ -39,4 +44,28 @@ export function uploadBufferToCloudinary(
     bufferToStream(buffer).pipe(stream);
   });
 }
+
+export function deleteFromCloudinary(publicId: string) {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(publicId, { invalidate: true }, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+export function deleteFolderFromCloudinary(folderPath: string) {
+  return new Promise((resolve, reject) => {
+    cloudinary.api.delete_resources_by_prefix(folderPath, (error, result) => {
+      if (error) reject(error);
+      else {
+        cloudinary.api.delete_folder(folderPath, (err, res) => {
+          if (err) reject(err);
+          else resolve(res);
+        });
+      }
+    });
+  });
+}
+
 export default cloudinary;

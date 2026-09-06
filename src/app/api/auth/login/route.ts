@@ -75,7 +75,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sign JWT token
+    // --- Admin 2FA Flow ---
+    if (user.role === "admin") {
+      // 1. Generate OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log(`[DEV MODE] Admin Login OTP for ${user.email}: ${otp}`);
+      }
+
+      // 2. Store OTP in DB
+      const { Otp } = await import("@/models/Otp");
+      await Otp.findOneAndUpdate(
+        { email: user.email }, 
+        { otp, createdAt: new Date() }, 
+        { upsert: true }
+      );
+
+      // 3. Send Email
+      const { sendMail } = await import("@/lib/mail");
+      const { render } = await import("@react-email/render");
+      const OtpEmail = (await import("@/components/mail/otp-email")).default;
+      const React = await import("react");
+      
+      const emailHtml = await render(React.createElement(OtpEmail, { name: user.name, otp }));
+      
+      await sendMail({
+        to: user.email,
+        subject: "Admin Login Verification Code",
+        html: emailHtml,
+      });
+
+      return NextResponse.json({ requiresOtp: true, email: user.email });
+    }
+    // --- End Admin 2FA Flow ---
+
+    // Sign JWT token for normal users
     const token = await signToken(user);
     
     // Log Activity

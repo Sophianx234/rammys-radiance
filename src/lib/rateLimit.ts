@@ -8,3 +8,11 @@ export const loginRateLimit = new Ratelimit({
   analytics: true,
   prefix: "@upstash/ratelimit/login",
 });
+
+// Create a ratelimiter for password resets (e.g. 3 per hour)
+export const passwordResetRateLimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "1 h"),
+  analytics: true,
+  prefix: "@upstash/ratelimit/reset",
+});

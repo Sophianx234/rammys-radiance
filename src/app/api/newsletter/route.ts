@@ -6,14 +6,18 @@ export async function POST(req: Request) {
   try {
     await connectToDatabase();
 
-    const { email } = await req.json();
+    const body = await req.json();
+    const { newsletterSchema } = await import("@/lib/validations");
+    const validatedData = newsletterSchema.safeParse(body);
 
-    if (!email) {
+    if (!validatedData.success) {
       return NextResponse.json(
-        { type: 'error', text: "Email is required" },
+        { type: 'error', text: validatedData.error.errors[0].message },
         { status: 400 }
       );
     }
+
+    const { email } = validatedData.data;
 
     // Prevent duplicates
     const existing = await Newsletter.findOne({ email });

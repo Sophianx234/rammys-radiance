@@ -19,12 +19,32 @@ export async function updateCustomerRoleAction(userId: string, newRole: string) 
   }
 }
 
+import { Redis } from "@upstash/redis";
+
+// Graceful redis init
+let redis: Redis | null = null;
+try {
+  redis = Redis.fromEnv();
+} catch (e) {
+  console.warn("Redis not configured in environment");
+}
+
 export async function toggleSuspendCustomerAction(userId: string, currentSuspendedStatus: boolean) {
   try {
     await requireAdmin();
     await connectToDatabase();
-    await User.findByIdAndUpdate(userId, { isSuspended: !currentSuspendedStatus });
-    await logActivity(currentSuspendedStatus ? "UNSUSPEND_USER" : "SUSPEND_USER", `${currentSuspendedStatus ? 'Unsuspended' : 'Suspended'} user ${userId}`, userId);
+    const newStatus = !currentSuspendedStatus;
+    await User.findByIdAndUpdate(userId, { isSuspended: newStatus });
+    
+    if (redis) {
+      if (newStatus) {
+        await redis.sadd("suspended_users", userId);
+      } else {
+        await redis.srem("suspended_users", userId);
+      }
+    }
+
+    await logActivity(newStatus ? "SUSPEND_USER" : "UNSUSPEND_USER", `${newStatus ? 'Suspended' : 'Unsuspended'} user ${userId}`, userId);
     revalidatePath("/admin/customers");
     return { success: true };
   } catch (error: any) {

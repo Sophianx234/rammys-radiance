@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/connectDB";
 import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
-import { uploadBufferToCloudinary } from "@/lib/cloudinary";
+import { uploadBufferToCloudinary, deleteFolderFromCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -41,6 +41,15 @@ export async function DELETE(
     await connectToDatabase();
     const { id } = await params;
 
+    const product = await Product.findById(id);
+    if (product) {
+      try {
+        await deleteFolderFromCloudinary(`rammysradiance/products/${product.slug}`);
+      } catch (e) {
+        console.warn("Failed to delete product folder from Cloudinary:", e);
+      }
+    }
+
     await Product.findByIdAndDelete(id);
 
     revalidatePath("/");
@@ -56,7 +65,6 @@ export async function DELETE(
   }
 }
 
-
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -66,6 +74,11 @@ export async function PUT(
 
     const { id } = await params;
     const formData = await req.formData();
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
 
     // ---------- BASIC FIELDS ----------
     const name = formData.get("name") as string;
@@ -110,34 +123,51 @@ export async function PUT(
       }
     });
 
-    // ---------- EXISTING IMAGES ----------
+    // ---------- IMAGES (Limit to 5) ----------
     const existingImages = formData.getAll("existingImages[]") as string[];
-
-    // ---------- NEW IMAGE FILES ----------
     const newImageFiles = formData.getAll("newImages") as File[];
+    
+    if (existingImages.length + newImageFiles.length === 0) {
+      return NextResponse.json({ error: "Product must have at least one image." }, { status: 400 });
+    }
+    if (existingImages.length + newImageFiles.length > 5) {
+      return NextResponse.json({ error: "Maximum of 5 images allowed per product." }, { status: 400 });
+    }
+
+    // --- GARBAGE COLLECTION ---
+    // If an image URL was in the DB but is no longer in the submitted existingImages[], delete it from Cloudinary
+    const removedImages = product.images.filter((oldUrl: string) => !existingImages.includes(oldUrl));
+    for (const url of removedImages) {
+      const match = url.match(/rammysradiance\/products\/[^\/]+\/(img_\d+|[^\.]+)/);
+      if (match) {
+        try {
+          await deleteFromCloudinary(match[0]);
+        } catch (e) {
+          console.warn("Failed to delete orphaned image:", match[0], e);
+        }
+      }
+    }
+
+    // Determine starting index for new images to avoid overwriting existing ones
+    let maxIdx = 0;
+    existingImages.forEach((url: string) => {
+      const m = url.match(/img_(\d+)/);
+      if (m && Number(m[1]) > maxIdx) maxIdx = Number(m[1]);
+    });
 
     const uploadedNewImages: string[] = [];
-
-    // upload new images if provided
-    for (const file of newImageFiles) {
+    for (let i = 0; i < newImageFiles.length; i++) {
+      const file = newImageFiles[i];
       const buffer = Buffer.from(await file.arrayBuffer());
       const uploadResult = await uploadBufferToCloudinary(
         buffer,
-        undefined,
-        "products"
+        `img_${maxIdx + i + 1}`,
+        `products/${product.slug}`
       );
       uploadedNewImages.push(uploadResult.secure_url);
     }
 
-    // ---------- FINAL MERGED IMAGES ----------
     const finalImages = [...existingImages, ...uploadedNewImages];
-
-    if (finalImages.length === 0) {
-      return NextResponse.json(
-        { error: "Product must have at least one image." },
-        { status: 400 }
-      );
-    }
 
     // ---------- UPDATE PRODUCT ----------
     const updated = await Product.findByIdAndUpdate(
@@ -157,13 +187,6 @@ export async function PUT(
       { new: true }
     );
 
-    if (!updated) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
-    }
-
     revalidatePath("/");
     revalidatePath("/products");
     revalidatePath("/admin/products");
@@ -177,4 +200,3 @@ export async function PUT(
     );
   }
 }
-

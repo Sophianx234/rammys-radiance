@@ -13,7 +13,7 @@ export default function PromoBanners() {
             eyebrow="NEW COLLECTION"
             title={"Discover Our\nAutumn Skincare"}
             buttonText="Explore More"
-            buttonLink="/collection/autumn"
+            buttonLink="/shop"
             imageSrc="/imgs/products/lady-1.jpeg"
             bgHex="#F2F2F2"
             className="lg:col-span-3"

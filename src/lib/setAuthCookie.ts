@@ -13,7 +13,7 @@ export function setAuthCookie(token: string, message = "Login successful") {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     path: "/",
-    sameSite: "lax",
+    sameSite: "strict",
   });
 
   return response;

@@ -13,7 +13,7 @@ export default function PromoBannersSecondary() {
             eyebrow="NEW COLLECTION"
             title={"Intensive Glow C+\nSerum"}
             buttonText="Explore More"
-            buttonLink="/collection/glow-c-serum"
+            buttonLink="/shop"
             imageSrc="/imgs/products/prod-8.jpeg"
             bgHex="#F7F7F7"
           />
@@ -23,7 +23,7 @@ export default function PromoBannersSecondary() {
             title="25% off Everything"
             description="Makeup with extended range in colors for every human."
             buttonText="Explore More"
-            buttonLink="/sale"
+            buttonLink="/shop"
             imageSrc="/imgs/products/prod-9.jpeg"
             bgHex="#B5CDB8"
           />

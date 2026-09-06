@@ -27,9 +27,26 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const formData = await req.formData();
-    const name = formData.get("name") as string;
-    const slug = formData.get("slug") as string;
-    const description = formData.get("description") as string;
+    
+    // Parse form data to plain object
+    const rawData = {
+      name: formData.get("name") as string,
+      slug: formData.get("slug") as string,
+      description: formData.get("description") as string,
+    };
+
+    // Validate with Zod
+    const { categorySchema } = await import("@/lib/validations");
+    const validatedData = categorySchema.safeParse(rawData);
+    
+    if (!validatedData.success) {
+      return NextResponse.json(
+        { error: validatedData.error.errors[0].message }, 
+        { status: 400 }
+      );
+    }
+
+    const { name, slug, description } = validatedData.data;
 
     // ✅ Check if category already exists
     const existing = await Category.findOne({ $or: [{ name }, { slug }] });

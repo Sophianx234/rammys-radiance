@@ -7,12 +7,19 @@ import Link from "next/link";
 import type { IUser } from "@/models/User";
 import { Button } from "@/components/ui/button";
 import { useDashStore } from "@/lib/store";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role] = useState<"user" | "admin">("user");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<1 | 2>(1); // 1 = Credentials, 2 = OTP
+  const [adminEmailForOtp, setAdminEmailForOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [queryString, setQueryString] = useState("");
@@ -27,7 +34,7 @@ export default function LoginPage() {
   const redirect = searchParams.get("redirect") || "";
   const cartParam = searchParams.get("cart") || "";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCredentialsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -36,7 +43,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -46,55 +53,90 @@ export default function LoginPage() {
         return;
       }
 
-      if (res.ok) {
-        let resMe = await fetch("/api/auth/me");
-        let userData = await resMe.json();
-        if (resMe.ok) {
-          const userRole = (userData.user as IUser).role;
-          
-          if (["user", "customer"].includes(userRole) && cartParam) {
-            try {
-              const cartItems = JSON.parse(decodeURIComponent(cartParam));
-              if (cartItems.length > 0) {
-                await fetch("/api/users/cart", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(cartItems),
-                });
-                
-                // Fetch fresh user data with updated cart from DB
-                resMe = await fetch("/api/auth/me");
-                userData = await resMe.json();
-              }
-            } catch (e) {
-              console.error("Failed to sync cart", e);
-            }
-          }
-
-          // Hydrate the Zustand store so client components immediately see the user and their cart without a hard reload
-          useDashStore.getState().setUser(userData.user);
-          if (userData.user.cart) {
-            useDashStore.getState().loadCart(userData.user.cart);
-          }
-
-          if (redirect) {
-            const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
-            // Force a full reload to ensure global state fetches fresh from DB
-            window.location.href = redirectUrl;
-          } else if (userRole === "admin") {
-            router.push("/admin/products");
-          } else if (userRole === "dispatcher") {
-            router.push("/admin/orders");
-          } else {
-            router.push("/");
-          }
-        }
+      if (data.requiresOtp) {
+        // Admin 2FA triggered
+        setAdminEmailForOtp(data.email);
+        setStep(2);
+        setLoading(false);
+        return;
       }
+
+      await finalizeLogin(res);
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Try again.");
-    } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: adminEmailForOtp, otp }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Invalid OTP");
+        setLoading(false);
+        return;
+      }
+
+      await finalizeLogin(res);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Try again.");
+      setLoading(false);
+    }
+  };
+
+  const finalizeLogin = async (res: Response) => {
+    if (res.ok) {
+      let resMe = await fetch("/api/auth/me");
+      let userData = await resMe.json();
+      if (resMe.ok) {
+        const userRole = (userData.user as IUser).role;
+        
+        if (["user", "customer"].includes(userRole) && cartParam) {
+          try {
+            const cartItems = JSON.parse(decodeURIComponent(cartParam));
+            if (cartItems.length > 0) {
+              await fetch("/api/users/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cartItems),
+              });
+              
+              resMe = await fetch("/api/auth/me");
+              userData = await resMe.json();
+            }
+          } catch (e) {
+            console.error("Failed to sync cart", e);
+          }
+        }
+
+        useDashStore.getState().setUser(userData.user);
+        if (userData.user.cart) {
+          useDashStore.getState().loadCart(userData.user.cart);
+        }
+
+        if (redirect) {
+          const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
+          window.location.href = redirectUrl;
+        } else if (userRole === "admin") {
+          router.push("/admin/products");
+        } else if (userRole === "dispatcher") {
+          router.push("/admin/orders");
+        } else {
+          router.push("/");
+        }
+      }
     }
   };
 
@@ -119,77 +161,114 @@ export default function LoginPage() {
 
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-text-main mb-4">
-              Welcome Back
+              {step === 1 ? "Welcome Back" : "Admin Verification"}
             </h1>
             <p className="text-[13px] text-text-muted tracking-wide">
-              Sign in to continue your journey to radiant skin.
+              {step === 1 
+                ? "Sign in to continue your journey to radiant skin." 
+                : "An OTP has been sent to your email to verify your identity."}
             </p>
           </div>
 
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                Email / Phone 
-              </label>
-              <input
-                id="email"
-                type="text"
-                placeholder="Enter your email or phone number"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                  Password
+          {step === 1 && (
+            <form className="flex flex-col gap-6" onSubmit={handleCredentialsSubmit}>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                  Email / Phone 
                 </label>
-                <Link href="/forgot-password" className="text-[11px] font-bold tracking-widest uppercase text-text-main hover:text-[#5B7763] transition-colors">
-                  Forgot?
-                </Link>
+                <input
+                  id="email"
+                  type="text"
+                  placeholder="Enter your email or phone number"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+                />
               </div>
-              <input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
-              />
-            </div>
 
-            {error && (
-              <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
-            )}
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
-            >
-              {loading ? "Signing in..." : "Sign In"}
-            </Button>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/40" />
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                    Password
+                  </label>
+                  <Link href="/forgot-password" className="text-[11px] font-bold tracking-widest uppercase text-text-main hover:text-[#5B7763] transition-colors">
+                    Forgot?
+                  </Link>
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-12 w-full border-b border-border/60 bg-transparent text-[14px] text-text-main focus:border-black focus:outline-none transition-colors placeholder:text-border"
+                />
               </div>
+
+              {error && (
+                <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
+              >
+                {loading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+          )}
+
+          {step === 2 && (
+            <form className="flex flex-col gap-6" onSubmit={handleOtpSubmit}>
+              <div className="flex flex-col gap-4 items-center">
+                <label htmlFor="otp" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                  Verification Code
+                </label>
+                <InputOTP maxLength={6} value={otp} onChange={(value) => setOtp(value)}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot index={1} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot index={2} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot index={3} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot index={4} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot index={5} className="w-12 h-14 text-xl bg-transparent" />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+
+              {error && (
+                <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading || otp.length < 6}
+                className="h-14 mt-4 w-full bg-black hover:bg-black/80 rounded-none text-white text-[12px] font-bold tracking-[0.2em] uppercase transition-colors"
+              >
+                {loading ? "Verifying..." : "Verify & Login"}
+              </Button>
               
-            </div>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="text-[11px] font-bold uppercase tracking-widest text-text-muted hover:text-text-main transition-colors mt-2"
+              >
+                Go Back
+              </button>
+            </form>
+          )}
 
-            
-          </form>
-
-          <p className="mt-4 text-center text-[12px] text-text-muted">
-            Don't have an account?{" "}
-            <Link href={queryString ? `/signup${queryString}` : "/signup"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
-              Create One
-            </Link>
-          </p>
+          {step === 1 && (
+            <p className="mt-10 text-center text-[12px] text-text-muted">
+              Don't have an account?{" "}
+              <Link href={queryString ? `/signup${queryString}` : "/signup"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+                Create One
+              </Link>
+            </p>
+          )}
         </div>
       </div>
 

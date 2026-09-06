@@ -2,13 +2,23 @@ import { connectToDatabase } from "@/lib/connectDB";
 import { User } from "@/models/User";
 import { NextResponse } from "next/server";
 
+import { updateEmailSchema } from "@/lib/validations";
+
 export async function PATCH(req: Request) {
   try {
     await connectToDatabase();
 
     const form = await req.formData();
-    const userId = form.get("userId") as string | null;
-    const email = form.get("email") as string | null;
+    const rawData = Object.fromEntries(form.entries());
+    const validatedData = updateEmailSchema.safeParse(rawData);
+    
+    if (!validatedData.success) {
+      return NextResponse.json(
+        { message: validatedData.error.errors[0].message },
+        { status: 400 }
+      );
+    }
+    const { userId, email } = validatedData.data;
 
     if (!userId) {
       return NextResponse.json(

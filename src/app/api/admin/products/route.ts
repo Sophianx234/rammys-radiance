@@ -33,26 +33,40 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
 
-    // Sanitize basic text fields
-    const name = DOMPurify.sanitize(formData.get("name") as string || "");
-    const description = DOMPurify.sanitize(formData.get("description") as string || "");
-    const category = DOMPurify.sanitize(formData.get("category") as string || "");
-    let slug = DOMPurify.sanitize(formData.get("slug") as string || "");
+    // Extract data
+    const rawData = {
+      name: formData.get("name") as string || "",
+      description: formData.get("description") as string || "",
+      category: formData.get("category") as string || "",
+      slug: formData.get("slug") as string || "",
+      price: formData.get("price"),
+      stock: formData.get("stock"),
+      isFeatured: formData.get("isFeatured") === "true",
+      rating: formData.get("rating") || 0,
+      reviewsCount: formData.get("reviewsCount") || 0,
+      discountPrice: formData.has("discountPrice") ? formData.get("discountPrice") : undefined,
+      discountBadge: formData.get("discountBadge") as string || "",
+    };
 
-    const price = Number(formData.get("price"));
-    const stock = Number(formData.get("stock"));
-    const isFeatured = formData.get("isFeatured") === "true";
-    const rating = Number(formData.get("rating") || 0);
-    const reviewsCount = Number(formData.get("reviewsCount") || 0);
-    const discountPrice = formData.has("discountPrice") ? Number(formData.get("discountPrice")) : undefined;
-    const discountBadge = formData.get("discountBadge") ? DOMPurify.sanitize(formData.get("discountBadge") as string) : undefined;
+    // Validate with Zod
+    const { productSchema } = await import("@/lib/validations");
+    const validatedData = productSchema.safeParse(rawData);
 
-    if (!name || !description || !price || !category) {
+    if (!validatedData.success) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: validatedData.error.errors[0].message },
         { status: 400 }
       );
     }
+
+    let { name, description, category, slug, price, stock, isFeatured, rating, reviewsCount, discountPrice, discountBadge } = validatedData.data;
+
+    // Sanitize basic text fields
+    name = DOMPurify.sanitize(name);
+    description = DOMPurify.sanitize(description);
+    category = DOMPurify.sanitize(category);
+    slug = slug ? DOMPurify.sanitize(slug) : "";
+    discountBadge = discountBadge ? DOMPurify.sanitize(discountBadge) : undefined;
 
     // ----- SLUG -----
     if (!slug) {
@@ -95,14 +109,21 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (imageFiles.length > 5) {
+      return NextResponse.json(
+        { error: "Maximum of 5 images allowed per product" },
+        { status: 400 }
+      );
+    }
 
     const uploadedImages: string[] = [];
-    for (const file of imageFiles) {
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
       const buffer = Buffer.from(await file.arrayBuffer());
       const result = await uploadBufferToCloudinary(
         buffer,
-        undefined,
-        "products"
+        `img_${i + 1}`,
+        `products/${slug}`
       );
       uploadedImages.push(result.secure_url);
     }

@@ -1,22 +1,31 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import crypto from "crypto";
 import { connectToDatabase } from "@/lib/connectDB";
 import { User } from "@/models/User";
 import { signToken } from "@/lib/jwtConfig";
 import { sendMail } from "@/lib/mail";
 import { resetPasswordEmail } from "@/lib/email-templates";
+import { forgotPasswordSchema } from "@/lib/validations";
+import { passwordResetRateLimit } from "@/lib/rateLimit";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  // Rate Limiting
+  const ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
+  const { success } = await passwordResetRateLimit.limit(ip);
+  if (!success) {
+    return NextResponse.json({ message: "Too many password reset requests." }, { status: 429 });
+  }
+
   try {
     await connectToDatabase();
 
-    const { email } = await req.json();
-    if (!email) {
-      return NextResponse.json(
-        { message: "Email is required." },
-        { status: 400 }
-      );
+    const body = await req.json();
+    const validatedData = forgotPasswordSchema.safeParse(body);
+    if (!validatedData.success) {
+      return NextResponse.json({ message: validatedData.error.errors[0].message }, { status: 400 });
     }
+    
+    const { email } = validatedData.data;
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -36,12 +45,9 @@ export async function POST(req: Request) {
     user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 min
     await user.save();
 
-    
     // Send Email
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
-    
 
-    // ✨ Use your template
     const html = resetPasswordEmail({
       name: user.name,
       resetUrl,

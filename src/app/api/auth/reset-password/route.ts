@@ -1,19 +1,31 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { User } from "@/models/User";
 import { connectToDatabase } from "@/lib/connectDB";
 import { encryptPassword } from "@/lib/bcrypt";
 import { sendMail } from "@/lib/mail";
 import { passwordResetConfirmationEmail } from "@/lib/email-templates";
 import crypto from "crypto";
-export async function POST(req: Request) {
+import { resetPasswordSchema } from "@/lib/validations";
+import { passwordResetRateLimit } from "@/lib/rateLimit";
+
+export async function POST(req: NextRequest) {
+  // Rate Limiting
+  const ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
+  const { success } = await passwordResetRateLimit.limit(ip);
+  if (!success) {
+    return NextResponse.json({ message: "Too many password reset requests." }, { status: 429 });
+  }
+
   try {
     await connectToDatabase();
 
-    const { token, password } = await req.json();
-
-    if (!token || !password) {
-      return NextResponse.json({ message: "Token and password are required" }, { status: 400 });
+    const body = await req.json();
+    const validatedData = resetPasswordSchema.safeParse(body);
+    if (!validatedData.success) {
+      return NextResponse.json({ message: validatedData.error.errors[0].message }, { status: 400 });
     }
+    
+    const { token, password } = validatedData.data;
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     // Find user with valid token
@@ -36,11 +48,11 @@ export async function POST(req: Request) {
 
     await user.save();
 
-     await sendMail({
-        to: user.email,
-        subject: "Your password has been reset",
-        html: passwordResetConfirmationEmail(user.name),
-      });
+    await sendMail({
+      to: user.email,
+      subject: "Your password has been reset",
+      html: passwordResetConfirmationEmail(user.name),
+    });
 
     return NextResponse.json({ message: "Password updated successfully" });
   } catch (err) {
