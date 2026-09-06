@@ -21,13 +21,14 @@ Use Next.js Edge Middleware to attach helmet-style security headers globally to 
 - `Referrer-Policy: strict-origin-when-cross-origin` - Secures referrer information.
 - `Content-Security-Policy (CSP)` - Restricts sources for scripts, styles, frames, and connections (ensure 3rd-party integrations like payment gateways are whitelisted).
 
-## 3. CSRF Protection for API Mutations
-Do not rely solely on cookies for API security. Ensure Cross-Site Request Forgery (CSRF) protection is handled at the edge.
+## 3. Dynamic CSRF Protection for API Mutations
+Do not rely solely on cookies for API security. Ensure Cross-Site Request Forgery (CSRF) protection is handled dynamically at the edge without breaking deployments.
 
 **Implementation Strategy:**
 - In the middleware, intercept all mutating requests (`POST`, `PUT`, `PATCH`, `DELETE`) hitting `/api/*`.
-- Verify the `Origin` or `Referer` headers against an array of `allowedOrigins` (matching the environment URL).
-- If neither header matches the allowed origins, return a `403 Forbidden`.
+- Extract the `Origin`, `Referer`, and `Host` headers.
+- Dynamically parse the `Origin`/`Referer` and compare their hostname against the incoming `Host` header. This standardizes CSRF protection across local development and diverse production domains without relying on brittle, hardcoded `.env` origin arrays.
+- Return a `403 Forbidden` if there is a mismatch or missing headers in production.
 
 ## 4. Edge Rate Limiting (DDoS & Brute-Force Mitigation)
 APIs must be protected from high-volume automated attacks.
@@ -47,12 +48,13 @@ Since JWTs are stateless and cannot be naturally invalidated until they expire, 
 - If the user is found in the blocklist, instantly clear their authentication cookie and return a `403 Forbidden` or redirect to login.
 
 ## 6. Audit & Access Logging
-Ensure all inbound traffic and its resolution is actively monitored.
+Ensure all inbound traffic and its resolution is actively monitored with a clean, highly readable console output format.
 
 **Implementation Strategy:**
 - Implement a formatted logging utility within the middleware.
-- Log the HTTP Method, Route Path, Requester IP, Resolved User Role, and the final action taken by the middleware (e.g., `ALLOWED`, `BLOCKED`, `LIMITED`, `REDIRECTED`).
-- This creates immediate visibility into unauthorized access attempts or triggered rate limits directly in the server console.
+- Log the HTTP Method, Route Path, Requester IP, Resolved User Role, and the final action taken by the middleware.
+- Example standard format: `[14:32:05] 🌐 POST   /api/orders/track         => 🛡️ ALLOWED (Role: guest, IP: 127.0.0.1)`
+- This creates immediate, human-readable visibility into unauthorized access attempts or triggered rate limits directly in the server console.
 
 ## 7. Secure & Optimized Cloudinary Asset Management
 Prevent storage bloating, orphan files, and bandwidth exhaustion by managing media files deterministically.
@@ -81,3 +83,18 @@ Accounts with destructive or broad permissions (Admins, Managers) must not rely 
 - **Halt Flow:** Return a response like `{ requiresOtp: true }` to command the frontend UI to switch to an OTP input view.
 - **Verify & Issue:** Create a dedicated secondary route (`POST /api/auth/login/verify-otp`) to accept the OTP. Only after successful verification should the system issue the `HttpOnly` token cookie.
 - **Audit Log:** Permanently log successful 2FA logins to the database for security auditing.
+
+## 10. Third-Party SDK & Dual CSP Synchronization
+When integrating 3rd-party services (e.g., MapTiler, Paystack) that rely on external assets or Web Workers, you must synchronize Content-Security-Policies across all entry points.
+
+**Implementation Strategy:**
+- Ensure wildcard domains (e.g., `https://*.maptiler.com`) and CDN fallbacks (e.g., `https://unpkg.com`) are explicitly whitelisted in `worker-src`, `child-src`, `img-src`, and `connect-src`.
+- If a CSP is defined in `next.config.ts` AND `middleware.ts`, the browser enforces the strict intersection of both. Always ensure BOTH files contain identical whitelists to prevent production-only blockages where CDN fallbacks execute.
+- Always use `blob:` in `worker-src` and `child-src` for SDKs that instantiate their own Web Workers (like MapLibre).
+
+## 11. Next.js App Router Scroll Management
+Never use "auto scroll" hacks (like `useEffect(() => window.scrollTo(0,0))`) to fix layout scroll behavior in the Next.js App Router.
+
+**Implementation Strategy:**
+- When using Sticky headers in persistent layouts, Next.js naturally scrolls to the top of the changing route segment (cutting off the header visually).
+- Fix this exclusively using the Next.js standard approach by enabling `experimental: { scrollRestoration: true }` in `next.config.ts`. This utilizes the browser's native History API to enforce an absolute `(0,0)` scroll reset on new page loads while perfectly restoring scroll height on Back/Forward navigation.
