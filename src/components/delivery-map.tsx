@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import * as maptilersdk from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
-import "@maptiler/geocoding-control/style.css";
 import { MapPin } from "lucide-react";
 
 interface DeliveryMapProps {
