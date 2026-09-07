@@ -157,26 +157,26 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
 
       <section className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Product Details Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
           {/* Left: Image Slider (Sticky) */}
-          <div className="relative">
-            <div className="lg:sticky lg:top-[120px] bg-surface aspect-[4/5] flex items-center justify-center overflow-hidden">
+          <div className="relative lg:col-span-5 xl:col-span-5">
+            <div className="lg:sticky lg:top-[120px] bg-surface aspect-[4/5] lg:max-h-[600px] flex items-center justify-center overflow-hidden w-full max-w-xl mx-auto lg:mx-0">
               <ProductImageSlider images={product.images || []} />
             </div>
           </div>
 
           {/* Right: Details */}
-          <div className="flex flex-col pt-4 lg:pt-10">
-            <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-text-muted mb-4">
+          <div className="flex flex-col pt-4 lg:pt-6 lg:col-span-7 xl:col-span-7">
+            <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-text-muted mb-3">
               {product.category?.name || "Skincare"}
             </p>
-            <h1 className="text-3xl md:text-5xl font-medium tracking-tight text-text-main mb-6 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-text-main mb-4 leading-tight">
               {product.name}
             </h1>
 
             {/* Price & Rating */}
-            <div className="flex items-center justify-between mb-8 pb-8 border-b border-border/40">
+            <div className="flex items-center justify-between mb-6 pb-6 border-b border-border/40">
               <div className="flex items-center gap-4">
                 <span className="text-2xl font-medium text-text-main">
                   ${typeof product.price === 'number' ? product.price.toLocaleString() : product.price}
@@ -200,12 +200,12 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
               </div>
             </div>
 
-            <p className="text-[14px] leading-relaxed text-text-muted mb-12">
+            <p className="text-[14px] leading-relaxed text-text-muted mb-8">
               {product.description || "Experience a new era of effortless confidence with our clinically proven, nature-inspired formulas. Perfectly balanced to rejuvenate your natural glow."}
             </p>
 
             {/* Add to Cart Actions */}
-            <div className="flex flex-col gap-5 mb-14">
+            <div className="flex flex-col gap-5 mb-10">
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 {/* Quantity Selector */}
                 <div className="flex items-center border border-border/60 h-14 w-full sm:w-36 shrink-0">
