@@ -78,8 +78,8 @@ const CreditCardIcon = () => (
 const features = [
   {
     icon: <BoxIcon />,
-    title: "Free Shipping",
-    description: "Free Shipping for orders over $130",
+    title: "Free Worldwide Shipping",
+    description: "Free Shipping for orders over ₵130",
   },
   {
     icon: <LeafPinIcon />,

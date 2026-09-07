@@ -179,7 +179,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
             <div className="flex items-center justify-between mb-6 pb-6 border-b border-border/40">
               <div className="flex items-center gap-4">
                 <span className="text-2xl font-medium text-text-main">
-                  ${typeof product.price === 'number' ? product.price.toLocaleString() : product.price}
+                  ₵{typeof product.price === 'number' ? product.price.toLocaleString() : product.price}
                 </span>
                 <span className={`text-[11px] font-bold uppercase tracking-widest ${product.inStock !== false && (product.stock === undefined || product.stock > 0) ? "text-[#5B7763]" : "text-red-500"}`}>
                   {product.inStock !== false 

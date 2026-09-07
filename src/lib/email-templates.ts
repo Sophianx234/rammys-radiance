@@ -349,7 +349,7 @@ export function newProductAnnouncementEmail({
 
       <!-- Price -->
       <p style="font-size:17px; color:#000; font-weight:600; margin: 15px 0;">
-        Price: $${price}
+        Price: GHS ${price}
       </p>
 
       <!-- CTA -->
