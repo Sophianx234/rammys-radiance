@@ -209,3 +209,50 @@ export const getAllCustomers = cache(async (search?: string, role?: string) => {
     orders: orderMap.get(String(user._id)) || 0
   }));
 });
+
+import { ActivityLog } from "@/models/ActivityLog";
+export const getAllAuditLogs = cache(async ({
+  page = 1,
+  limit = 20,
+  search = "",
+  actionTypes = []
+}: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  actionTypes?: string[];
+}) => {
+  await connectToDatabase();
+  const skip = (page - 1) * limit;
+
+  const query: any = {};
+  
+  if (actionTypes.length > 0) {
+    query.actionType = { $in: actionTypes };
+  }
+
+  if (search) {
+    query.description = { $regex: search, $options: "i" };
+  }
+
+  const logs = await ActivityLog.find(query)
+    .populate("user", "name email profile role")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const total = await ActivityLog.countDocuments(query);
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    logs: JSON.parse(JSON.stringify(logs)),
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalItems: total,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    }
+  };
+});

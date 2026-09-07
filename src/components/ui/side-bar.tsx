@@ -23,7 +23,7 @@ const allNavItems = [
   { name: "Products", key: "products", icon: Package2, path: "/admin/products" },
   { name: "Orders", key: "orders", icon: ShoppingCart, path: "/admin/orders" },
   { name: "Customers", key: "customers", icon: UsersRound, path: "/admin/customers" },
-  { name: "Activity Logs", key: "activity", icon: ClipboardList, path: "/admin/activity" },
+  { name: "Audit", key: "audit", icon: ClipboardList, path: "/admin/audit" },
 ];
 
 export default function Sidebar() {
@@ -119,7 +119,7 @@ export default function Sidebar() {
         {navItems.map(({ name, key, icon: Icon }) => {
           const role = user?.role === "dispatcher" ? "dispatch" : (user?.role === "customer" ? "user" : user?.role);
           if (role === "dispatch" && key !== "orders") return null;
-          if (key === "activity" && role !== "admin") return null;
+          if (key === "audit" && role !== "admin") return null;
 
           const isActive = activeTab === key;
 
