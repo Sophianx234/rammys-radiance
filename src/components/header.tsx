@@ -481,6 +481,26 @@ export default function Header() {
                   )}
                 </div>
               ))}
+
+              <div className="pt-6 mt-6 border-t border-border/40 flex flex-col space-y-4">
+                {user ? (
+                  <>
+                    <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-[13px] font-medium text-text-muted hover:text-black transition-colors">
+                      <User className="w-4 h-4" /> My Profile
+                    </Link>
+                    <Link href="/orders" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-[13px] font-medium text-text-muted hover:text-black transition-colors">
+                      <Package className="w-4 h-4" /> Orders
+                    </Link>
+                    <button onClick={() => { handleLogout(); setIsOpen(false); }} className="flex items-center gap-3 text-[13px] font-medium text-[#5B7763] hover:text-[#5B7763]/80 transition-colors">
+                      <LogOut className="w-4 h-4" /> Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 py-3 text-[13px] bg-[#5B7763] font-medium text-white hover:bg-opacity-90 transition-colors shadow-sm">
+                    <LogIn className="w-4 h-4" /> Login
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.nav>
         )}
