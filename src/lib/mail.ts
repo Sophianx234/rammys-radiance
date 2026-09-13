@@ -76,7 +76,7 @@ export async function sendMailToAllUsers({
         text: text || "",
       }));
 
-      const { data, error } = await resend.batch.send(emailsToSend);
+      const { data, error } = await resend.batch.send(emailsToSend as any);
 
       if (error) {
         console.error(`❌ Batch send error:`, error);

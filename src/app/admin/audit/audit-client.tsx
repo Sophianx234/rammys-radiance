@@ -30,11 +30,10 @@ interface UserProfile {
 
 interface AuditLog {
   _id: string;
-  user: UserProfile;
-  actionType: string;
-  description: string;
+  user: UserProfile | null;
+  action: string;
+  details: string;
   targetId?: string;
-  entityType?: string;
   createdAt: string;
 }
 
@@ -148,43 +147,43 @@ export default function AuditClient({ initialLogs, pagination, currentSearch, cu
                   <TableRow key={log._id} className="group border-b border-border/40 hover:bg-secondary/20 transition-colors">
                     <TableCell className="py-4">
                       <div className="flex items-center gap-3">
-                        {log.user.profile ? (
+                        {log.user?.profile ? (
                           <div className="relative w-8 h-8 rounded-full overflow-hidden border border-border/40">
                             <Image
                               src={log.user.profile}
-                              alt={log.user.name}
+                              alt={log.user.name || "System"}
                               fill
                               className="object-cover"
                             />
                           </div>
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center border border-border/40 text-[10px] font-bold text-[#5B7763]">
-                            {log.user.name?.charAt(0).toUpperCase() || "?"}
+                            {log.user?.name?.charAt(0).toUpperCase() || "?"}
                           </div>
                         )}
                         <div className="flex flex-col">
                           <span className="text-[12px] font-bold text-[#222222]">
-                            {log.user.name}
+                            {log.user?.name || "Unknown User"}
                           </span>
-                          {log.user.email && (
+                          {log.user?.email && (
                             <span className="text-[10px] text-text-muted truncate max-w-[150px]">
                               {log.user.email}
                             </span>
                           )}
                           <span className="text-[9px] uppercase tracking-wider text-[#5B7763] font-bold mt-0.5">
-                            {log.user.role}
+                            {log.user?.role || "System"}
                           </span>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getActionColor(log.actionType)}`}>
-                        {log.actionType.replace(/_/g, " ")}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getActionColor(log.action || "UNKNOWN")}`}>
+                        {(log.action || "UNKNOWN").replace(/_/g, " ")}
                       </span>
                     </TableCell>
                     <TableCell className="py-4">
                       <p className="text-[12px] text-[#222222] max-w-[400px]">
-                        {log.description}
+                        {log.details}
                       </p>
                       {log.targetId && (
                         <span className="text-[10px] text-text-muted font-mono mt-1 block">
@@ -195,10 +194,10 @@ export default function AuditClient({ initialLogs, pagination, currentSearch, cu
                     <TableCell className="py-4 text-right">
                       <div className="flex flex-col items-end">
                         <span className="text-[11px] font-medium text-[#222222]">
-                          {format(new Date(log.createdAt), "MMM d, yyyy")}
+                          {log.createdAt ? format(new Date(log.createdAt), "MMM d, yyyy") : "Unknown Date"}
                         </span>
                         <span className="text-[10px] text-text-muted">
-                          {format(new Date(log.createdAt), "h:mm a")}
+                          {log.createdAt ? format(new Date(log.createdAt), "h:mm a") : ""}
                         </span>
                       </div>
                     </TableCell>

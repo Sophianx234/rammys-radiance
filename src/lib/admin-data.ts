@@ -228,11 +228,11 @@ export const getAllAuditLogs = cache(async ({
   const query: any = {};
   
   if (actionTypes.length > 0) {
-    query.actionType = { $in: actionTypes };
+    query.action = { $in: actionTypes };
   }
 
   if (search) {
-    query.description = { $regex: search, $options: "i" };
+    query.details = { $regex: search, $options: "i" };
   }
 
   const logs = await ActivityLog.find(query)

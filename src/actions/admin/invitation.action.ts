@@ -82,11 +82,18 @@ export async function inviteTeamMemberAction(rawEmail: string, rawRole: string) 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const emailHtml = await render(React.createElement(InvitationEmail, { role, inviteLink: `${baseUrl}/accept-invite?token=${token}` }));
     
-    await sendMail({
+    const mailResult = await sendMail({
       to: email,
       subject: "Join the Rammy's Radiance Team",
       html: emailHtml
     });
+
+    if (!mailResult.success) {
+      // Rollback invitation creation since email failed
+      await Invitation.deleteOne({ email });
+      const errorMessage = mailResult.error?.message || "Failed to send email via Resend.";
+      return { success: false, error: `Email error: ${errorMessage}` };
+    }
     
     revalidatePath("/admin/manage/team"); 
     return { success: true, message: `Invitation sent to ${email}` };
@@ -120,13 +127,18 @@ export async function updateTeamMemberRole(rawUserId: string, rawNewRole: string
       message: `Your account role has been updated to ${newRole}.`
     }));
 
-    await sendMail({
+    const mailResult = await sendMail({
       to: user.email!,
       subject: "Account Permission Update",
       html: emailHtml
     });
     
     revalidatePath("/admin/manage/team");
+    
+    if (!mailResult.success) {
+      return { success: true, message: `Role updated successfully, but email notification failed: ${mailResult.error?.message || "Unknown error"}` };
+    }
+    
     return { success: true, message: `Role updated successfully.` };
   } catch (error: any) {
     return { success: false, error: "Failed to update role." };
@@ -160,13 +172,18 @@ export async function toggleTeamAccountStatus(rawUserId: string, currentIsSuspen
         : "Your account has been reactivated. You may now log in normally."
     }));
 
-    await sendMail({
+    const mailResult = await sendMail({
       to: user.email!,
       subject: newIsSuspended ? "Account Suspended" : "Account Reactivated",
       html: emailHtml
     });
     
     revalidatePath("/admin/manage/team");
+    
+    if (!mailResult.success) {
+      return { success: true, message: `Account has been ${newIsSuspended ? 'suspended' : 'reactivated'}, but email notification failed: ${mailResult.error?.message || "Unknown error"}` };
+    }
+    
     return { success: true, message: `Account has been ${newIsSuspended ? 'suspended' : 'reactivated'}.` };
   } catch (error: any) {
     return { success: false, error: "Failed to update account status." };
