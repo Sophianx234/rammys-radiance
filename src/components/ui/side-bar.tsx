@@ -38,6 +38,12 @@ const allNavItems = [
     icon: UsersRound,
     path: "/admin/customers",
   },
+  {
+    name: "Team",
+    key: "team",
+    icon: UsersRound,
+    path: "/admin/manage/team",
+  },
   { name: "Audit", key: "audit", icon: ClipboardList, path: "/admin/audit" },
 ];
 
@@ -141,6 +147,7 @@ export default function Sidebar() {
                 : user?.role;
           if (role === "dispatch" && key !== "orders") return null;
           if (key === "audit" && role !== "admin") return null;
+          if (key === "team" && role !== "admin") return null;
 
           const isActive = activeTab === key;
 
