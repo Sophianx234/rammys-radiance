@@ -570,7 +570,7 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
 
       {/* INVITE DIALOG */}
       <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
-        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden">
+        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white rounded-lg border border-zinc-200/60 font-sans">
           <form onSubmit={handleInviteUser}>
             <div className="px-6 pt-6 pb-4 border-b border-zinc-200/60">
               <DialogTitle className="text-xl font-bold text-zinc-900">
