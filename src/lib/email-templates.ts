@@ -17,7 +17,7 @@ export function welcomeEmail(name: string) {
       <div style="text-align: center; margin-bottom: 25px;">
         <img 
           src="YOUR_LOGO_URL_HERE" 
-          alt="Rammy's Closet Logo"
+          alt="Rammy's Radiance Logo"
           style="width: 120px; height: auto;"
         />
       </div>
@@ -75,8 +75,6 @@ export function welcomeEmail(name: string) {
   `;
 }
 
-
-
 export function orderConfirmationEmail({
   name,
   orderId,
@@ -98,7 +96,7 @@ export function orderConfirmationEmail({
           <td style="padding: 8px 0; font-size:14px; color:#333; text-align:center;">${item.quantity}</td>
           <td style="padding: 8px 0; font-size:14px; color:#333; text-align:right;">GHS ${item.price}</td>
         </tr>
-      `
+      `,
     )
     .join("");
 
@@ -117,7 +115,7 @@ export function orderConfirmationEmail({
       <div style="text-align:center; margin-bottom:25px;">
         <img 
           src="YOUR_LOGO_URL_HERE"
-          alt="Rammy's Closet Logo"
+          alt="Rammy's Radiance Logo"
           style="width: 120px; height:auto;"
         />
       </div>
@@ -199,7 +197,11 @@ export function orderConfirmationEmail({
   `;
 }
 
-export function reviewThankYouEmail(name: string, productName: string, rating: number) {
+export function reviewThankYouEmail(
+  name: string,
+  productName: string,
+  rating: number,
+) {
   return `
   <div style="font-family: 'Segoe UI', Arial, sans-serif; background:#faf7f7; padding: 40px 0;">
     <div style="
@@ -216,7 +218,7 @@ export function reviewThankYouEmail(name: string, productName: string, rating: n
       <div style="text-align: center; margin-bottom: 25px;">
         <img 
           src="YOUR_LOGO_URL_HERE" 
-          alt="Rammy's Closet Logo"
+          alt="Rammy's Radiance Logo"
           style="width: 120px; height: auto;"
         />
       </div>
@@ -270,7 +272,6 @@ export function reviewThankYouEmail(name: string, productName: string, rating: n
   `;
 }
 
-
 export function newProductAnnouncementEmail({
   name,
   description,
@@ -305,7 +306,7 @@ export function newProductAnnouncementEmail({
       <div style="text-align: center; margin-bottom: 25px;">
         <img 
           src="YOUR_LOGO_URL_HERE"
-          alt="Rammy's Closet Logo"
+          alt="Rammy's Radiance Logo"
           style="width: 120px; height: auto;"
         />
       </div>
@@ -412,7 +413,7 @@ export function resetPasswordEmail({
       <div style="text-align: center; margin-bottom: 25px;">
         <img 
           src="YOUR_LOGO_URL"
-          alt="Rammy's Closet"
+          alt="Rammy's Radiance"
           style="width: 120px; height: auto;"
         />
       </div>
@@ -465,7 +466,6 @@ export function resetPasswordEmail({
   `;
 }
 
-
 export function passwordResetConfirmationEmail(name: string) {
   return `
   <div style="font-family: 'Segoe UI', Arial, sans-serif; background:#faf7f7; padding: 40px 0;">
@@ -483,7 +483,7 @@ export function passwordResetConfirmationEmail(name: string) {
       <div style="text-align: center; margin-bottom: 25px;">
         <img 
           src="YOUR_LOGO_URL_HERE" 
-          alt="Rammy's Closet Logo"
+          alt="Rammy's Radiance Logo"
           style="width: 120px; height: auto;"
         />
       </div>

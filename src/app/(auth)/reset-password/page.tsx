@@ -72,11 +72,11 @@ export default function ResetPasswordPage() {
           {/* Logo */}
           <div className="flex justify-center mb-16">
             <Link href="/">
-              <Image 
-                src="/imgs/logo.jpeg" 
-                alt="Rammy's Radiance" 
-                width={180} 
-                height={54} 
+              <Image
+                src="/imgs/logo.jpeg"
+                alt="Rammy's Radiance"
+                width={180}
+                height={54}
                 className="object-contain"
                 priority
               />
@@ -94,7 +94,10 @@ export default function ResetPasswordPage() {
 
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
-              <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+              <label
+                htmlFor="password"
+                className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+              >
                 New Password
               </label>
               <input
@@ -109,7 +112,10 @@ export default function ResetPasswordPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="confirm" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+              <label
+                htmlFor="confirm"
+                className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+              >
                 Confirm Password
               </label>
               <input
@@ -124,10 +130,14 @@ export default function ResetPasswordPage() {
             </div>
 
             {error && (
-              <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+              <p className="text-red-500 text-[12px] font-medium text-center">
+                {error}
+              </p>
             )}
             {success && (
-              <p className="text-[#5B7763] text-[12px] font-medium text-center">{success}</p>
+              <p className="text-[#5B7763] text-[12px] font-medium text-center">
+                {success}
+              </p>
             )}
 
             <Button
@@ -141,7 +151,10 @@ export default function ResetPasswordPage() {
 
           <p className="mt-12 text-center text-[12px] text-text-muted">
             Remember your password?{" "}
-            <Link href="/login" className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+            <Link
+              href="/login"
+              className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1"
+            >
               Sign In
             </Link>
           </p>

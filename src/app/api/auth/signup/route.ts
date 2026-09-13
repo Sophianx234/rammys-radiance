@@ -22,12 +22,12 @@ export async function POST(req: NextRequest) {
       phone: formData.get("phone")?.toString(),
       password: formData.get("password")?.toString(),
     };
-    
+
     const validatedData = signupSchema.safeParse(rawData);
     if (!validatedData.success) {
       return NextResponse.json(
         { message: validatedData.error.errors[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       if (!otp) {
         return NextResponse.json(
           { message: "Verification code is required for email signup" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       const { Otp } = await import("@/models/Otp");
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       if (!existingOtp) {
         return NextResponse.json(
           { message: "Invalid or expired verification code" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       if (existingUser) {
         return NextResponse.json(
           { message: "Email already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       // Clean up OTP
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       if (existingUser) {
         return NextResponse.json(
           { message: "Phone number already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -84,8 +84,11 @@ export async function POST(req: NextRequest) {
 
     if (email) {
       const { render } = await import("@react-email/render");
-      const WelcomeEmail = (await import("@/components/mail/welcome-email")).default;
-      const emailHtml = await render(React.createElement(WelcomeEmail, { name: name as string }));
+      const WelcomeEmail = (await import("@/components/mail/welcome-email"))
+        .default;
+      const emailHtml = await render(
+        React.createElement(WelcomeEmail, { name: name as string }),
+      );
 
       await sendMail({
         to: email,
@@ -100,7 +103,7 @@ export async function POST(req: NextRequest) {
     console.error(err);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

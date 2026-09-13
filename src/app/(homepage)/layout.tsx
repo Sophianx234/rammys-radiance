@@ -22,8 +22,15 @@ export const metadata: Metadata = {
     default: "Rammy's Radiance | Premium Cosmetics & Beauty",
     template: "%s | Rammy's Radiance",
   },
-  description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look at Rammy's Radiance.",
-  keywords: ["cosmetics", "beauty", "skincare", "premium makeup", "Rammy's Radiance"],
+  description:
+    "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look at Rammy's Radiance.",
+  keywords: [
+    "cosmetics",
+    "beauty",
+    "skincare",
+    "premium makeup",
+    "Rammy's Radiance",
+  ],
   authors: [{ name: "Rammy's Radiance" }],
   creator: "Rammy's Radiance",
   openGraph: {
@@ -31,7 +38,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://rammysradiance.com",
     title: "Rammy's Radiance | Premium Cosmetics & Beauty",
-    description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look at Rammy's Radiance.",
+    description:
+      "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look at Rammy's Radiance.",
     siteName: "Rammy's Radiance",
     images: [
       {
@@ -45,7 +53,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Rammy's Radiance | Premium Cosmetics & Beauty",
-    description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look.",
+    description:
+      "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look.",
     images: ["/og-image.jpg"],
   },
   robots: {
@@ -54,14 +63,14 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   alternates: {
     canonical: "https://rammysradiance.com",
-  }
+  },
 };
 
 export const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -92,7 +101,8 @@ export default function RootLayout({
     name: "Rammy's Radiance",
     url: "https://rammysradiance.com",
     logo: "https://rammysradiance.com/icon.png",
-    description: "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look.",
+    description:
+      "Discover luxury beauty products, premium cosmetics, and radiant skincare curated for your glowing look.",
     sameAs: [
       "https://instagram.com/rammysradiance",
       "https://facebook.com/rammysradiance",
@@ -106,7 +116,9 @@ export default function RootLayout({
         <script src="https://js.paystack.co/v1/inline.js"></script>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          }}
         />
       </head>
       <body className={` ${inter.className} antialiased`}>

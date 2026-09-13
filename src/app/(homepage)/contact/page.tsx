@@ -3,15 +3,17 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact Us | Get in Touch",
-  description: "Have questions about our premium cosmetics or your order? Contact the Rammy's Radiance team for support, inquiries, and beauty advice.",
+  description:
+    "Have questions about our premium cosmetics or your order? Contact the Rammy's Radiance team for support, inquiries, and beauty advice.",
   alternates: {
     canonical: "https://rammysradiance.com/contact",
   },
   openGraph: {
     title: "Contact Us | Rammy's Radiance",
-    description: "Have questions about our premium cosmetics or your order? Contact the Rammy's Radiance team for support, inquiries, and beauty advice.",
+    description:
+      "Have questions about our premium cosmetics or your order? Contact the Rammy's Radiance team for support, inquiries, and beauty advice.",
     url: "https://rammysradiance.com/contact",
-  }
+  },
 };
 
 export default function ContactPage() {

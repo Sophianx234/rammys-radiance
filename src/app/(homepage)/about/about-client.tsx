@@ -65,21 +65,22 @@ export default function AboutPage() {
                 </p>
 
                 <h1 className="text-4xl md:text-5xl font-serif font-bold">
-                  The Journey of Rammy's Closet
+                  The Journey of Rammy's Radiance
                 </h1>
               </div>
               <p className="text-lg text-muted-foreground">
-                Rammy's Closet began as a small dream to bring beauty that feels
-                personal, luxurious, and ethical to everyone. What started as a
-                passion for handpicking the finest cosmetics grew into a curated
-                collection that celebrates individuality and self-expression.
+                Rammy's Radiance began as a small dream to bring beauty that
+                feels personal, luxurious, and ethical to everyone. What started
+                as a passion for handpicking the finest cosmetics grew into a
+                curated collection that celebrates individuality and
+                self-expression.
               </p>
               <p className="text-muted-foreground">
                 Every product we offer has a story sourced thoughtfully, crafted
                 with care, and chosen to inspire confidence. Our team of beauty
                 enthusiasts works tirelessly to ensure each item reflects the
                 quality, elegance, and sustainability that define Rammy's
-                Closet.
+                Radiance Closet.
               </p>
             </div>
             <div className="h-64 md:h-96 bg-primary/10 rounded-lg overflow-hidden flex items-center justify-center">

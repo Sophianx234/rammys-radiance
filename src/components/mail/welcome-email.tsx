@@ -6,7 +6,8 @@ interface WelcomeEmailProps {
   name: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://rammys-radiance.com";
+const baseUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://rammys-radiance.com";
 
 export default function WelcomeEmail({ name }: WelcomeEmailProps) {
   return (
@@ -18,12 +19,15 @@ export default function WelcomeEmail({ name }: WelcomeEmailProps) {
         Hello {name},
       </Text>
       <Text className="text-black text-[14px] leading-[24px]">
-        We are absolutely thrilled to have you here. Your account has been successfully created, and you are now part of the Rammy's Radiance family.
+        We are absolutely thrilled to have you here. Your account has been
+        successfully created, and you are now part of the Rammy's Radiance
+        Radiance family.
       </Text>
       <Text className="text-black text-[14px] leading-[24px]">
-        Get ready to discover premium skincare crafted to make you glow from the inside out.
+        Get ready to discover premium skincare crafted to make you glow from the
+        inside out.
       </Text>
-      
+
       <Section className="text-center mt-[32px] mb-[32px]">
         <Button
           href={`${baseUrl}/shop`}
@@ -32,9 +36,10 @@ export default function WelcomeEmail({ name }: WelcomeEmailProps) {
           Shop Now
         </Button>
       </Section>
-      
+
       <Text className="text-black text-[14px] leading-[24px]">
-        If you have any questions or need recommendations, just reply to this email. We're always here to help.
+        If you have any questions or need recommendations, just reply to this
+        email. We're always here to help.
       </Text>
     </EmailLayout>
   );

@@ -23,6 +23,19 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [queryString, setQueryString] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendTimer]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -34,7 +47,9 @@ export default function LoginPage() {
   const redirect = searchParams.get("redirect") || "";
   const cartParam = searchParams.get("cart") || "";
 
-  const handleCredentialsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCredentialsSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -57,6 +72,7 @@ export default function LoginPage() {
         // Admin 2FA triggered
         setAdminEmailForOtp(data.email);
         setStep(2);
+        setResendTimer(60);
         setLoading(false);
         return;
       }
@@ -96,13 +112,43 @@ export default function LoginPage() {
     }
   };
 
+  const handleResend = async () => {
+    if (resendTimer > 0 || loading) return;
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Failed to resend OTP");
+        setLoading(false);
+        return;
+      }
+
+      if (data.requiresOtp) {
+        setResendTimer(60);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const finalizeLogin = async (res: Response) => {
     if (res.ok) {
       let resMe = await fetch("/api/auth/me");
       let userData = await resMe.json();
       if (resMe.ok) {
         const userRole = (userData.user as IUser).role;
-        
+
         if (["user", "customer"].includes(userRole) && cartParam) {
           try {
             const cartItems = JSON.parse(decodeURIComponent(cartParam));
@@ -112,7 +158,7 @@ export default function LoginPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(cartItems),
               });
-              
+
               resMe = await fetch("/api/auth/me");
               userData = await resMe.json();
             }
@@ -127,7 +173,9 @@ export default function LoginPage() {
         }
 
         if (redirect) {
-          const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
+          const redirectUrl = cartParam
+            ? `${redirect}?cart=${encodeURIComponent(cartParam)}`
+            : redirect;
           window.location.href = redirectUrl;
         } else if (userRole === "admin") {
           router.push("/admin/products");
@@ -148,11 +196,11 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="flex justify-center mb-2 mt-24">
             <Link href="/">
-              <Image 
-                src="/imgs/logo.jpeg" 
-                alt="Rammy's Radiance" 
-                width={180} 
-                height={54} 
+              <Image
+                src="/imgs/logo.jpeg"
+                alt="Rammy's Radiance"
+                width={180}
+                height={54}
                 className="object-contain"
                 priority
               />
@@ -164,17 +212,23 @@ export default function LoginPage() {
               {step === 1 ? "Welcome Back" : "Admin Verification"}
             </h1>
             <p className="text-[13px] text-text-muted tracking-wide">
-              {step === 1 
-                ? "Sign in to continue your journey to radiant skin." 
+              {step === 1
+                ? "Sign in to continue your journey to radiant skin."
                 : "An OTP has been sent to your email to verify your identity."}
             </p>
           </div>
 
           {step === 1 && (
-            <form className="flex flex-col gap-6" onSubmit={handleCredentialsSubmit}>
+            <form
+              className="flex flex-col gap-6"
+              onSubmit={handleCredentialsSubmit}
+            >
               <div className="flex flex-col gap-2">
-                <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                  Email / Phone 
+                <label
+                  htmlFor="email"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                >
+                  Email / Phone
                 </label>
                 <input
                   id="email"
@@ -189,10 +243,16 @@ export default function LoginPage() {
 
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                  <label
+                    htmlFor="password"
+                    className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                  >
                     Password
                   </label>
-                  <Link href="/forgot-password" className="text-[11px] font-bold tracking-widest uppercase text-text-main hover:text-[#5B7763] transition-colors">
+                  <Link
+                    href="/forgot-password"
+                    className="text-[11px] font-bold tracking-widest uppercase text-text-main hover:text-[#5B7763] transition-colors"
+                  >
                     Forgot?
                   </Link>
                 </div>
@@ -208,7 +268,9 @@ export default function LoginPage() {
               </div>
 
               {error && (
-                <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+                <p className="text-red-500 text-[12px] font-medium text-center">
+                  {error}
+                </p>
               )}
 
               <Button
@@ -224,23 +286,50 @@ export default function LoginPage() {
           {step === 2 && (
             <form className="flex flex-col gap-6" onSubmit={handleOtpSubmit}>
               <div className="flex flex-col gap-4 items-center">
-                <label htmlFor="otp" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                <label
+                  htmlFor="otp"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                >
                   Verification Code
                 </label>
-                <InputOTP maxLength={6} value={otp} onChange={(value) => setOtp(value)}>
+                <InputOTP
+                  maxLength={6}
+                  value={otp}
+                  onChange={(value) => setOtp(value)}
+                >
                   <InputOTPGroup>
-                    <InputOTPSlot index={0} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={1} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={2} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={3} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={4} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={5} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot
+                      index={0}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={3}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
                   </InputOTPGroup>
                 </InputOTP>
               </div>
 
               {error && (
-                <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>
+                <p className="text-red-500 text-[12px] font-medium text-center">
+                  {error}
+                </p>
               )}
 
               <Button
@@ -250,21 +339,34 @@ export default function LoginPage() {
               >
                 {loading ? "Verifying..." : "Verify & Login"}
               </Button>
-              
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="text-[11px] font-bold uppercase tracking-widest text-text-muted hover:text-text-main transition-colors mt-2"
-              >
-                Go Back
-              </button>
+
+              <div className="flex flex-col gap-4 items-center mt-2">
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendTimer > 0 || loading}
+                  className="text-[11px] font-bold uppercase tracking-widest text-text-main disabled:text-text-muted transition-colors"
+                >
+                  {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : "Resend Code"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="text-[11px] font-bold uppercase tracking-widest text-text-muted hover:text-text-main transition-colors"
+                >
+                  Go Back
+                </button>
+              </div>
             </form>
           )}
 
           {step === 1 && (
             <p className="mt-10 text-center text-[12px] text-text-muted">
               Don't have an account?{" "}
-              <Link href={queryString ? `/signup${queryString}` : "/signup"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+              <Link
+                href={queryString ? `/signup${queryString}` : "/signup"}
+                className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1"
+              >
                 Create One
               </Link>
             </p>

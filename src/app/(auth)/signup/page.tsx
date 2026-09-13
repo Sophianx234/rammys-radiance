@@ -5,7 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { useDashStore } from "@/lib/store";
 
 export default function SignupPage() {
@@ -106,7 +110,7 @@ export default function SignupPage() {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("password", password);
-    
+
     if (useEmail) {
       formData.append("email", email);
       formData.append("otp", otp);
@@ -137,9 +141,10 @@ export default function SignupPage() {
           }
         }
 
-
         if (redirect) {
-          const redirectUrl = cartParam ? `${redirect}?cart=${encodeURIComponent(cartParam)}` : redirect;
+          const redirectUrl = cartParam
+            ? `${redirect}?cart=${encodeURIComponent(cartParam)}`
+            : redirect;
           window.location.href = redirectUrl;
         } else {
           window.location.href = "/";
@@ -162,11 +167,11 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex justify-center pt-12">
             <Link href="/">
-              <Image 
-                src="/imgs/logo.jpeg" 
-                alt="Rammy's Radiance" 
-                width={180} 
-                height={54} 
+              <Image
+                src="/imgs/logo.jpeg"
+                alt="Rammy's Radiance"
+                width={180}
+                height={54}
                 className="object-contain"
                 priority
               />
@@ -180,7 +185,8 @@ export default function SignupPage() {
               {step === 3 && "Secure Account"}
             </h1>
             <p className="text-[13px] text-text-muted tracking-wide">
-              {step === 1 && "Create an account to start your radiance journey."}
+              {step === 1 &&
+                "Create an account to start your radiance journey."}
               {step === 2 && `Enter the 6-digit code sent to ${email}`}
               {step === 3 && "Create a secure password for your account."}
             </p>
@@ -194,7 +200,9 @@ export default function SignupPage() {
                   type="button"
                   onClick={() => setUseEmail(true)}
                   className={`flex-1 pb-2 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors ${
-                    useEmail ? "border-black text-black" : "border-transparent text-text-muted hover:text-black"
+                    useEmail
+                      ? "border-black text-black"
+                      : "border-transparent text-text-muted hover:text-black"
                   }`}
                 >
                   Use Email
@@ -203,7 +211,9 @@ export default function SignupPage() {
                   type="button"
                   onClick={() => setUseEmail(false)}
                   className={`flex-1 pb-2 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors ${
-                    !useEmail ? "border-black text-black" : "border-transparent text-text-muted hover:text-black"
+                    !useEmail
+                      ? "border-black text-black"
+                      : "border-transparent text-text-muted hover:text-black"
                   }`}
                 >
                   Use Phone Number
@@ -211,7 +221,10 @@ export default function SignupPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="name" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                <label
+                  htmlFor="name"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                >
                   Full Name
                 </label>
                 <input
@@ -227,7 +240,10 @@ export default function SignupPage() {
 
               {useEmail ? (
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                  <label
+                    htmlFor="email"
+                    className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                  >
                     Email Address
                   </label>
                   <input
@@ -242,7 +258,10 @@ export default function SignupPage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="phone" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                  <label
+                    htmlFor="phone"
+                    className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                  >
                     Phone Number
                   </label>
                   <input
@@ -257,7 +276,11 @@ export default function SignupPage() {
                 </div>
               )}
 
-              {error && <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>}
+              {error && (
+                <p className="text-red-500 text-[12px] font-medium text-center">
+                  {error}
+                </p>
+              )}
 
               <Button
                 type="submit"
@@ -273,22 +296,51 @@ export default function SignupPage() {
           {step === 2 && (
             <form className="flex flex-col gap-6" onSubmit={handleVerifyOtp}>
               <div className="flex flex-col gap-4 items-center">
-                <label htmlFor="otp" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                <label
+                  htmlFor="otp"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                >
                   Verification Code
                 </label>
-                <InputOTP maxLength={6} value={otp} onChange={(value) => setOtp(value)}>
+                <InputOTP
+                  maxLength={6}
+                  value={otp}
+                  onChange={(value) => setOtp(value)}
+                >
                   <InputOTPGroup>
-                    <InputOTPSlot index={0} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={1} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={2} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={3} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={4} className="w-12 h-14 text-xl bg-transparent" />
-                    <InputOTPSlot index={5} className="w-12 h-14 text-xl bg-transparent" />
+                    <InputOTPSlot
+                      index={0}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={3}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="w-12 h-14 text-xl bg-transparent"
+                    />
                   </InputOTPGroup>
                 </InputOTP>
               </div>
 
-              {error && <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>}
+              {error && (
+                <p className="text-red-500 text-[12px] font-medium text-center">
+                  {error}
+                </p>
+              )}
 
               <Button
                 type="submit"
@@ -297,7 +349,7 @@ export default function SignupPage() {
               >
                 {loading ? "Verifying..." : "Verify Code"}
               </Button>
-              
+
               <button
                 type="button"
                 onClick={() => setStep(1)}
@@ -312,7 +364,10 @@ export default function SignupPage() {
           {step === 3 && (
             <form className="flex flex-col gap-6" onSubmit={handleFinalSignup}>
               <div className="flex flex-col gap-2">
-                <label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                <label
+                  htmlFor="password"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                >
                   Password
                 </label>
                 <input
@@ -327,7 +382,10 @@ export default function SignupPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="confirmPassword" className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted"
+                >
                   Confirm Password
                 </label>
                 <input
@@ -341,7 +399,11 @@ export default function SignupPage() {
                 />
               </div>
 
-              {error && <p className="text-red-500 text-[12px] font-medium text-center">{error}</p>}
+              {error && (
+                <p className="text-red-500 text-[12px] font-medium text-center">
+                  {error}
+                </p>
+              )}
 
               <Button
                 type="submit"
@@ -361,15 +423,18 @@ export default function SignupPage() {
                   <div className="w-full border-t border-border/40" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-surface px-4 text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">Or</span>
+                  <span className="bg-surface px-4 text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                    Or
+                  </span>
                 </div>
               </div>
 
-              
-
               <p className="mt-10 text-center text-[12px] text-text-muted pb-4">
                 Already have an account?{" "}
-                <Link href={queryString ? `/login${queryString}` : "/login"} className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1">
+                <Link
+                  href={queryString ? `/login${queryString}` : "/login"}
+                  className="font-bold uppercase tracking-[0.1em] text-text-main hover:text-[#5B7763] transition-colors ml-1"
+                >
                   Sign In
                 </Link>
               </p>

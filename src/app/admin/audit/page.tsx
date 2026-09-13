@@ -4,11 +4,12 @@ import { getAllAuditLogs } from "@/lib/admin-data";
 export default async function AuditPage({
   searchParams,
 }: {
-  searchParams: { page?: string; search?: string; actionType?: string };
+  searchParams: Promise<{ page?: string; search?: string; actionType?: string }>;
 }) {
-  const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const search = searchParams.search || "";
-  const actionTypes = searchParams.actionType ? searchParams.actionType.split(",") : [];
+  const resolvedSearchParams = await searchParams;
+  const page = resolvedSearchParams.page ? parseInt(resolvedSearchParams.page) : 1;
+  const search = resolvedSearchParams.search || "";
+  const actionTypes = resolvedSearchParams.actionType ? resolvedSearchParams.actionType.split(",") : [];
 
   const { logs, pagination } = await getAllAuditLogs({
     page,

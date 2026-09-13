@@ -1,5 +1,13 @@
 import * as React from "react";
-import { Text, Heading, Button, Section, Hr, Row, Column } from "@react-email/components";
+import {
+  Text,
+  Heading,
+  Button,
+  Section,
+  Hr,
+  Row,
+  Column,
+} from "@react-email/components";
 import EmailLayout from "./email-layout";
 
 interface OrderConfirmationEmailProps {
@@ -10,7 +18,8 @@ interface OrderConfirmationEmailProps {
   address: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://rammys-radiance.com";
+const baseUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://rammys-radiance.com";
 
 export default function OrderConfirmationEmail({
   name,
@@ -24,13 +33,14 @@ export default function OrderConfirmationEmail({
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
         Your Order is Confirmed! 🎉
       </Heading>
-      
+
       <Text className="text-black text-[14px] leading-[24px]">
         Hello {name},
       </Text>
-      
+
       <Text className="text-black text-[14px] leading-[24px]">
-        Thank you for shopping with Rammy's Radiance! Your order has been successfully received and is now being processed.
+        Thank you for shopping with Rammy's Radiance! Your order has been
+        successfully received and is now being processed.
       </Text>
 
       <Section className="bg-[#f2f2f2] p-[16px] rounded my-[20px]">
@@ -42,20 +52,29 @@ export default function OrderConfirmationEmail({
         </Text>
       </Section>
 
-      <Heading as="h3" className="text-black text-[18px] font-medium mt-[32px] mb-[16px]">
+      <Heading
+        as="h3"
+        className="text-black text-[18px] font-medium mt-[32px] mb-[16px]"
+      >
         Order Summary
       </Heading>
 
       <Section>
         <Row className="border-b border-solid border-[#eaeaea] pb-[8px] mb-[8px]">
           <Column className="w-[60%]">
-            <Text className="text-[#666] text-[12px] font-bold uppercase tracking-wider m-0">Item</Text>
+            <Text className="text-[#666] text-[12px] font-bold uppercase tracking-wider m-0">
+              Item
+            </Text>
           </Column>
           <Column className="w-[20%] text-center">
-            <Text className="text-[#666] text-[12px] font-bold uppercase tracking-wider m-0">Qty</Text>
+            <Text className="text-[#666] text-[12px] font-bold uppercase tracking-wider m-0">
+              Qty
+            </Text>
           </Column>
           <Column className="w-[20%] text-right">
-            <Text className="text-[#666] text-[12px] font-bold uppercase tracking-wider m-0">Price</Text>
+            <Text className="text-[#666] text-[12px] font-bold uppercase tracking-wider m-0">
+              Price
+            </Text>
           </Column>
         </Row>
 
@@ -65,10 +84,14 @@ export default function OrderConfirmationEmail({
               <Text className="text-black text-[14px] m-0">{item.name}</Text>
             </Column>
             <Column className="w-[20%] text-center">
-              <Text className="text-black text-[14px] m-0">{item.quantity}</Text>
+              <Text className="text-black text-[14px] m-0">
+                {item.quantity}
+              </Text>
             </Column>
             <Column className="w-[20%] text-right">
-              <Text className="text-black text-[14px] m-0">₵{item.price.toLocaleString()}</Text>
+              <Text className="text-black text-[14px] m-0">
+                ₵{item.price.toLocaleString()}
+              </Text>
             </Column>
           </Row>
         ))}
@@ -92,7 +115,8 @@ export default function OrderConfirmationEmail({
       </Section>
 
       <Text className="text-[#666] text-[14px] leading-[24px]">
-        You'll receive another update once your order is on its way. Thank you for choosing Rammy's Radiance!
+        You'll receive another update once your order is on its way. Thank you
+        for choosing Rammy's Radiance!
       </Text>
     </EmailLayout>
   );

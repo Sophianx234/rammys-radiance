@@ -5,7 +5,10 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
 // Use a verified domain email in production, otherwise onboarding@resend.dev for testing.
-const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.EMAIL_USER || "onboarding@resend.dev";
+const fromEmail =
+  process.env.RESEND_FROM_EMAIL ||
+  process.env.EMAIL_USER ||
+  "onboarding@resend.dev";
 
 export async function sendMail({
   to,
@@ -20,7 +23,7 @@ export async function sendMail({
 }) {
   try {
     const { data, error } = await resend.emails.send({
-      from: `"Rammy's Closet" <${fromEmail}>`,
+      from: `"Rammy's Radiance" <${fromEmail}>`,
       to: [to],
       subject,
       html,
@@ -66,7 +69,7 @@ export async function sendMailToAllUsers({
     try {
       // Create batch array for Resend
       const emailsToSend = batch.map((email) => ({
-        from: `"Rammy's Closet" <${fromEmail}>`,
+        from: `"Rammy's Radiance" <${fromEmail}>`,
         to: [email],
         subject,
         html,
@@ -76,9 +79,12 @@ export async function sendMailToAllUsers({
       const { data, error } = await resend.batch.send(emailsToSend);
 
       if (error) {
-         console.error(`❌ Batch send error:`, error);
+        console.error(`❌ Batch send error:`, error);
       } else {
-         console.log(`📩 Sent batch of ${batch.length} successfully. Batch ID:`, data?.data?.[0]?.id || "unknown");
+        console.log(
+          `📩 Sent batch of ${batch.length} successfully. Batch ID:`,
+          data?.data?.[0]?.id || "unknown",
+        );
       }
     } catch (error) {
       console.error(`❌ Batch send exception:`, error);

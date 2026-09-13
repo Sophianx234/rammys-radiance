@@ -16,9 +16,13 @@ interface EmailLayoutProps {
   previewText?: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://rammys-radiance.com";
+const baseUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://rammys-radiance.com";
 
-export default function EmailLayout({ children, previewText }: EmailLayoutProps) {
+export default function EmailLayout({
+  children,
+  previewText,
+}: EmailLayoutProps) {
   return (
     <Html>
       <Head />
@@ -26,7 +30,6 @@ export default function EmailLayout({ children, previewText }: EmailLayoutProps)
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans px-2">
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[600px]">
-            
             {/* Header */}
             <Section className="mt-[32px] mb-[32px] text-center">
               <Img
@@ -49,11 +52,11 @@ export default function EmailLayout({ children, previewText }: EmailLayoutProps)
                 Rammy's Radiance
               </Text>
               <Text className="text-[#999999] text-[11px] leading-[20px] text-center mt-2">
-                123 Skincare Ave, Glow City, GL 10024 <br />
-                © {new Date().getFullYear()} Rammy's Radiance. All rights reserved.
+                123 Skincare Ave, Glow City, GL 10024 <br />©{" "}
+                {new Date().getFullYear()} Rammy's Radiance. All rights
+                reserved.
               </Text>
             </Section>
-
           </Container>
         </Body>
       </Tailwind>

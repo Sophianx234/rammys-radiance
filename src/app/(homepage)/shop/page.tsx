@@ -11,25 +11,28 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Shop All Products",
-  description: "Browse our complete collection of luxury cosmetics, premium skincare, and radiant beauty essentials.",
+  description:
+    "Browse our complete collection of luxury cosmetics, premium skincare, and radiant beauty essentials.",
   alternates: {
     canonical: "https://rammysradiance.com/shop",
   },
   openGraph: {
     title: "Shop All Products | Rammy's Radiance",
-    description: "Browse our complete collection of luxury cosmetics, premium skincare, and radiant beauty essentials.",
+    description:
+      "Browse our complete collection of luxury cosmetics, premium skincare, and radiant beauty essentials.",
     url: "https://rammysradiance.com/shop",
-  }
+  },
 };
 
-export default async function ShopPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+export default async function ShopPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const searchParams = await props.searchParams;
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] font-sans pb-24">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-16">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
-          
           {/* Sidebar */}
           <Suspense fallback={<div className="lg:w-[240px] shrink-0" />}>
             <SidebarContainer />
@@ -37,15 +40,16 @@ export default async function ShopPage(props: { searchParams: Promise<{ [key: st
 
           {/* Products Grid Area */}
           <div className="flex-1">
-            <Suspense fallback={
-              <div className="h-[40vh] flex justify-center items-center">
-                <GridLoader size={18} color="#5B7763" />
-              </div>
-            }>
+            <Suspense
+              fallback={
+                <div className="h-[40vh] flex justify-center items-center">
+                  <GridLoader size={18} color="#5B7763" />
+                </div>
+              }
+            >
               <ProductsContainer searchParams={searchParams} />
             </Suspense>
           </div>
-
         </div>
       </div>
     </main>
@@ -57,13 +61,25 @@ async function SidebarContainer() {
   return <ShopFilters categories={categories} />;
 }
 
-async function ProductsContainer({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
-  const sortBy = typeof searchParams.sortBy === 'string' ? searchParams.sortBy : "featured";
-  const selectedCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-  
+async function ProductsContainer({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const page =
+    typeof searchParams.page === "string" ? parseInt(searchParams.page) : 1;
+  const sortBy =
+    typeof searchParams.sortBy === "string" ? searchParams.sortBy : "featured";
+  const selectedCategory =
+    typeof searchParams.category === "string"
+      ? searchParams.category
+      : undefined;
+
   let minPrice, maxPrice;
-  const priceRange = typeof searchParams.priceRange === 'string' ? searchParams.priceRange : undefined;
+  const priceRange =
+    typeof searchParams.priceRange === "string"
+      ? searchParams.priceRange
+      : undefined;
   if (priceRange) {
     const [min, max] = priceRange.split("-");
     if (min) minPrice = parseFloat(min);
@@ -76,8 +92,9 @@ async function ProductsContainer({ searchParams }: { searchParams: { [key: strin
     category: selectedCategory,
     minPrice,
     maxPrice,
-    search: typeof searchParams.search === 'string' ? searchParams.search : undefined,
-    discounted: searchParams.discounted === 'true'
+    search:
+      typeof searchParams.search === "string" ? searchParams.search : undefined,
+    discounted: searchParams.discounted === "true",
   });
 
   return (
@@ -91,8 +108,10 @@ async function ProductsContainer({ searchParams }: { searchParams: { [key: strin
 
       {products.length === 0 ? (
         <div className="h-[40vh] flex flex-col justify-center items-center text-center">
-          <p className="text-[14px] text-text-muted mb-6">No products match your current filters.</p>
-          <Link 
+          <p className="text-[14px] text-text-muted mb-6">
+            No products match your current filters.
+          </p>
+          <Link
             href="/shop"
             className="bg-black text-white text-[11px] font-bold uppercase tracking-[0.2em] px-8 py-3 hover:bg-[#5B7763] transition-colors inline-block"
           >

@@ -5,6 +5,7 @@ This document outlines the security vulnerabilities originally discovered during
 ---
 
 ### ✅ 1. A01:2021 - Broken Access Control & A02:2021 - Cryptographic Failures
+
 **Severity: Critical 🔴**
 **Status: Patched**
 
@@ -17,6 +18,7 @@ Imported the `jose` library (Edge-compatible) and replaced all Base64 decoding l
 ---
 
 ### ✅ 2. A03:2021 - Injection (Stored XSS)
+
 **Severity: High 🟠**
 **Status: Patched**
 
@@ -24,12 +26,14 @@ Imported the `jose` library (Edge-compatible) and replaced all Base64 decoding l
 Admin API routes accepted raw HTML/String inputs and saved them to MongoDB. When rendered in the JSON-LD `<script type="application/ld+json">` tag via `dangerouslySetInnerHTML`, an attacker could inject `</script><script>alert('Hacked')</script>` into a product description to execute arbitrary JavaScript on victims' browsers (Stored XSS).
 
 **Remediation:**
+
 1. **Entry Point:** Integrated `isomorphic-dompurify` into `POST /api/admin/products` to strictly sanitize all text-based fields (names, descriptions, variants) before they touch the database, neutralizing malicious payloads.
 2. **Render Point:** Escaped all `<` characters in the JSON-LD stringification process (`JSON.stringify(jsonLd).replace(/</g, '\\u003c')`), structurally preventing script breakouts.
 
 ---
 
 ### ✅ 3. A07:2021 - Identification and Authentication Failures
+
 **Severity: Medium 🟡**
 **Status: Patched**
 
@@ -42,6 +46,7 @@ Integrated `@upstash/ratelimit` and `@upstash/redis` to implement a Sliding Wind
 ---
 
 ### ✅ 4. A09:2021 - Security Logging and Monitoring Failures
+
 **Severity: Low 🟢**
 **Status: Patched**
 
@@ -49,6 +54,7 @@ Integrated `@upstash/ratelimit` and `@upstash/redis` to implement a Sliding Wind
 Sensitive administrative and authentication actions were missing persistent audit trails.
 
 **Remediation:**
-Leveraged the existing Mongoose `ActivityLog` model to construct a secure audit trail. 
+Leveraged the existing Mongoose `ActivityLog` model to construct a secure audit trail.
+
 - Successful logins are automatically recorded alongside the originating IP address.
 - Administrative actions (like product creation) securely decode the admin's JWT and record the action, target item ID, and timestamps for robust forensic monitoring.

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Allows manual dark mode toggling using a .dark class on the html or body tag */
-@custom-variant dark (&:where(.dark, .dark *)); 
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* Static Brand Colors from Rammy's Radiance Logo */
@@ -12,7 +12,7 @@
   /* Semantic Colors with Automatic Dark Mode Switching */
   --color-surface: light-dark(#ffffff, #0a120d);
   --color-surface-alt: light-dark(#f3f4f6, #132218);
-  
+
   --color-text-main: light-dark(#111827, #f8fafc);
   --color-text-muted: light-dark(#4b5563, #94a3b8);
 
@@ -23,10 +23,12 @@
 
 /* Base styles to apply the semantic colors globally */
 @layer base {
-  *, ::before, ::after {
+  *,
+  ::before,
+  ::after {
     border-color: var(--color-surface-alt);
   }
-  
+
   body {
     background-color: var(--color-surface);
     color: var(--color-text-main);
@@ -42,4 +44,3 @@
     scrollbar-width: none;
   }
 }
-

@@ -1,11 +1,14 @@
 import BlogPostClient, { articles } from "./blog-post-client";
 import { Metadata } from "next";
 
-export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await props.params;
-  const article = articles.find(a => a.slug === slug) || articles[0];
+  const article = articles.find((a) => a.slug === slug) || articles[0];
 
-  const plainTextDescription = article.content.replace(/<[^>]+>/g, '').slice(0, 150) + "...";
+  const plainTextDescription =
+    article.content.replace(/<[^>]+>/g, "").slice(0, 150) + "...";
 
   return {
     title: article.title,
@@ -26,13 +29,15 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
       title: article.title,
       description: plainTextDescription,
       images: [article.image],
-    }
+    },
   };
 }
 
-export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await props.params;
-  const article = articles.find(a => a.slug === slug) || articles[0];
+  const article = articles.find((a) => a.slug === slug) || articles[0];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -42,15 +47,17 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     datePublished: new Date(article.date).toISOString(),
     author: {
       "@type": "Organization",
-      name: "Rammy's Radiance"
-    }
+      name: "Rammy's Radiance",
+    },
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       <BlogPostClient />
     </>
