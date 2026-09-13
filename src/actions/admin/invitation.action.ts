@@ -261,6 +261,10 @@ export async function acceptInviteAction(prevState: any, formData: FormData) {
 
   } catch (error: any) {
     console.error(error)
+    if (error.code === 11000) {
+      const duplicatedField = Object.keys(error.keyValue || {})[0];
+      return { success: false, error: `An account with this ${duplicatedField || "information"} already exists.` };
+    }
     return { success: false, error: "An error occurred while creating your account. Please try again." };
   }
 }
