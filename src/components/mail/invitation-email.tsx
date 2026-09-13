@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Preview, Heading, Text, Button, Section } from "react-email";
-import { EmailLayout } from "./email-layout";
+import { Preview, Heading, Text, Button, Section } from "@react-email/components";
+import EmailLayout from "./email-layout";
 
 interface InviteProps {
   role: string;

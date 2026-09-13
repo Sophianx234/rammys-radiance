@@ -1,7 +1,7 @@
 "use client";
 
 import { AcceptInviteForm } from "@/components/auth/accept-invite-form";
-import Logo from "@/components/logo";
+import Image from "next/image";
 
 import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
@@ -11,7 +11,14 @@ export default function AcceptInvitePage() {
     <div className="grid min-h-svh lg:grid-cols-2 bg-[#FAFAFA]">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <Logo />
+          <Image
+            src="/imgs/logo.jpeg"
+            alt="Rammy's Radiance Logo"
+            width={170}
+            height={36}
+            className="object-contain"
+            priority
+          />
         </div>
         
         <div className="flex flex-1 items-center justify-center">

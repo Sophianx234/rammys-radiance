@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/connectDB";
 import { Invitation } from "@/models/Invitation";
 import { User } from "@/models/User";
 import crypto from "crypto";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
