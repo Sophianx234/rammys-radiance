@@ -409,7 +409,7 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="w-48 rounded-lg shadow-sm border-zinc-200/60 font-sans p-1"
+                        className="w-48 rounded-lg shadow-sm border-zinc-200/60 font-sans p-1 bg-white"
                       >
                         {member.accountStatus === "Pending_Invite" ? (
                           <>
@@ -535,7 +535,7 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
           setConfirmDialog((prev) => ({ ...prev, isOpen: open }))
         }
       >
-        <AlertDialogContent className="p-0 overflow-hidden">
+        <AlertDialogContent className="p-0 overflow-hidden bg-white rounded-lg">
           <div className="p-6 pb-4">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-xl font-bold text-zinc-900">
@@ -824,5 +824,6 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
     </div>
   );
 }
+
 
 
