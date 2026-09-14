@@ -110,10 +110,10 @@ async function StatsSection() {
   return (
     <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
       {[
-        { title: "Total Revenue", icon: DollarSign, value: `₵${stats.totalRevenue}`, desc: stats.descriptions?.revenue },
-        { title: "Orders", icon: ShoppingBag, value: stats.totalOrders, desc: stats.descriptions?.orders },
-        { title: "Active Customers", icon: Users, value: stats.totalCustomers, desc: stats.descriptions?.customers },
-        { title: "Low Stock Items", icon: Package, value: stats.lowStockCount, desc: stats.descriptions?.stock }
+        { title: "Total Revenue", icon: DollarSign, value: `₵${stats.totalRevenue.toLocaleString()}`, desc: stats.descriptions?.revenue },
+        { title: "Orders", icon: ShoppingBag, value: stats.totalOrders.toLocaleString(), desc: stats.descriptions?.orders },
+        { title: "Active Customers", icon: Users, value: stats.totalCustomers.toLocaleString(), desc: stats.descriptions?.customers },
+        { title: "Low Stock Items", icon: Package, value: stats.lowStockCount.toLocaleString(), desc: stats.descriptions?.stock }
       ].map((stat, i) => (
         <div key={i} className="bg-white border border-border/40 p-6 flex flex-col justify-between h-full transition-all duration-300 hover:border-[#5B7763]/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] group cursor-default relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#5B7763]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
