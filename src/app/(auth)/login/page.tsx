@@ -331,7 +331,7 @@ export default function LoginPage() {
                   {error}
                 </p>
               )}
-<div className="my-2">
+<div className="my-2 flex items-center justify-center">
     <button
                   type="button"
                   onClick={handleResend}
