@@ -6,6 +6,8 @@ import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary, deleteFolderFromCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
 
+import { logActivity } from "@/lib/logger";
+
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
@@ -48,6 +50,8 @@ export async function DELETE(
       } catch (e) {
         console.warn("Failed to delete product folder from Cloudinary:", e);
       }
+      
+      await logActivity("Delete Product", `Deleted product: ${product.name}`, id);
     }
 
     await Product.findByIdAndDelete(id);
@@ -186,6 +190,8 @@ export async function PUT(
       },
       { new: true }
     );
+    
+    await logActivity("Update Product", `Updated product details for: ${name}`, id);
 
     revalidatePath("/");
     revalidatePath("/products");

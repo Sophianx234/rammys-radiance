@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/connectDB";
 import { User } from "@/models/User";
 import { encryptPassword, verifyPassword } from "@/lib/bcrypt";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
+import { logActivity } from "@/lib/logger";
 
 export async function updateProfileAction(form: FormData) {
   try {
@@ -36,6 +37,8 @@ export async function updateProfileAction(form: FormData) {
 
     await user.save();
     
+    await logActivity("Update Profile", `Updated profile information for user: ${user.email}`, userId);
+    
     // Return safe user object
     const safeUser = user.toObject();
     delete safeUser.password;
@@ -63,8 +66,11 @@ export async function updateEmailAction(form: FormData) {
       return { success: false, message: "Unauthorized" };
     }
 
+    const oldEmail = user.email;
     user.email = email;
     await user.save();
+    
+    await logActivity("Update Email", `Updated email from ${oldEmail} to ${email}`, userId);
 
     // Return safe user object
     const safeUser = user.toObject();
@@ -101,6 +107,8 @@ export async function updatePasswordAction(form: FormData) {
 
     user.password = await encryptPassword(newPass);
     await user.save();
+    
+    await logActivity("Update Password", `Updated password for user: ${user.email}`, userId);
 
     return { success: true, message: "Password updated successfully" };
   } catch (err: any) {

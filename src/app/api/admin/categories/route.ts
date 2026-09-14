@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/connectDB";
 import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
 import { connect } from "http2";
+import { logActivity } from "@/lib/logger";
 
 
 export async function GET() {
@@ -66,6 +67,9 @@ export async function POST(req: NextRequest) {
     // ✅ Save category
     const newCategory = new Category({ name, slug, description, image });
     await newCategory.save();
+    
+    await logActivity("Create Category", `Created category: ${name}`, newCategory._id.toString());
+    
     revalidatePath("/");
     revalidatePath("/products");
     revalidatePath("/admin/products");

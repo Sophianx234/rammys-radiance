@@ -75,7 +75,6 @@ export default function AuditClient({ initialLogs, pagination, currentSearch, cu
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
         <div>
           <h2 className="text-[18px] uppercase tracking-widest font-bold text-[#222222] flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-[#5B7763]" />
             Audit Logs
           </h2>
           <p className="text-[12px] text-text-muted mt-1 uppercase tracking-wider font-medium">

@@ -17,6 +17,8 @@ import jwt from "jsonwebtoken";
 import { signToken } from "@/lib/jwtConfig";
 import { render } from "@react-email/render";
 
+import { logActivity } from "@/lib/logger";
+
 const jwtSecret = process.env.JWT_SECRET as string;
 
 // Helper to get session from cookie
@@ -95,6 +97,7 @@ export async function inviteTeamMemberAction(rawEmail: string, rawRole: string) 
       return { success: false, error: `Email error: ${errorMessage}` };
     }
     
+    await logActivity("Team Invitation", `Invited ${email} as ${role}`);
     revalidatePath("/admin/manage/team"); 
     return { success: true, message: `Invitation sent to ${email}` };
   } catch (error: any) {
@@ -133,6 +136,7 @@ export async function updateTeamMemberRole(rawUserId: string, rawNewRole: string
       html: emailHtml
     });
     
+    await logActivity("Role Update", `Updated role for ${user.email} to ${newRole}`, user._id.toString());
     revalidatePath("/admin/manage/team");
     
     if (!mailResult.success) {
@@ -178,6 +182,7 @@ export async function toggleTeamAccountStatus(rawUserId: string, currentIsSuspen
       html: emailHtml
     });
     
+    await logActivity("Account Status Update", `Account ${user.email} was ${newIsSuspended ? 'suspended' : 'reactivated'}`, user._id.toString());
     revalidatePath("/admin/manage/team");
     
     if (!mailResult.success) {
@@ -198,6 +203,10 @@ export async function cancelInvitation(rawInvitationId: string) {
     const { invitationId } = cancelInviteSchema.parse({ invitationId: rawInvitationId });
 
     await connectToDatabase();
+    const inv = await Invitation.findById(invitationId);
+    if (inv) {
+      await logActivity("Invitation Cancelled", `Cancelled invitation for ${inv.email}`);
+    }
     await Invitation.findByIdAndDelete(invitationId);
     
     revalidatePath("/admin/manage/team");
