@@ -624,8 +624,8 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
                           Manager
                         </span>
                         <span className="text-xs text-zinc-500 leading-relaxed">
-                          Can view tenants, approve KYC, and manage smart locks.
-                          Cannot view overall financials.
+                          Can view and manage orders, update product inventory, and handle customer support.
+                          Cannot view overall financials or system settings.
                         </span>
                       </div>
                       <div
@@ -657,8 +657,8 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
                           Administrator
                         </span>
                         <span className="text-xs text-zinc-500 leading-relaxed">
-                          Full system access including financial ledger, global
-                          settings, and role management.
+                          Full system access including financial reports, global store
+                          settings, team management, and inventory control.
                         </span>
                       </div>
                       <div
@@ -743,8 +743,8 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
                           Manager
                         </span>
                         <span className="text-xs text-zinc-500 leading-relaxed">
-                          Can view tenants, approve KYC, and manage smart locks.
-                          Cannot view overall financials.
+                          Can view and manage orders, update product inventory, and handle customer support.
+                          Cannot view overall financials or system settings.
                         </span>
                       </div>
                       <div
@@ -776,8 +776,8 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
                           Administrator
                         </span>
                         <span className="text-xs text-zinc-500 leading-relaxed">
-                          Full system access including financial ledger, global
-                          settings, and role management.
+                          Full system access including financial reports, global store
+                          settings, team management, and inventory control.
                         </span>
                       </div>
                       <div

@@ -64,14 +64,17 @@ export const getRecentOrders = cache(async (status: string, search: string) => {
   const orders = await Order.find(query).sort({ createdAt: -1 }).limit(20).populate("user", "name email profile");
   return orders.map((order: any) => {
     const user = order.user;
+    const customerName = user?.name || order.customer?.name || "Unknown User";
+    const customerEmail = user?.email || order.customer?.email || "N/A";
+
     let initials = "UN";
-    if (user?.name) {
-      initials = user.name.split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase();
+    if (customerName && customerName !== "Unknown User") {
+      initials = customerName.split(" ").filter(Boolean).map((p: string) => p[0]).join("").slice(0, 2).toUpperCase();
     }
     return {
       _id: order._id.toString(),
-      customerName: user?.name || "Unknown User",
-      customerEmail: user?.email || "N/A",
+      customerName,
+      customerEmail,
       avatar: user?.profile || null,
       initials,
       status: order.orderStatus,
