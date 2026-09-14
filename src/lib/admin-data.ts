@@ -230,8 +230,8 @@ export const getAllAuditLogs = cache(async ({
 
   const query: any = {};
   
-  if (actionTypes.length > 0) {
-    query.action = { $in: actionTypes };
+  if (actionTypes.length > 0 && !actionTypes.includes("all")) {
+    query.action = { $in: actionTypes.map((type: string) => new RegExp(type, 'i')) };
   }
 
   if (search) {

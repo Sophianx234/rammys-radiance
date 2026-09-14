@@ -62,10 +62,11 @@ export default function AuditClient({ initialLogs, pagination, currentSearch, cu
   };
 
   const getActionColor = (type: string) => {
-    if (type.includes("DELETE") || type.includes("REMOVE")) return "bg-red-50 text-red-600 border-red-200";
-    if (type.includes("UPDATE") || type.includes("EDIT")) return "bg-orange-50 text-orange-600 border-orange-200";
-    if (type.includes("CREATE") || type.includes("ADD")) return "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20";
-    if (type.includes("AUTH") || type.includes("LOGIN")) return "bg-blue-50 text-blue-600 border-blue-200";
+    const t = type.toUpperCase();
+    if (t.includes("DELETE") || t.includes("REMOVE") || t.includes("CANCEL")) return "bg-red-50 text-red-600 border-red-200";
+    if (t.includes("UPDATE") || t.includes("EDIT") || t.includes("STATUS")) return "bg-orange-50 text-orange-600 border-orange-200";
+    if (t.includes("CREATE") || t.includes("ADD") || t.includes("INVIT")) return "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20";
+    if (t.includes("AUTH") || t.includes("LOGIN") || t.includes("PASSWORD")) return "bg-blue-50 text-blue-600 border-blue-200";
     return "bg-gray-50 text-gray-600 border-gray-200";
   };
 
