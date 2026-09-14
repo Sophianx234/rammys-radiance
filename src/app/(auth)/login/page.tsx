@@ -331,7 +331,16 @@ export default function LoginPage() {
                   {error}
                 </p>
               )}
-
+<div className="my-2">
+    <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendTimer > 0 || loading}
+                  className="text-[11px] font-bold uppercase tracking-widest text-text-main disabled:text-text-muted transition-colors"
+                >
+                  {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : "Resend Code"}
+                </button>
+</div>
               <Button
                 type="submit"
                 disabled={loading || otp.length < 6}
@@ -341,14 +350,7 @@ export default function LoginPage() {
               </Button>
 
               <div className="flex flex-col gap-4 items-center mt-2">
-                <button
-                  type="button"
-                  onClick={handleResend}
-                  disabled={resendTimer > 0 || loading}
-                  className="text-[11px] font-bold uppercase tracking-widest text-text-main disabled:text-text-muted transition-colors"
-                >
-                  {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : "Resend Code"}
-                </button>
+              
                 <button
                   type="button"
                   onClick={() => setStep(1)}
