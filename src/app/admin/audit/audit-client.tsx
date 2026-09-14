@@ -177,7 +177,7 @@ export default function AuditClient({ initialLogs, pagination, currentSearch, cu
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getActionColor(log.action || "UNKNOWN")}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border ${getActionColor(log.action || "UNKNOWN")}`}>
                         {(log.action || "UNKNOWN").replace(/_/g, " ")}
                       </span>
                     </TableCell>
