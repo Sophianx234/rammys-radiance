@@ -12,21 +12,23 @@ const slides = [
    title: "Your Daily\nSkincare Ritual",
    description: "Elevate your routine with our award-winning\nhydration collection.",
    image: "/imgs/products/prod-5.jpeg",
- },
- 
+   imagePosition: "right",
+  },
   {
     id: 5,
     subtitle: "BEST SELLERS",
     title: "Your Daily\nSkincare Ritual",
     description: "Elevate your routine with our award-winning\nhydration collection.",
     image: "/imgs/products/prod-4.jpeg",
+    imagePosition: "right",
   }, 
-   {
+  {
     id: 1,
     subtitle: "ESSENTIAL ITEMS",
     title: "Beauty Inspired\nby Real Life",
     description: "Made using clean, non-toxic ingredients, our products\nare designed for everyone.",
     image: "/imgs/products/prod-1.jpeg",
+    imagePosition: " right",
   },
   {
     id: 2,
@@ -34,6 +36,7 @@ const slides = [
     title: "Glow From\nWithin",
     description: "Discover our new radiant serums, crafted with\nnature's finest botanicals.",
     image: "/imgs/products/prod-3.jpeg",
+    imagePosition: "right",
   },
   {
     id: 3,
@@ -41,6 +44,7 @@ const slides = [
     title: "Your Daily\nSkincare Ritual",
     description: "Elevate your routine with our award-winning\nhydration collection.",
     image: "/imgs/products/prod-2.jpeg",
+    imagePosition: "right",
   }
 ];
 
@@ -53,17 +57,12 @@ export default function Hero() {
     setPage([page + newDirection, newDirection]);
   };
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      paginate(1);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [page]);
+  // Autoplay is handled by the motion.div progress bar below
 
   const slideVariants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? "15%" : "-15%",
-      scale: 1.05,
+      x: direction > 0 ? "5%" : "-5%",
+      scale: 1.02,
       opacity: 0,
     }),
     center: {
@@ -72,40 +71,43 @@ export default function Hero() {
       scale: 1,
       opacity: 1,
       transition: { 
-        x: { type: "spring", stiffness: 70, damping: 20, mass: 1 },
-        opacity: { duration: 0.8, ease: "easeInOut" },
-        scale: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
+        x: { type: "spring", duration: 0.7, bounce: 0 },
+        opacity: { duration: 0.5, ease: "easeOut" },
+        scale: { duration: 0.7, ease: [0.23, 1, 0.32, 1] } 
       }
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      x: direction < 0 ? "15%" : "-15%",
-      scale: 0.95,
+      x: direction < 0 ? "5%" : "-5%",
+      scale: 0.98,
       opacity: 0,
       transition: { 
-        x: { type: "spring", stiffness: 70, damping: 20, mass: 1 },
-        opacity: { duration: 0.8, ease: "easeInOut" },
-        scale: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+        x: { type: "spring", duration: 0.7, bounce: 0 },
+        opacity: { duration: 0.4, ease: "easeOut" },
+        scale: { duration: 0.7, ease: [0.23, 1, 0.32, 1] }
       }
     })
   };
 
   const textVariants = {
-    hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
+    hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
     visible: (custom: number) => ({
       opacity: 1,
       y: 0,
       filter: "blur(0px)",
       transition: { 
-        delay: custom * 0.15 + 0.3, 
-        duration: 0.9, 
-        ease: [0.16, 1, 0.3, 1] 
+        delay: custom * 0.08 + 0.2, 
+        duration: 0.5, 
+        ease: [0.23, 1, 0.32, 1] // Strong ease-out
       }
     })
   };
 
   return (
-    <section className={`relative w-full h-[calc(100dvh-120px)] min-h-[500px] overflow-hidden bg-[#F4F4F4]`}>
+    <section 
+      className="relative w-full  overflow-hidden bg-[#F4F4F4]"
+      style={{ height: "calc(100dvh - var(--header-height, 120px))" }}
+    >
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={page}
@@ -124,7 +126,8 @@ export default function Hero() {
               fill
               priority={index === 0}
               quality={90}
-              className={`object-cover max-lg:object-center ${index > 2 ? 'md:!-[object-position:100%_top]' : 'md:![object-position:100%_bottom]'}`}
+              className="object-contain  max-lg:object-center md:object-[var(--hero-img-pos)]"
+              style={{ "--hero-img-pos": slides[index].imagePosition } as React.CSSProperties}
             />
             {/* Subtle Gradient to ensure text readability against any image */}
             <div className="absolute inset-0 bg-gradient-to-r from-surface/90 via-surface/50 to-transparent md:w-2/3" />
@@ -171,7 +174,7 @@ export default function Hero() {
               >
                 <Link
                   href="/shop"
-                  className="inline-flex items-center justify-center bg-text-main text-surface px-10 py-4 font-semibold text-sm transition-all duration-300 hover:bg-text-muted"
+                  className="inline-flex items-center justify-center bg-text-main text-surface px-10 py-4 font-semibold text-sm transition-[background-color,transform] duration-200 ease-out hover:bg-text-muted active:scale-[0.97]"
                 >
                   Shop Now
                 </Link>
@@ -182,7 +185,7 @@ export default function Hero() {
       </AnimatePresence>
 
       {/* Carousel Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center space-x-3 z-20">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex justify-center items-center gap-2 z-20">
         {slides.map((_, idx) => {
           const isActive = index === idx;
           return (
@@ -192,13 +195,22 @@ export default function Hero() {
                 const newDirection = idx > index ? 1 : -1;
                 setPage([page + (idx - index), newDirection]);
               }}
-              className={`rounded-full transition-all duration-300 flex items-center justify-center ${
-                isActive
-                  ? "w-[14px] h-[14px] border border-[#5B7763] bg-transparent"
-                  : "w-[6px] h-[6px] bg-text-main hover:scale-125"
-              }`}
               aria-label={`Go to slide ${idx + 1}`}
-            />
+              className={`relative h-2 rounded-full overflow-hidden transition-all duration-100 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+                isActive ? "w-10 sm:w-14 bg-black/10" : "w-2 bg-black/15 hover:bg-black/25"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  key={page} // Reset animation when slide changes
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 6, ease: "linear" }}
+                  onAnimationComplete={() => paginate(1)}
+                  className="absolute top-0 left-0 h-full bg-[#5B7763] rounded-full"
+                />
+              )}
+            </button>
           );
         })}
       </div>

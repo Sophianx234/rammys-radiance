@@ -92,11 +92,11 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
             <div className="lg:col-span-8">
               <div className="flex items-center justify-between pb-4 border-b border-black mb-6">
                 <h2 className="text-[13px] font-bold uppercase tracking-[0.2em] text-[#222222]">
-                  Products ({cart.reduce((acc, item: any) => acc + (item.quantity || 1), 0)})
+                  {cart.reduce((acc, item: any) => acc + (item.quantity || 1), 0)} Products 
                 </h2>
                 <button
                   onClick={handleClearCart}
-                  className="text-[11px] font-bold uppercase tracking-widest text-text-muted hover:text-black transition-colors"
+                  className="text-[10px] font-bold uppercase tracking-widest text-text-muted hover:text-black transition-colors"
                 >
                   Clear Bag
                 </button>
@@ -135,7 +135,7 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
                         </div>
                         <button
                           onClick={() => handleRemoveCartItem(item._id)}
-                          className="p-2 text-text-muted hover:text-red-500 transition-colors bg-secondary/20 hover:bg-red-50 rounded-full"
+                          className="p-2 text-text-muted hover:bg-gray-100 transition-colors bg-secondary/20  rounded-full"
                           aria-label="Remove item"
                         >
                           <X size={16} />
@@ -176,7 +176,7 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
 
                         <div className="text-right">
                           <p className="text-[15px] font-bold text-[#222222]">
-                            ₵{(item.price * (item.quantity || 1)).toLocaleString()}
+                            GH₵{(item.price * (item.quantity || 1)).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -196,17 +196,17 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
                 <div className="space-y-4 mb-6 text-[14px]">
                   <div className="flex justify-between">
                     <span className="text-text-muted">Subtotal</span>
-                    <span className="font-medium text-[#222222]">₵{subtotal.toLocaleString()}</span>
+                    <span className="font-medium text-[#222222]">GH₵{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-muted">Estimated Delivery</span>
-                    <span className="font-medium text-[#222222]">₵{delivery.toLocaleString()}</span>
+                    <span className="font-medium text-[#222222]">GH₵{delivery.toLocaleString()}</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center py-5 border-t border-border/60 mb-8">
                   <span className="text-[14px] font-bold uppercase tracking-wider text-[#222222]">Total</span>
-                  <span className="text-xl font-bold text-[#222222]">₵{finalTotal.toLocaleString()}</span>
+                  <span className="text-xl font-bold text-[#222222]">GH₵{finalTotal.toLocaleString()}</span>
                 </div>
 
                 <Link
@@ -238,19 +238,17 @@ export function CartClient({ suggestedProducts }: { suggestedProducts: any[] }) 
               <h2 className="text-2xl md:text-3xl font-bold text-[#222222] mb-2 tracking-tight">
                 Complete Your Routine
               </h2>
-              <p className="text-text-muted text-sm md:text-base">
-                Pairs perfectly with your current selection
-              </p>
+              
             </div>
             <Link 
               href="/shop" 
-              className="hidden md:inline-block text-[11px] font-bold uppercase tracking-[0.2em] text-[#222222] hover:text-[#5B7763] transition-colors border-b border-[#222222] hover:border-[#5B7763] pb-1"
+              className="hidden md:inline-block text-[11px] font-bold uppercase tracking-[0.2em] text-[#5B7763] transition-colors  "
             >
               View All
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8">
             {suggestedProducts.map((product: any) => (
               <ProductCard key={product._id} product={product} />
             ))}

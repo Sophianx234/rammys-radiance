@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                     <div className="flex-1 flex flex-col justify-center">
                       <h4 className="text-[12px] font-bold text-[#222222] leading-tight mb-1">{item.name}</h4>
                       <p className="text-[12px] text-text-muted mb-2">QTY: {item.quantity}</p>
-                      <p className="text-[12px] font-semibold text-[#5B7763]">₵{(item.price * item.quantity).toLocaleString()}</p>
+                      <p className="text-[12px] font-semibold ">GH₵{ (item.price * item.quantity).toLocaleString() }</p>
                     </div>
                   </div>
                 ))}
@@ -431,14 +431,14 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-[13px]">
                   <span className="text-text-muted">Estimated Delivery</span>
-                  <span className="font-medium text-[#222222]">{delivery === 0 ? "Free" : `₵${delivery.toLocaleString()}`}</span>
+                  <span className="font-medium text-[#222222]">{delivery === 0 ? "Free" : `GH₵${delivery.toLocaleString()}`}</span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center py-6">
                 <span className="text-[14px] font-bold text-[#222222] uppercase tracking-wider">Total</span>
-                <span className="text-xl font-sans font-bold text-[#5B7763]">
-                  ₵{finalTotal.toLocaleString()}
+                <span className="text-xl font-sans font-bold ">
+                  GH₵{finalTotal.toLocaleString()}
                 </span>
               </div>
 

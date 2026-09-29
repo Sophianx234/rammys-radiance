@@ -1,5 +1,6 @@
 import { ProductCard } from "@/components/product-card";
 import { getProducts } from "@/lib/data";
+import Link from "next/link";
 
 export default async function Bestsellers() {
   const { products } = await getProducts({ sortBy: "rating", limit: 4 });
@@ -22,11 +23,20 @@ export default async function Bestsellers() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+        <div className="flex flex-wrap justify-center gap-6 md:gap-10 max-w-6xl mx-auto">
           {products.map((product: any) => (
-            <ProductCard product={product} key={product._id} />
+            <div key={product._id} className="w-[calc(50%-12px)] md:w-[calc(33.333%-27px)] lg:w-[calc(25%-30px)]">
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
+
+        <div className="flex justify-center ">
+        
+        <Link href='/shop' className="mx-auto inline-block mt-4 bg-text-main text-surface px-10 py-4 font-semibold text-sm transition-[background-color,transform] duration-200 ease-out hover:bg-text-muted active:scale-[0.97]">
+                  See All Products
+                </Link>
+                </div>
       </div>
     </section>
   );

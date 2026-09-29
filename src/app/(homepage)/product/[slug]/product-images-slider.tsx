@@ -37,7 +37,7 @@ export default function ProductImageSlider({ images }: { images: string[] }) {
             <motion.img
               key={index}
               src={images[index]}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-contain scale-95"
               initial={{ opacity: 0, scale: 1.03 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}

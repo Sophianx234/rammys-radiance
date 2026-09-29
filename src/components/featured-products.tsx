@@ -7,6 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { getProducts } from "@/lib/data";
+import Link from "next/link";
 
 export default async function FeaturedProducts() {
   const { products } = await getProducts({ limit: 8 });
@@ -44,12 +45,17 @@ export default async function FeaturedProducts() {
             </CarouselContent>
             
             <div className="hidden sm:block">
-              <CarouselPrevious className="-left-12 h-10 w-10 border-border/60 text-text-muted hover:text-text-main hover:border-text-main transition-colors bg-surface" />
-              <CarouselNext className="-right-12 h-10 w-10 border-border/60 text-text-muted hover:text-text-main hover:border-text-main transition-colors bg-surface" />
+              <CarouselPrevious className="-left-12 top-40 h-10 w-10 border-border/60 text-text-muted hover:text-text-main hover:border-text-main transition-colors bg-surface" />
+              <CarouselNext className="-right-12 top-40 h-10 w-10 border-border/60 text-text-muted hover:text-text-main hover:border-text-main transition-colors bg-surface" />
             </div>
           </Carousel>
         </div>
+        <div className="flex justify-center ">
 
+<Link href='/shop' className="mx-auto inline-block mt-4 bg-text-main text-surface px-10 py-4 font-semibold text-sm transition-[background-color,transform] duration-200 ease-out hover:bg-text-muted active:scale-[0.97]">
+          See All Products
+        </Link>
+        </div>
       </div>
     </section>
   );

@@ -92,9 +92,12 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group flex flex-col w-full relative">
       {/* Image Container */}
-      <div className="relative aspect-[4/5] bg-[#F8F9FA] mb-5 overflow-hidden flex items-center justify-center">
+      <div className="relative aspect-[4/5] bg-[#F8F9FA] mb-3 overflow-hidden flex items-center justify-center">
         {product.discountBadge && (
-          <div className="absolute top-3 left-3 z-20 bg-[#5B7763] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+          <div 
+            className="absolute top-3 left-3 z-20 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm"
+            style={{ backgroundColor: product.badgeColor || '#5B7763' }}
+          >
             {product.discountBadge}
           </div>
         )}
@@ -105,7 +108,7 @@ export function ProductCard({ product }: ProductCardProps) {
           className="absolute top-3 right-3 z-30 p-2 bg-white/80 backdrop-blur rounded-full hover:bg-white transition-colors"
         >
           <Heart
-            size={16}
+            size={14}
             className={`transition-colors ${isFavorite ? "fill-[#5B7763] text-[#5B7763]" : "text-gray-500 hover:text-[#5B7763]"}`}
           />
         </button>
@@ -124,8 +127,8 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Details - Wrapped in its own Link */}
-      <Link href={`/product/${product.slug || product._id}`} className="flex flex-col items-center text-center space-y-1.5 cursor-pointer z-10 block">
-        <div className="flex items-center justify-center space-x-1.5 text-xs font-semibold text-text-main">
+      <Link href={`/product/${product.slug || product._id}`} className="flex flex-col items-center text-center space-y-1 cursor-pointer z-10 block">
+        <div className="flex items-center justify-center space-x-1.5 text-[11px] font-semibold text-text-main">
           {discountPriceDisplay ? (
             <>
               <span className="line-through text-text-muted font-normal">{priceDisplay}</span>
@@ -136,7 +139,7 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         
-        <div className="text-sm font-semibold text-text-main group-hover:text-[#5B7763] transition-colors">
+        <div className="text-xs font-semibold text-text-main group-hover:text-[#5B7763] transition-colors">
           {product.name}
         </div>
         
@@ -145,18 +148,18 @@ export function ProductCard({ product }: ProductCardProps) {
           {[...Array(5)].map((_, i) => (
             <svg
               key={i}
-              className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? "text-[#5B7763]" : "text-gray-200"}`}
+              className={`w-2.5 h-2.5 ${i < Math.floor(product.rating || 5) ? "text-[#5B7763]" : "text-gray-200"}`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
           ))}
-          <span className="text-[10px] text-text-muted ml-1 font-medium">({product.reviewsCount || 0})</span>
+          <span className="text-[9px] text-text-muted ml-1 font-medium">({product.reviewsCount || 0})</span>
         </div>
 
         {/* Stock Quantity */}
-        <div className="text-[11px] font-bold tracking-wider  mt-1">
+        <div className="text-[10px] font-bold tracking-wider mt-1">
           {product.stock > 0 ? (
             <span className="text-[#5B7763]">{product.stock} in stock</span>
           ) : (

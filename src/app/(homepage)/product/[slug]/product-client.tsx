@@ -143,7 +143,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
   if (!product) return null;
 
   return (
-    <main className="bg-white min-h-screen pb-24">
+    <main className="bg-white   pb-24">
       {/* Breadcrumb */}
       <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-12 py-8">
         <div className="flex items-center gap-3 text-[11px] font-bold tracking-[0.2em] uppercase text-text-muted">
@@ -155,35 +155,36 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
         </div>
       </div>
 
+        {/* Product Details section */}
       <section className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Product Details Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
           {/* Left: Image Slider (Sticky) */}
           <div className="relative lg:col-span-5 xl:col-span-5">
-            <div className="lg:sticky lg:top-[120px] bg-surface aspect-[4/5] lg:max-h-[600px] flex items-center justify-center overflow-hidden w-full max-w-xl mx-auto lg:mx-0">
+            <div className="lg:sticky lg:top-[120px] bg-surface aspect-[5/5] lg:max-h-[590px] flex items-center justify-center overflow-hidden w-full max-w-xl mx-auto lg:mx-0">
               <ProductImageSlider images={product.images || []} />
             </div>
           </div>
 
           {/* Right: Details */}
-          <div className="flex flex-col pt-4 lg:pt-6 lg:col-span-7 xl:col-span-7">
+          <div className="flex flex-col pt-4 lg:pt-6 lg:col-span-6 ">
             <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-text-muted mb-3">
               {product.category?.name || "Skincare"}
             </p>
-            <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-text-main mb-4 leading-tight">
+            <h1 className="text-2xl md:text-3xl font-normal tracking-tight text-text-main mb-4 leading-tight">
               {product.name}
             </h1>
 
             {/* Price & Rating */}
             <div className="flex items-center justify-between mb-6 pb-6 border-b border-border/40">
               <div className="flex items-center gap-4">
-                <span className="text-2xl font-medium text-text-main">
-                  ₵{typeof product.price === 'number' ? product.price.toLocaleString() : product.price}
+                <span className="text-xl md:text-2xl font-extrabold  text-text-main">
+                  GH₵{typeof product.price === 'number' ? product.price.toLocaleString() : product.price}
                 </span>
                 <span className={`text-[11px] font-bold uppercase tracking-widest ${product.inStock !== false && (product.stock === undefined || product.stock > 0) ? "text-[#5B7763]" : "text-red-500"}`}>
                   {product.inStock !== false 
-                    ? `In Stock ${product.stock !== undefined ? `(${product.stock} items left)` : ''}`
+                    ? `${product.stock !== undefined ? `${product.stock} items left` : ''}`
                     : "Out of Stock"}
                 </span>
               </div>
@@ -204,78 +205,91 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
               {product.description || "Experience a new era of effortless confidence with our clinically proven, nature-inspired formulas. Perfectly balanced to rejuvenate your natural glow."}
             </p>
 
-            {/* Add to Cart Actions */}
-            <div className="flex flex-col gap-5 mb-10">
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                {/* Quantity Selector */}
-                <div className="flex items-center border border-border/60 h-14 w-full sm:w-36 shrink-0">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-full flex items-center justify-center text-text-muted hover:text-black transition-colors">
-                    <Minus size={14} />
-                  </button>
-                  <span className="flex-1 text-center text-[13px] font-semibold">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(Math.min(product.stock || 1, quantity + 1))} 
-                    disabled={quantity >= (product.stock || 1)}
-                    className="w-12 h-full flex items-center justify-center text-text-muted hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-                
-                {/* Add to Cart Button */}
-                <Button 
-                  onClick={handleAddToCart} 
-                  disabled={product.inStock === false || (product.stock !== undefined && product.stock < 1)} 
-                  className="flex-1 w-full h-14 rounded-none bg-black hover:bg-black/80 text-white text-[12px] font-bold uppercase tracking-[0.2em] transition-colors disabled:opacity-50"
-                >
-                  {addedToCart ? "Added To Cart" : "Add To Bag"}
-                </Button>
-              </div>
-
-              {/* Wishlist */}
-              
-              <div className="flex items-center gap-4">
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 mb-8">
+              {/* Quantity Selector */}
+              <div className="flex items-center border border-border/60 h-12 w-full sm:w-32 shrink-0">
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-full flex items-center justify-center text-text-muted hover:text-black transition-colors">
+                  <Minus size={14} />
+                </button>
+                <span className="flex-1 text-center text-[13px] font-semibold">{quantity}</span>
                 <button 
-                  onClick={handleWishlist} 
-                  disabled={!user}
-                  className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-text-muted hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={!user ? "Please login to save to wishlist" : ""}
+                  onClick={() => setQuantity(Math.min(product.stock || 1, quantity + 1))} 
+                  disabled={quantity >= (product.stock || 1)}
+                  className="w-10 h-full flex items-center justify-center text-text-muted hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  <Heart size={14} className={isFavorite ? "fill-[#5B7763] text-[#5B7763]" : ""} />
-                  {isFavorite ? "Saved to Wishlist" : (!user ? "Login to Save" : "Save to Wishlist")}
+                  <Plus size={14} />
                 </button>
               </div>
+              
+              {/* Add to Cart Button */}
+              <Button 
+                onClick={handleAddToCart} 
+                disabled={product.inStock === false || (product.stock !== undefined && product.stock < 1)} 
+                className="flex-1 w-full h-12 rounded-none bg-black hover:bg-black/80 text-white text-[11px] font-bold uppercase tracking-[0.2em] transition-colors disabled:opacity-50"
+              >
+                {addedToCart ? "Added To Cart" : "Add To Bag"}
+              </Button>
+
+              {/* Wishlist Button */}
+              <button 
+                onClick={handleWishlist} 
+                disabled={!user}
+                className={`flex items-center justify-center h-12 w-full sm:w-12 shrink-0 border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isFavorite ? "border-[#5B7763] bg-[#5B7763]/10" : "border-border/60 hover:border-black"}`}
+                title={!user ? "Please login to save to wishlist" : (isFavorite ? "Saved to Wishlist" : "Save to Wishlist")}
+              >
+                <Heart size={16} className={isFavorite ? "fill-[#5B7763] text-[#5B7763]" : "text-text-muted"} />
+              </button>
             </div>
 
             {/* Accordions (Details, Features) */}
-            <div className="border-t border-border/40">
-              <div className="py-7 border-b border-border/40">
-                <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] mb-4 text-text-main">Key Features</h3>
-                <ul className="space-y-3">
-                  {(product.features && product.features.length > 0) ? product.features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start gap-4">
-                      <span className="w-1 h-1 rounded-full bg-black mt-2.5 shrink-0" />
-                      <span className="text-[14px] text-text-muted leading-relaxed">{feature}</span>
-                    </li>
-                  )) : (
-                    <li className="flex items-start gap-4">
-                      <span className="w-1 h-1 rounded-full bg-black mt-2.5 shrink-0" />
-                      <span className="text-[14px] text-text-muted leading-relaxed">Formulated for all skin types with highly active botanicals.</span>
-                    </li>
-                  )}
-                </ul>
-              </div>
-              <div className="py-7 border-b border-border/40">
-                <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] mb-4 text-text-main">Shipping & Returns</h3>
-                <p className="text-[14px] text-text-muted leading-relaxed">
-                  Complimentary shipping on all U.S. orders over $50. Enjoy a 30-day money-back guarantee on all products if you're not fully satisfied with your radiance.
-                </p>
-              </div>
+            <div className="border-t border-border/40 mt-6">
+              <details className="group border-b border-border/40" open>
+                <summary className="flex justify-between items-center py-5 cursor-pointer list-none">
+                  <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-text-main">Key Features</h3>
+                  <span className="transition-transform group-open:rotate-180">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="pb-6">
+                  <ul className="space-y-3">
+                    {(product.features && product.features.length > 0) ? product.features.map((feature: string, index: number) => (
+                      <li key={index} className="flex items-start gap-4">
+                        <span className="w-1 h-1 rounded-full bg-black mt-2.5 shrink-0" />
+                        <span className="text-[14px] text-text-muted leading-relaxed">{feature}</span>
+                      </li>
+                    )) : (
+                      <li className="flex items-start gap-4">
+                        <span className="w-1 h-1 rounded-full bg-black mt-2.5 shrink-0" />
+                        <span className="text-[14px] text-text-muted leading-relaxed">Formulated for all skin types with highly active botanicals.</span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </details>
+
+              <details className="group border-b border-border/40">
+                <summary className="flex justify-between items-center py-5 cursor-pointer list-none">
+                  <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-text-main">Shipping & Returns</h3>
+                  <span className="transition-transform group-open:rotate-180">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="pb-6">
+                  <p className="text-[14px] text-text-muted leading-relaxed">
+                    Complimentary shipping on all U.S. orders over $50. Enjoy a 30-day money-back guarantee on all products if you're not fully satisfied with your radiance.
+                  </p>
+                </div>
+              </details>
             </div>
 
             {/* Reviews Section */}
-            <div className="mt-20 pt-10">
-              <h2 className="text-2xl font-medium tracking-tight mb-10">Customer Reviews</h2>
+            <div className="mt-12 pt-8">
+              <h2 className="text-xl md:text-2xl font-medium tracking-tight mb-8">Customer Reviews</h2>
               
               {/* Form */}
               <div className="bg-surface p-8 mb-12">
@@ -375,7 +389,7 @@ export default function ProductClient({ product, similarProducts = [] }: { produ
               View All 
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
             {similarProducts.map(p => (
               <ProductCard key={p._id} product={p as any} />
             ))}

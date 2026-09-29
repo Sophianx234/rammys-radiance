@@ -227,6 +227,21 @@ export default function Header() {
     }
   }, []);
 
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        document.documentElement.style.setProperty(
+          "--header-height",
+          `${entry.contentRect.height}px`
+        );
+      }
+    });
+    observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
@@ -292,7 +307,7 @@ export default function Header() {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full flex flex-col bg-surface border-b border-border/40">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full flex flex-col bg-surface border-b border-border/40">
       <div className="bg-[#5B7763] text-white text-xs sm:text-[13px] tracking-wide text-center py-2.5 px-4 w-full font-medium flex items-center justify-center gap-2">
         <span>All orders are delivered on Fridays.</span>
         <Link
