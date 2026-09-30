@@ -25,7 +25,7 @@ export function uploadBufferToCloudinary(
 
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder: `rammysradiance/${imagePath}`,
+        folder: `rammys-radiance/${imagePath}`,
         public_id: finalPublicId,
         overwrite: shouldOverwrite,
         invalidate: shouldOverwrite,

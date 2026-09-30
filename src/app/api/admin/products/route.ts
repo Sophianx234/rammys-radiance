@@ -12,6 +12,8 @@ import { Category } from "@/models/Category";
 import DOMPurify from "isomorphic-dompurify";
 import { logActivity } from "@/lib/logger";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import crypto from "crypto";
 
 export async function GET() {
   try {
@@ -46,6 +48,7 @@ export async function POST(req: NextRequest) {
       reviewsCount: formData.get("reviewsCount") || 0,
       discountPrice: formData.has("discountPrice") ? formData.get("discountPrice") : undefined,
       discountBadge: formData.get("discountBadge") as string || "",
+      badgeColor: formData.get("badgeColor") as string || "#5B7763",
     };
 
     // Validate with Zod
@@ -59,7 +62,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let { name, description, category, slug, price, stock, isFeatured, rating, reviewsCount, discountPrice, discountBadge } = validatedData.data;
+    let { name, description, category, slug, price, stock, isFeatured, rating, reviewsCount, discountPrice, discountBadge, badgeColor } = validatedData.data;
 
     // Sanitize basic text fields
     name = DOMPurify.sanitize(name);
@@ -67,6 +70,7 @@ export async function POST(req: NextRequest) {
     category = DOMPurify.sanitize(category);
     slug = slug ? DOMPurify.sanitize(slug) : "";
     discountBadge = discountBadge ? DOMPurify.sanitize(discountBadge) : undefined;
+    badgeColor = badgeColor ? DOMPurify.sanitize(badgeColor) : "#5B7763";
 
     // ----- SLUG -----
     if (!slug) {
@@ -116,20 +120,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const productId = new mongoose.Types.ObjectId();
     const uploadedImages: string[] = [];
+    const imageHashes = new Set<string>();
+
     for (let i = 0; i < imageFiles.length; i++) {
       const file = imageFiles[i];
       const buffer = Buffer.from(await file.arrayBuffer());
+      
+      const hash = crypto.createHash("sha256").update(buffer).digest("hex");
+      if (imageHashes.has(hash)) {
+        return NextResponse.json(
+          { error: "Duplicate images are not allowed for the same product" },
+          { status: 400 }
+        );
+      }
+      imageHashes.add(hash);
+
       const result = await uploadBufferToCloudinary(
         buffer,
         `img_${i + 1}`,
-        `products/${slug}`
+        `products/${productId.toString()}`
       );
       uploadedImages.push(result.secure_url);
     }
 
+    const finalRating = rating > 0 ? rating : Number((Math.random() * (5.0 - 4.0) + 4.0).toFixed(1));
+    const finalReviewsCount = reviewsCount > 0 ? reviewsCount : Math.floor(Math.random() * (16 - 8 + 1)) + 8;
+
     // ----- SAVE PRODUCT -----
     const newProduct = await Product.create({
+      _id: productId,
       name,
       slug,
       description,
@@ -137,12 +158,13 @@ export async function POST(req: NextRequest) {
       price,
       discountPrice,
       discountBadge,
+      badgeColor,
       images: uploadedImages,
       features,
       stock,
       inStock: stock > 0,
-      rating,
-      reviewsCount,
+      rating: finalRating,
+      reviewsCount: finalReviewsCount,
       variants,
       isFeatured,
     });

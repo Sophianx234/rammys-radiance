@@ -52,6 +52,7 @@ export const productSchema = z.object({
   reviewsCount: z.coerce.number().min(0).optional(),
   discountPrice: z.coerce.number().min(0).optional(),
   discountBadge: z.string().optional().or(z.literal("")),
+  badgeColor: z.string().optional().or(z.literal("")),
 });
 
 export const newsletterSchema = z.object({

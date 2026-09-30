@@ -7,6 +7,7 @@ import { Category } from "@/models/Category";
 import { uploadBufferToCloudinary, deleteFolderFromCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
 
 import { logActivity } from "@/lib/logger";
+import crypto from "crypto";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -46,7 +47,7 @@ export async function DELETE(
     const product = await Product.findById(id);
     if (product) {
       try {
-        await deleteFolderFromCloudinary(`rammysradiance/products/${product.slug}`);
+        await deleteFolderFromCloudinary(`rammys-radiance/products/${product._id.toString()}`);
       } catch (e) {
         console.warn("Failed to delete product folder from Cloudinary:", e);
       }
@@ -91,6 +92,10 @@ export async function PUT(
     const stock = Number(formData.get("stock"));
     const category = formData.get("category") as string;
     const isFeatured = formData.get("isFeatured") === "true";
+    const slug = formData.get("slug") as string;
+    const discountPrice = formData.has("discountPrice") ? Number(formData.get("discountPrice")) : undefined;
+    const discountBadge = formData.get("discountBadge") as string;
+    const badgeColor = formData.get("badgeColor") as string;
 
     if (!name || !description || !price || !category) {
       return NextResponse.json(
@@ -142,7 +147,7 @@ export async function PUT(
     // If an image URL was in the DB but is no longer in the submitted existingImages[], delete it from Cloudinary
     const removedImages = product.images.filter((oldUrl: string) => !existingImages.includes(oldUrl));
     for (const url of removedImages) {
-      const match = url.match(/rammysradiance\/products\/[^\/]+\/(img_\d+|[^\.]+)/);
+      const match = url.match(/(?:rammysradiance|rammys-radiance)\/products\/[^\/]+\/(img_\d+|[^\.]+)/);
       if (match) {
         try {
           await deleteFromCloudinary(match[0]);
@@ -160,13 +165,22 @@ export async function PUT(
     });
 
     const uploadedNewImages: string[] = [];
+    const imageHashes = new Set<string>();
+
     for (let i = 0; i < newImageFiles.length; i++) {
       const file = newImageFiles[i];
       const buffer = Buffer.from(await file.arrayBuffer());
+      
+      const hash = crypto.createHash("sha256").update(buffer).digest("hex");
+      if (imageHashes.has(hash)) {
+        return NextResponse.json({ error: "Duplicate images detected in your upload." }, { status: 400 });
+      }
+      imageHashes.add(hash);
+
       const uploadResult = await uploadBufferToCloudinary(
         buffer,
         `img_${maxIdx + i + 1}`,
-        `products/${product.slug}`
+        `products/${product._id.toString()}`
       );
       uploadedNewImages.push(uploadResult.secure_url);
     }
@@ -174,20 +188,26 @@ export async function PUT(
     const finalImages = [...existingImages, ...uploadedNewImages];
 
     // ---------- UPDATE PRODUCT ----------
+    const updatePayload: any = {
+      name,
+      description,
+      price,
+      stock,
+      inStock: stock > 0,
+      category,
+      features,
+      variants,
+      isFeatured,
+      images: finalImages,
+    };
+    if (slug) updatePayload.slug = slug;
+    updatePayload.discountPrice = discountPrice || null;
+    updatePayload.discountBadge = discountBadge || "";
+    if (badgeColor) updatePayload.badgeColor = badgeColor;
+
     const updated = await Product.findByIdAndUpdate(
       id,
-      {
-        name,
-        description,
-        price,
-        stock,
-        inStock: stock > 0,
-        category,
-        features,
-        variants,
-        isFeatured,
-        images: finalImages,
-      },
+      updatePayload,
       { new: true }
     );
     

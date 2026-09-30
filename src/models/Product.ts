@@ -16,6 +16,7 @@ export interface IProduct extends Document {
   price: number;
   discountPrice?: number;
   discountBadge?: string;
+  badgeColor?: string;
   images: string[];
   features: string[];
   rating: number;
@@ -38,6 +39,7 @@ const productSchema = new Schema<IProduct>(
     price: { type: Number, required: true },
     discountPrice: { type: Number },
     discountBadge: { type: String },
+    badgeColor: { type: String, default: "#5B7763" },
     images: [{ type: String, required: true }],
     features: [String],
     rating: { type: Number, default: 0 },
