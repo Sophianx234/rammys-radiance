@@ -47,10 +47,11 @@ export default function AddProductPage() {
     name: "",
     slug: "",
     description: "",
-    price: 1,
-    discountPrice: 0,
+    price: "" as any,
+    discountPrice: "" as any,
     discountBadge: "",
-    stock: 1,
+    badgeColor: "#5B7763",
+    stock: "" as any,
     rating: 0,
     reviewsCount: 0,
     images: [] as File[],
@@ -128,6 +129,15 @@ export default function AddProductPage() {
     }
   };
 
+  useEffect(() => {
+    if (product.price > 0 && product.discountPrice > product.price) {
+      if (!product.discountBadge || product.discountBadge.startsWith("-")) {
+        const discount = Math.round(((product.discountPrice - product.price) / product.discountPrice) * 100);
+        setProduct((prev) => ({ ...prev, discountBadge: `-${discount}%` }));
+      }
+    }
+  }, [product.price, product.discountPrice]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({}); // reset errors
@@ -149,6 +159,7 @@ export default function AddProductPage() {
       form.append("price", String(validated.price));
       if (validated.discountPrice) form.append("discountPrice", String(validated.discountPrice));
       if (validated.discountBadge) form.append("discountBadge", validated.discountBadge);
+      if (product.badgeColor) form.append("badgeColor", product.badgeColor);
       form.append("stock", String(validated.stock));
       form.append("category", validated.category);
       form.append("rating", String(validated.rating || 0));
@@ -195,7 +206,7 @@ export default function AddProductPage() {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex-1 space-y-8 pb-20 max-w-5xl mx-auto"
+      className="flex-1 space-y-8 max-w-5xl mx-auto pb-20 "
     >
       {/* HEADER */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
@@ -219,9 +230,9 @@ export default function AddProductPage() {
         </button>
       </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* LEFT COLUMN - MAIN DETAILS */}
-        <div className="xl:col-span-2 space-y-8">
+      <div className="flex flex-col gap-8 max-w-5xl mx-auto">
+        {/* MAIN DETAILS */}
+        <div className="space-y-8">
           
           {/* GENERAL INFORMATION */}
           <div className="bg-white border border-border/40 p-6 md:p-8">
@@ -242,22 +253,27 @@ export default function AddProductPage() {
                     }));
                   }}
                   placeholder="e.g. Shield Conditioner"
-                  className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
+                  className="bg-secondary/20 shadow-none border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
                 />
                 {errors.name && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.name}</p>}
               </div>
 
               <div>
-                <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">URL Slug</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted">Slug</label>
+                  {!isSlugManuallyEdited && (
+                    <button type="button" onClick={() => setIsSlugManuallyEdited(true)} className="text-[10px] font-bold uppercase text-[#5B7763] hover:underline">Edit Slug</button>
+                  )}
+                </div>
                 <Input
                   type="text"
                   value={product.slug}
+                  disabled={!isSlugManuallyEdited}
                   onChange={(e) => {
-                    setIsSlugManuallyEdited(true);
                     setProduct({ ...product, slug: e.target.value.toLowerCase().replace(/[^a-z0-9\-]+/g, '-') });
                   }}
                   placeholder="e.g. shield-conditioner"
-                  className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
+                  className="bg-secondary/20 shadow-none border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <p className="text-[10px] text-text-muted mt-2 tracking-wider font-medium">Auto-generated from name.</p>
                 {errors.slug && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.slug}</p>}
@@ -266,7 +282,7 @@ export default function AddProductPage() {
               <div>
                  <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Category</label>
                  <Select value={product.category} onValueChange={(val) => setProduct({ ...product, category: val })}>
-                   <SelectTrigger className="w-full bg-secondary/20 border-border/40 text-[13px] text-[#222222] h-12 rounded-none focus:ring-0 focus:border-[#5B7763]">
+                   <SelectTrigger className="w-full  bg-secondary/20 border-border/40  shadow-none text-[13px] text-[#222222] h-12 rounded-none focus:ring-0 focus:border-[#5B7763]">
                      <SelectValue placeholder="Select a category" />
                    </SelectTrigger>
                    <SelectContent className="rounded-none border-border/40">
@@ -288,8 +304,8 @@ export default function AddProductPage() {
                       type="number"
                       min={0}
                       value={product.price}
-                      onChange={(e) => setProduct({ ...product, price: Number(e.target.value) })}
-                      className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#5B7763] font-bold h-12"
+                      onChange={(e) => setProduct({ ...product, price: e.target.value as any })}
+                      className="bg-secondary/20 border-border/40  shadow-none text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#5B7763] font-bold h-12"
                     />
                     <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">The selling price.</p>
                     {errors.price && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.price}</p>}
@@ -300,9 +316,9 @@ export default function AddProductPage() {
                     <Input
                       type="number"
                       min={0}
-                      value={product.discountPrice || ""}
-                      onChange={(e) => setProduct({ ...product, discountPrice: e.target.value ? Number(e.target.value) : 0 })}
-                      className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-text-muted h-12"
+                      value={product.discountPrice}
+                      onChange={(e) => setProduct({ ...product, discountPrice: e.target.value as any })}
+                      className="bg-secondary/20 border-border/40  shadow-none text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-text-muted h-12"
                       placeholder="Optional"
                     />
                     <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">Crossed out price.</p>
@@ -310,17 +326,40 @@ export default function AddProductPage() {
                  </div>
               </div>
               
-              <div className="md:col-span-2">
-                 <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Discount Badge Text</label>
-                 <Input
-                   type="text"
-                   value={product.discountBadge}
-                   onChange={(e) => setProduct({ ...product, discountBadge: e.target.value })}
-                   className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
-                   placeholder="e.g. SALE or -20%"
-                 />
-                 <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">Appears as a badge on the top left of the product image.</p>
-                 {errors.discountBadge && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.discountBadge}</p>}
+              <div className="md:col-span-2 space-y-4">
+                 <div>
+                   <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Discount Badge Text</label>
+                   <Input
+                     type="text"
+                     value={product.discountBadge}
+                     onChange={(e) => setProduct({ ...product, discountBadge: e.target.value })}
+                     className="bg-secondary/20 border-border/40  shadow-none text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
+                     placeholder="e.g. SALE or -20%"
+                   />
+                   <p className="text-[10px] text-text-muted mt-2 tracking-wider font-medium">Auto-calculates if Old Price is provided, but you can type a custom caption.</p>
+                   {errors.discountBadge && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.discountBadge}</p>}
+                 </div>
+                 
+                 <div>
+                   <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Badge Color</label>
+                   <div className="flex flex-wrap gap-3">
+                     {[
+                       "#5B7763", "#000000", "#ef4444", "#f97316", "#eab308", 
+                       "#3b82f6", "#8b5cf6", "#ec4899", "#64748b"
+                     ].map((color) => (
+                       <button
+                         key={color}
+                         type="button"
+                         onClick={() => setProduct({ ...product, badgeColor: color })}
+                         className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${product.badgeColor === color ? 'border-gray-900 scale-110 shadow-sm' : 'border-transparent hover:scale-105'}`}
+                         style={{ backgroundColor: color }}
+                         title={color}
+                       >
+                         {product.badgeColor === color && <span className="w-2 h-2 rounded-full bg-white opacity-80" />}
+                       </button>
+                     ))}
+                   </div>
+                 </div>
               </div>
             </div>
           </div>
@@ -336,7 +375,7 @@ export default function AddProductPage() {
                   value={product.description}
                   onChange={(e) => setProduct({ ...product, description: e.target.value })}
                   placeholder="Experience a new era of effortless confidence..."
-                  className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] min-h-[140px] resize-y p-4"
+                  className="bg-secondary/20 border-border/40  shadow-none text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] min-h-[140px] resize-y p-4"
                 />
                 <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">This text is displayed right below the price and rating.</p>
                 {errors.description && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.description}</p>}
@@ -351,7 +390,7 @@ export default function AddProductPage() {
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
                     placeholder="e.g. Formulated for all skin types..."
-                    className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12 flex-1"
+                    className="bg-secondary/20 border-border/40  shadow-none text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12 flex-1"
                   />
                   <button type="button" onClick={handleAddFeature} className="bg-secondary/50 text-[#222222] border border-border/40 px-8 text-[11px] uppercase tracking-wider font-bold hover:bg-secondary transition-colors h-12 shrink-0">
                     Add Feature
@@ -438,8 +477,8 @@ export default function AddProductPage() {
                     type="number"
                     min={0}
                     value={product.stock}
-                    onChange={(e) => setProduct({ ...product, stock: Number(e.target.value) })}
-                    className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
+                    onChange={(e) => setProduct({ ...product, stock: e.target.value as any })}
+                    className="bg-secondary/20 border-border/40 shadow-none shadow-none text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
                   />
                   <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">Determines the "In Stock" or "Out of Stock" status.</p>
                   {errors.stock && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.stock}</p>}
@@ -454,13 +493,13 @@ export default function AddProductPage() {
                       value={variantName}
                       onChange={(e) => setVariantName(e.target.value)}
                       placeholder="Variant (e.g. Size)"
-                      className="bg-secondary/20 border-border/40 text-[12px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-10 w-full"
+                      className="bg-secondary/20 border-border/40 shadow-none shadow-none text-[12px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-10 w-full"
                     />
                     <Input
                       value={variantOptions}
                       onChange={(e) => setVariantOptions(e.target.value)}
                       placeholder="Options (comma separated)"
-                      className="bg-secondary/20 border-border/40 text-[12px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-10 w-full"
+                      className="bg-secondary/20 border-border/40 shadow-none shadow-none text-[12px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-10 w-full"
                     />
                     <button type="button" onClick={handleAddVariant} className="bg-secondary/50 text-[#222222] border border-border/40 w-full py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-secondary transition-colors">
                       Add Variant
@@ -487,15 +526,9 @@ export default function AddProductPage() {
                     </div>
                   )}
                </div>
-             </div>
-          </div>
-
-          {/* VISIBILITY & SOCIAL PROOF */}
-          <div className="bg-white border border-border/40 p-6 md:p-8">
-             <h3 className="text-[14px] uppercase tracking-widest font-bold text-[#222222] mb-6 border-b border-border/40 pb-4">Visibility & Social Proof</h3>
-             
-             <div className="space-y-6">
-               <div className="flex items-start gap-4 p-4 border border-border/40 bg-secondary/10">
+               </div>
+               
+               <div className="md:col-span-2 mt-2 pt-6 border-t border-border/40 flex items-start gap-4 p-4 bg-secondary/10">
                  <Checkbox
                    id="isFeatured"
                    checked={product.isFeatured}
@@ -505,7 +538,7 @@ export default function AddProductPage() {
                  <div className="grid gap-2 leading-none">
                     <label
                       htmlFor="isFeatured"
-                      className="text-[12px] font-bold text-[#222222] uppercase tracking-wider leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      className="text-[12px] font-bold text-[#222222] uppercase tracking-wider leading-none cursor-pointer"
                     >
                       Featured Product
                     </label>
@@ -514,40 +547,10 @@ export default function AddProductPage() {
                     </p>
                  </div>
                </div>
-
-               <div className="grid grid-cols-2 gap-4 pt-2">
-                 <div>
-                    <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Base Rating</label>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={5}
-                      step={0.1}
-                      value={product.rating}
-                      onChange={(e) => setProduct({ ...product, rating: Number(e.target.value) })}
-                      className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
-                    />
-                    <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">Shown on cards (0-5).</p>
-                    {errors.rating && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.rating}</p>}
-                 </div>
-                 <div>
-                    <label className="block text-[11px] uppercase tracking-wider font-bold text-text-muted mb-2">Review Count</label>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={product.reviewsCount}
-                      onChange={(e) => setProduct({ ...product, reviewsCount: Number(e.target.value) })}
-                      className="bg-secondary/20 border-border/40 text-[13px] rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763] text-[#222222] h-12"
-                    />
-                    <p className="text-[10px] text-text-muted mt-2  tracking-wider font-medium">Initial review number.</p>
-                    {errors.reviewsCount && <p className="text-red-600 text-[10px] uppercase tracking-wider font-bold mt-1.5">{errors.reviewsCount}</p>}
-                 </div>
-               </div>
-             </div>
-          </div>
-
+           </div>
         </div>
       </div>
     </motion.div>
   );
 }
+export const dynamic = 'force-dynamic';  

@@ -249,13 +249,13 @@ export default function ManageTeamClient({ data }: ManageTeamClientProps) {
           <TabsList className="h-9 bg-zinc-100/50 border border-zinc-200/60 p-0.5 rounded-lg mb-2">
             <TabsTrigger
               value="team"
-              className="text-[13px] font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4"
+              className="text-[13px] shadow-none font-medium data-[state=active]:bg-white data-[state=active]:shadow-none rounded-md px-4"
             >
               Active Team
             </TabsTrigger>
             <TabsTrigger
               value="pending"
-              className="text-[13px] font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4"
+              className="text-[13px] shadow-none font-medium data-[state=active]:bg-white data-[state=active]:shadow-none rounded-md px-4"
             >
               Pending Invites
               {pendingCount > 0 && (

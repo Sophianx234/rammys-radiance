@@ -106,15 +106,15 @@ export function ProductTableRow({ product }: { product: any }) {
           {product.category?.name || "Uncategorized"}
         </TableCell>
 
-        <TableCell className="text-[13px] font-bold text-[#5B7763]">
-          ₵{(product.price / 100).toFixed(2)}
+        <TableCell className="text-[13px] font-bold ">
+          ₵{(product.price).toLocaleString()}
         </TableCell>
 
         <TableCell>
           <div className="flex flex-col gap-1.5">
-             <span className={`text-[11px] font-bold ${stockClass}`}>{product.stock} in stock</span>
+             <span className={`text-[11px] font-bold ${stockClass}`}> </span>
              <div className={`px-2 py-0.5 w-fit text-[9px] uppercase tracking-widest font-bold border ${product.inStock ? "border-[#5B7763]/20 bg-[#5B7763]/5 " : "border-red-600/20 bg-red-50 text-red-600"}`}>
-               {product.inStock ? "In Stock" : "Out of Stock"}
+              {product.stock} {product.inStock ? "In Stock" : "Out of Stock"}
              </div>
           </div>
         </TableCell>
@@ -190,7 +190,7 @@ export function ProductTableRow({ product }: { product: any }) {
 
             <div className="flex justify-between text-[12px] uppercase tracking-wider font-bold border-t border-border/40 pt-4">
               <p><span className="text-text-muted mr-2">Category:</span> {product.category?.name || "Uncategorized"}</p>
-              <p><span className="text-text-muted mr-2">Price:</span> ₵{(product.price / 100).toFixed(2)}</p>
+              <p><span className="text-text-muted mr-2">Price:</span> ₵{(product.price).toLocaleString()}</p>
             </div>
 
             <div className="flex justify-between text-[12px] uppercase tracking-wider font-bold border-t border-border/40 pt-4">

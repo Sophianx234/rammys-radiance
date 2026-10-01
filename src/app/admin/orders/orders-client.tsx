@@ -181,6 +181,21 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
     updateURL({ status: newFilter.length > 0 ? newFilter.join(",") : null, page: "1" });
   };
 
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+
+  React.useEffect(() => {
+    setLocalSearch(searchTerm);
+  }, [searchTerm]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localSearch !== searchTerm) {
+        updateURL({ search: localSearch, page: "1" });
+      }
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [localSearch]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -188,24 +203,16 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
       className="p-6 max-w-7xl mx-auto space-y-8 pb-20"
     >
       {/* HEADER */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
-        <div>
-          <h2 className="text-[18px] uppercase tracking-widest font-bold text-[#222222]">Orders Management</h2>
-          <p className="text-[12px] text-text-muted mt-1 tracking-wider font-medium">
-            Track and process all customer orders
-          </p>
-        </div>
-      </header>
 
       {/* FILTER BAR */}
       <div className="bg-white border border-border/40 p-4 flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-        <div className="relative w-full lg:w-96 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted group-focus-within:text-[#5B7763] transition-colors" />
+        <div className="relative w-full shadow-none lg:w-96 group">
+          <Search className="absolute  left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted group-focus-within:text-[#5B7763] transition-colors" />
           <Input
             placeholder="SEARCH ORDER #, PHONE OR NAME..."
-            className="pl-11 pr-10 bg-secondary/20 border-border/40 text-[11px] uppercase tracking-wider h-12 rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763]"
-            value={searchTerm}
-            onChange={(e) => updateURL({ search: e.target.value, page: "1" })}
+            className="pl-11 pr-10 shadow-none bg-secondary/20 border-border/40 text-[11px] uppercase tracking-wider h-12 rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763]"
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
           />
           {searchTerm && (
             <button 
@@ -261,13 +268,13 @@ export function OrdersClient({ initialOrders, pagination }: { initialOrders: any
           </DropdownMenu>
 
           <Select value={dateFilter} onValueChange={(val) => updateURL({ dateFilter: val, page: "1" })}>
-            <SelectTrigger className={`h-12 w-[180px] rounded-none text-[11px] uppercase tracking-wider font-bold focus:ring-0 ${dateFilter !== 'all' ? "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20" : "bg-white text-text-muted border-border/40"}`}>
+            <SelectTrigger className={`h-12 w-[180px] shadow-none rounded-none text-[11px] uppercase tracking-wider font-bold focus:ring-0 ${dateFilter !== 'all' ? "bg-[#5B7763]/10 text-[#5B7763] border-[#5B7763]/20" : "bg-white text-text-muted border-border/40"}`}>
                <div className="flex items-center gap-2">
                   <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
                   <SelectValue placeholder="DATE RANGE" />
                </div>
             </SelectTrigger>
-            <SelectContent className="rounded-none border-border/40">
+            <SelectContent className="rounded-none shadow-none border-border/40">
                <SelectItem value="all" className="text-[11px] uppercase tracking-wider cursor-pointer">All Time</SelectItem>
                <SelectItem value="today" className="text-[11px] uppercase tracking-wider cursor-pointer">Today</SelectItem>
                <SelectItem value="week" className="text-[11px] uppercase tracking-wider cursor-pointer">Last 7 Days</SelectItem>

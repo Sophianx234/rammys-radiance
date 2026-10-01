@@ -240,3 +240,4 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
     </motion.div>
   );
 }
+export const dynamic = 'force-dynamic'; 

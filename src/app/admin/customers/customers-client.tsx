@@ -126,6 +126,21 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
     setIsPasswordChangeLoading(false);
   };
 
+  const [localSearch, setLocalSearch] = useState(search);
+
+  React.useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localSearch !== search) {
+        updateURL({ search: localSearch });
+      }
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [localSearch]);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 8 }} 
@@ -155,8 +170,8 @@ export function CustomersClient({ initialUsers }: { initialUsers: any[] }) {
             <Input
               placeholder="SEARCH BY NAME OR EMAIL..."
               className="pl-11 pr-10 bg-secondary/20 border-border/40 text-[11px] uppercase tracking-wider h-12 rounded-none focus-visible:ring-0 focus-visible:border-[#5B7763]"
-              value={search}
-              onChange={(e) => updateURL({ search: e.target.value })}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
             />
             {search && (
               <button 

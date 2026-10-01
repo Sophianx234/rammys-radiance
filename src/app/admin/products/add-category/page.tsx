@@ -197,3 +197,4 @@ export default function AddCategoryPage() {
     </motion.div>
   );
 }
+export const dynamic = 'force-dynamic';  
