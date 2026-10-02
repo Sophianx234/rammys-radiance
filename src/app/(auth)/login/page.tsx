@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -389,5 +389,13 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-black/5" />
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="h-dvh flex items-center justify-center bg-surface text-[12px] tracking-widest uppercase font-bold text-text-muted">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

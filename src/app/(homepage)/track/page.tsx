@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Package, MapPin, ArrowRight, Clock, CheckCircle2, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { GridLoader } from "react-spinners";
 
-export default function TrackOrderPage() {
+function TrackOrderContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [reference, setReference] = useState(searchParams.get("reference") || "");
@@ -195,5 +195,13 @@ export default function TrackOrderPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function TrackOrderPage() {
+  return (
+    <Suspense fallback={<div className="h-dvh flex items-center justify-center bg-surface text-[12px] tracking-widest uppercase font-bold text-text-muted">Loading...</div>}>
+      <TrackOrderContent />
+    </Suspense>
   );
 }

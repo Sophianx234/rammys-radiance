@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,9 +10,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useDashStore } from "@/lib/store";
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -456,5 +455,13 @@ export default function SignupPage() {
         <div className="absolute inset-0 bg-black/5" />
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="h-dvh flex items-center justify-center bg-surface text-[12px] tracking-widest uppercase font-bold text-text-muted">Loading...</div>}>
+      <SignupContent />
+    </Suspense>
   );
 }
