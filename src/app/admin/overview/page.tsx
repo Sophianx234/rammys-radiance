@@ -70,15 +70,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ [ke
 
       {/* ---------- HEADER ---------- */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
-        <div>
-          <h2 className="text-[18px] uppercase tracking-widest font-bold text-[#222222]">Overview</h2>
-          <p className="text-[12px] text-text-muted mt-1 uppercase tracking-wider font-medium">
-            Insight into your store performance and operations
-          </p>
-        </div>
-        <button className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors w-fit">
-          Download Report
-        </button>
+
       </header>
 
       <Suspense fallback={<div className="h-[200px] flex items-center justify-center"><GridLoader size={18} color="#5B7763" /></div>}>

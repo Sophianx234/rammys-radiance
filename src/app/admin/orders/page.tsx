@@ -37,4 +37,4 @@ async function OrdersData({ searchParams }: { searchParams: { [key: string]: str
   });
 
   return <OrdersClient initialOrders={orders} pagination={pagination} />;
-}
+}export const dynamic = 'force-dynamic'; 

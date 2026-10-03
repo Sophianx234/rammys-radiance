@@ -14,22 +14,19 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export default function AdminPage({ children }: { children: ReactNode}) {
  
   return (
-       <html lang="en">
-
-      <body className={`font-sans    antialiased`}>
-        <ConfirmProvider>
-          <Toaster position="bottom-right" />
-          <div className="flex bg-[#F3F4F6] min-h-screen">
-            <Sidebar  />
-            <div className="flex-1 flex flex-col min-w-0">
-              <Topbar />
-              <main className="p-2 sm:p-8">
-               {children}
-              </main>
-            </div>
+    <>
+      <ConfirmProvider>
+        <Toaster position="bottom-right" />
+        <div className="flex bg-[#F3F4F6] min-h-screen">
+          <Sidebar  />
+          <div className="flex-1 flex flex-col min-w-0">
+            <Topbar />
+            <main className="p-2 sm:p-8">
+             {children}
+            </main>
           </div>
-        </ConfirmProvider>
-      </body>
-       </html>
+        </div>
+      </ConfirmProvider>
+    </>
   );
 }

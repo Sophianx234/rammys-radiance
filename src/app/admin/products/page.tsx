@@ -14,6 +14,8 @@ import { CategoryTableRow } from "./category-table-row";
 import { AdminProductsFilter } from "./client-filters";
 import { getCategories, getProducts } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductsTab(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
   const currentTab = typeof searchParams.tab === 'string' ? searchParams.tab : 'products';
@@ -22,26 +24,7 @@ export default async function ProductsTab(props: { searchParams: Promise<{ [key:
     <div className="flex-1 space-y-8 pb-10 max-w-7xl mx-auto">
       {/* ---------- HEADER ---------- */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-6">
-        <div>
-          <h2 className="text-[18px] uppercase tracking-widest font-bold text-[#222222]">Products</h2>
-          <p className="text-[12px] text-text-muted mt-1 uppercase tracking-wider font-medium">
-            Manage your store inventory and collections
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {currentTab === "categories" ? (
-            <Link href="/admin/products/add-category" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
-              <Plus className="w-3.5 h-3.5" /> Add New Category
-            </Link>
-          ) : (
-            <Link href="/admin/products/add" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
-              <Plus className="w-3.5 h-3.5" /> Add New Product
-            </Link>
-          )}
-        </div>
-      </header>
-
-      {/* Tabs */}
+        {/* Tabs */}
       <div className="flex items-center gap-6 border-b border-border/40">
         <Link 
           href="/admin/products?tab=products" 
@@ -64,6 +47,20 @@ export default async function ProductsTab(props: { searchParams: Promise<{ [key:
           Categories
         </Link>
       </div>
+        <div className="flex items-center gap-3">
+          {currentTab === "categories" ? (
+            <Link href="/admin/products/add-category" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
+              <Plus className="w-3.5 h-3.5" /> Add New Category
+            </Link>
+          ) : (
+            <Link href="/admin/products/add" className="bg-black text-white px-5 py-2.5 text-[11px] uppercase tracking-wider font-bold hover:bg-opacity-90 transition-colors flex items-center gap-2">
+              <Plus className="w-3.5 h-3.5" /> Add New Product
+            </Link>
+          )}
+        </div>
+      </header>
+
+      
 
       {currentTab === 'products' ? (
         <>

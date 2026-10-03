@@ -24,4 +24,4 @@ async function CustomersData({ searchParams }: { searchParams: { [key: string]: 
   const customers = await getAllCustomers(search, role);
 
   return <CustomersClient initialUsers={customers} />;
-}
+}export const dynamic = 'force-dynamic';  

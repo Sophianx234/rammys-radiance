@@ -27,3 +27,4 @@ export default async function AuditPage({
     />
   );
 }
+export const dynamic = 'force-dynamic'; 
