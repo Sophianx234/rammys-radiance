@@ -185,9 +185,11 @@ export default function EditProductPage({
   };
 
   useEffect(() => {
-    if (product.price > 0 && product.discountPrice > product.price) {
+    const p = Number(product.price);
+    const dp = Number(product.discountPrice);
+    if (p > 0 && dp > p) {
       if (!product.discountBadge || product.discountBadge.startsWith("-")) {
-        const discount = Math.round(((product.discountPrice - product.price) / product.discountPrice) * 100);
+        const discount = Math.round(((dp - p) / dp) * 100);
         setProduct((prev) => ({ ...prev, discountBadge: `-${discount}%` }));
       }
     }
@@ -205,6 +207,7 @@ export default function EditProductPage({
       const validated = productSchema.parse({
         ...product,
         price: Number(product.price),
+        discountPrice: product.discountPrice ? Number(product.discountPrice) : undefined,
         stock: Number(product.stock),
       });
 
